@@ -1,2 +1,2 @@
-# django-stockmanagement
-Gestion d'inventaire multi-sites et multilanguages - gestion des utilisateurs, du catalogue de produits, horodatage des mouvements d'inventaire, alertes seuil critique, tableau de bord et statistiques avec Chart.js, interface admin personnalisée.  Inclut jeu de données d'exemple et jeu de tests automatisés
+# Gestion d'inventaire - Application Web Django
+Gestion d'inventaire multi-sites et multi-languages - gestion des utilisateurs, du catalogue de produits, horodatage des mouvements d'inventaire, alertes seuil critique, tableau de bord et statistiques avec Chart.js, interface admin personnalisée. Inclut un jeu de données d'exemple et des tests automatisés
