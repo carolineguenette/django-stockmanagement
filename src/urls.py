@@ -16,7 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.views.generic.base import RedirectView
+from django.conf import settings
+from django.http import HttpResponse #TODO Pour la page d'accueil temporaire
 
 urlpatterns = [
+    # Page d'accueil temporaire
+    path('', lambda request: HttpResponse("<h1>Stock Management - Ça fonctionne!</h1>")),   #TODO Temporaire
+
     path('admin/', admin.site.urls),
+    path('favicon.ico', RedirectView.as_view(url=settings.STATIC_URL + 'img/favicon.ico')), #TODO Temporaire
 ]
