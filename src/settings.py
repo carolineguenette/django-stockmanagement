@@ -10,21 +10,20 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 from pathlib import Path
+from django.utils.translation import gettext_lazy as _
 
 import environ
-import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Initialiser environ
 env = environ.Env(
-    DEBUG=(bool, False)
+    DEBUG=(bool, False),
+    TIME_ZONE=(str, 'UTC')
 )
-
 # Lire le fichier .env
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
-
+environ.Env.read_env( BASE_DIR / '.env' )
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -46,11 +45,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Applications locales
+    'src.catalogue.apps.CatalogueConfig',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -63,13 +66,15 @@ ROOT_URLCONF = 'src.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': [BASE_DIR / 'src' / 'templates'],
+        'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.i18n',
+                'src.settings.project_context',
             ],
         },
     },
@@ -114,14 +119,21 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+LANGUAGE_CODE = 'en-ca'
 USE_I18N = True
-
+LANGUAGES = [
+    # En mettant 'fr', l'URL /fr/ devient valide et utilisera le dossier languages/fr_FR
+    ('en-ca', _('English')),
+    ('fr-ca', _('French (Canada)')),
+    ('fr-fr', _('French (France)')),
+]
+TIME_ZONE = env('TIME_ZONE')
 USE_TZ = True
 
+# Dossier où seront stockés les fichiers de traduction (.po/.mo)
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',
+]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
@@ -129,5 +141,15 @@ USE_TZ = True
 STATIC_URL = 'assets/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'assets'),
+    BASE_DIR / 'assets',
 ]
+
+
+PROJECT_AUTHOR = "Caroline Guénette"
+
+# Fonction personnalisée pour injecter l'auteur globalement
+def project_context(request):
+    return {
+        'PROJECT_AUTHOR': PROJECT_AUTHOR,
+    }
+

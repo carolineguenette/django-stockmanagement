@@ -15,15 +15,28 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.conf.urls.i18n import i18n_patterns
 from django.views.generic.base import RedirectView
 from django.conf import settings
-from django.http import HttpResponse #TODO Pour la page d'accueil temporaire
+from django.shortcuts import render
 
+# TODO Temporaire
+def home_view(request):
+    return render(request, 'main.html')
+
+
+# Les URLs sans préfixe de langue (ex: API ou Webhooks)
 urlpatterns = [
-    # Page d'accueil temporaire
-    path('', lambda request: HttpResponse("<h1>Stock Management - Ça fonctionne!</h1>")),   #TODO Temporaire
-
-    path('admin/', admin.site.urls),
     path('favicon.ico', RedirectView.as_view(url=settings.STATIC_URL + 'img/favicon.ico')), #TODO Temporaire
+    path('i18n/', include('django.conf.urls.i18n')),
 ]
+
+# Les URLs traduits et préfixés (ex: /fr/admin/, /en/catalogue/)
+urlpatterns += i18n_patterns(
+    path('', home_view, name='home'),
+    path('admin/', admin.site.urls),
+    path('catalogue/', include('src.catalogue.urls')),
+
+    prefix_default_language=False
+)

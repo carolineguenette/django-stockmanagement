@@ -1,0 +1,175 @@
+/* ----------------------------------------------------
+   RESETS & VARIABLES GLOBAL
+   ---------------------------------------------------- */
+:root {
+    --primary-color: #2c3e50;
+    --text-color: #333333;
+    --bg-color: #f8f9fa;
+    --white: #ffffff;
+    --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-stack), sans-serif;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Layout structural */
+.container {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+/* ----------------------------------------------------
+   DESIGN PAR DÉFAUT (MOBILE FIRST)
+   ---------------------------------------------------- */
+.main-header {
+    background-color: var(--primary-color);
+    color: var(--white);
+    padding: 1rem 0;
+}
+
+.main-header .container {
+    display: flex;
+    flex-direction: column; /* Empilé sur mobile */
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Conteneur du logo et du texte */
+.logo {
+    color: var(--white);
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.5rem;       /* Grossit légèrement le texte du titre */
+    display: flex;
+    align-items: center;    /* Aligne verticalement l'icône et le texte */
+    gap: 12px;              /* Espace entre l'icône SVG et le texte */
+}
+
+/* Style de l'image du logo */
+.logo img {
+    width: 36px;            /* Ajustez cette valeur pour grossir ou réduire l'icône */
+    height: auto;           /* Conserve les proportions du SVG */
+    display: block;
+    flex-shrink: 0;
+}
+
+
+.main-content {
+    flex: 1; /* Pousse le footer vers le bas */
+    padding: 2rem 0;
+}
+
+.main-footer {
+    background-color: #ecf0f1;
+    text-align: center;
+    padding: 1rem 0;
+    font-size: 0.875rem;
+}
+
+/* ----------------------------------------------------
+   SÉLECTEUR DE LANGUES
+   ---------------------------------------------------- */
+
+/* Conteneur principal */
+.lang-dropdown {
+    position: relative;
+    display: inline-block;
+    pointer-events: auto; /* Garantit la capture correcte des clics */
+}
+
+/* Bouton du menu (Drapeau courant) */
+.lang-summary {
+    list-style: none;  /*Cache la flèche par défaut Chrome/Firefox */
+    cursor: pointer;
+    display: block;   /* Force le summary à prendre la taille exacte du drapeau */
+}
+
+.lang-summary::-webkit-details-marker {
+    display: none;  /*Cache la flèche par défaut Safari */
+}
+
+/* Menu déroulant (Popup parfaitement aligné) */
+.lang-list {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%); /* Centre horizontalement par rapport au drapeau actif */
+    margin-top: 12px;            /* Espace vertical sous le drapeau principal */
+    padding: 12px 10px;
+    background-color: var(--primary-color);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    list-style: none;
+    display: flex;
+    flex-direction: column;      /* Alignement vertical des options */
+    gap: 12px;                   /* Espace uniforme entre chaque drapeau */
+    z-index: 1000;
+}
+
+/* Style des liens et drapeaux */
+.lang-link {
+    display: block;
+    line-height: 0;
+    padding: 2px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.flag-icon {
+    width: 32px;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 2px;
+    display: block;
+    transition: opacity 0.2s ease; /* Transition fluide pour tous les changements */
+    opacity: 1;
+}
+
+/* Quand le dropdown s'ouvre : TOUS les drapeaux passent à 0.8 */
+details[open] .flag-icon {
+    opacity: 0.6;
+}
+
+/* Au survol : le drapeau survolé (actif ou dans la liste) remonte à 1 */
+.lang-summary:hover .flag-icon,
+.lang-link:hover .flag-icon {
+    opacity: 1 !important; /* Le !important force le survol à gagner sur l'état [open] */
+}
+
+
+
+/* ----------------------------------------------------
+   RESPONSIVE DESIGN (TABLETTES & ÉCRANS LARGES)
+   ---------------------------------------------------- */
+@media (min-width: 768px) {
+    .container {
+        max-width: 720px;
+    }
+
+    .main-header .container {
+        flex-direction: row; /* Alignés côte à côte sur grand écran */
+        justify-content: space-between;
+    }
+}
+
+@media (min-width: 992px) {
+    .container {
+        max-width: 960px;
+    }
+}

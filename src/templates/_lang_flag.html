@@ -1,0 +1,9 @@
+{% load static %}
+
+{% if target_lang == 'en-ca' %}
+    <img src="{% static 'img/flags/canada.svg' %}" alt="English" class="flag-icon">
+{% elif target_lang == 'fr-ca' %}
+    <img src="{% static 'img/flags/quebec.svg' %}" alt="Français (Canada)" class="flag-icon">
+{% elif target_lang == 'fr-fr' %}
+    <img src="{% static 'img/flags/france.svg' %}" alt="Français (France)" class="flag-icon">
+{% endif %}

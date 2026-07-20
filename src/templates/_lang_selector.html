@@ -1,0 +1,27 @@
+{% load i18n %}
+{% load static %}
+
+{% get_current_language as CURRENT_LANG %}
+{% get_available_languages as AVAILABLE_LANGS %}
+
+<details class="lang-dropdown">
+    <!-- Le résumé (summary) sert de bouton et affiche la langue active -->
+    <summary class="lang-summary">
+        {% include "_lang_flag.html" with target_lang=CURRENT_LANG %}
+    </summary>
+
+    <!-- La liste déroulante avec les autres options -->
+    <ul class="lang-list">
+        {% for lang in AVAILABLE_LANGS %}
+            {% if lang.0 != CURRENT_LANG %}
+                <li>
+                    {% language lang.0 %}
+                    <a href="{% url 'home' %}" class="lang-link" title="{{ lang.1 }}">
+                        {% include "_lang_flag.html" with target_lang=lang.0 %}
+                    </a>
+                    {% endlanguage %}
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</details>
