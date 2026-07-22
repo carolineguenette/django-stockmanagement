@@ -8,6 +8,8 @@
 }
 
 :root {
+    color-scheme: light dark;
+
     /* Couleurs structurelles - Mode Clair */
     --bg-header-footer: #ffffff;
     --bg-main-content: #e5e7eb;
@@ -46,7 +48,7 @@
 }
 
 body {
-    font-family: var(--font-stack);
+    font-family: var(--font-stack), sans-serif;
     color: var(--text-primary);
     background-color: var(--bg-main-content);
     display: flex;
@@ -157,29 +159,39 @@ body {
     text-align: center;
 }
 
-/* Icône centrale au-dessus du titre */
-.auth-icon-center {
-    background-color: var(--bg-auth-icon-center);
-    width: 54px;
-    height: 54px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0 auto 1.25rem;
-}
-
-.auth-icon-center img {
-    width: 24px;
-    height: 24px;
-}
-
 .auth-card h2 {
     color: var(--text-primary);
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
+
+    /* Préparation du Flexbox pour aligner la pastille au-dessus du texte */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
+
+/* Création de la pastille ronde via le pseudo-élément ::before */
+.auth-card h2::before {
+    content: ""; /* Indispensable pour que le pseudo-élément s'affiche */
+    display: block;
+
+    /* Dimensions et forme de la pastille ronde */
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    margin-bottom: 1.25rem; /* Espace entre la pastille et le texte du titre */
+    background-color: var(--bg-main-content); /* Fond gris-blanc en clair, #1F2228 en sombre */
+
+    /* Configuration de l'image de fond SVG */
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 24px; /* Force l'icône SVG à faire 24px au centre de la pastille */
+}
+
+/* Chaque svg intègre le mode light ET dark (style dans le fichier SVG) */
+.card-login h2::before { background-image: url('../img/login.svg'); }
+.card-register h2::before { background-image: url('../img/register.svg'); }
 
 .auth-subtitle {
     color: var(--text-secondary);
