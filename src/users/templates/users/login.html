@@ -1,0 +1,59 @@
+{% extends 'main.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% translate "Sign In" %} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card">
+
+        <!-- Icône centrale au-dessus du titre (Uniforme avec register) -->
+        <div class="auth-icon-center">
+            <img src="{% static 'img/login.svg' %}" alt="">
+        </div>
+
+        <h2>{% translate "Sign In" %}</h2>
+        <p class="auth-subtitle">{% translate "Enter your details to access your account." %}</p>
+
+        <!-- Formulaire de connexion -->
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+
+            <!-- Affichage des erreurs globales si les identifiants sont erronés -->
+            {% if form.errors %}
+                <div class="form-errors">
+                    <img src="{% static 'img/denied.svg' %}" alt="">
+                    {% translate "Invalid username or password. Please try again." %}
+                </div>
+            {% endif %}
+
+            <!-- Champ Nom d'utilisateur -->
+            <div class="input-group">
+                <div class="input-icon-wrapper">
+                    <img src="{% static 'img/person.svg' %}" alt="" class="field-icon">
+                    <input type="text" name="username" placeholder="{% translate 'Username' %}" required autofocus>
+                </div>
+            </div>
+
+            <!-- Champ Mot de passe -->
+            <div class="input-group">
+                <div class="input-icon-wrapper">
+                    <img src="{% static 'img/keys.svg' %}" alt="" class="field-icon">
+                    <input type="password" name="password" placeholder="{% translate 'Password' %}" required>
+                </div>
+            </div>
+
+            <!-- Lien mot de passe oublié discret et aligné à droite -->
+            <div class="auth-extra-links">
+                <a href="{% url 'password_reset' %}" class="forgot-password-link">
+                    {% translate "Forgot password?" %} <img src="{% static 'img/password-lost.svg' %}" alt="" class="btn-icon">
+                </a>
+            </div>
+
+            <!-- Bouton de connexion qui utilise la même classe et le même bleu adaptatif -->
+            <button type="submit" class="btn-primary">{% translate "Login" %}</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

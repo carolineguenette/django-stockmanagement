@@ -1,175 +1,433 @@
-/* ----------------------------------------------------
-   RESETS & VARIABLES GLOBAL
-   ---------------------------------------------------- */
-:root {
-    --primary-color: #2c3e50;
-    --text-color: #333333;
-    --bg-color: #f8f9fa;
-    --white: #ffffff;
-    --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
-
+/* ==========================================================================
+   RESET, ACCESSIBILITÉ & CONFIGURATION DE BASE
+   ========================================================================== */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
+:root {
+    /* Couleurs structurelles - Mode Clair */
+    --bg-header-footer: #ffffff;
+    --bg-main-content: #e5e7eb;
+    --bg-card: #ffffff;
+
+    /* Typographie et Textes */
+    --text-primary: #111827;
+    --text-secondary: #6b7280;
+    --input-border: #d1d5db;
+    --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+    /* Boutons et Accents */
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --accent-constrast: #ffffff;
+
+    --bg-auth-icon-center: var(--bg-main-content);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* Précision 1 : Alignement strict sur les codes couleurs du mode sombre */
+        --bg-header-footer: #0d0d0d;
+        --bg-main-content: #1f2228;
+        --bg-card: #0d0d0d;
+
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --input-border: #334155;
+        --accent: #3b82f6;
+        --accent-hover: #60a5fa;
+        --accent-constrast: #ffffff;
+
+        --bg-auth-icon-center: var(--bg-main-content);
+    }
+}
+
 body {
-    font-family: var(--font-stack), sans-serif;
-    color: var(--text-color);
-    background-color: var(--bg-color);
+    font-family: var(--font-stack);
+    color: var(--text-primary);
+    background-color: var(--bg-main-content);
     display: flex;
     flex-direction: column;
+    /* Précision 2 : Permet au corps de prendre toute la hauteur de la fenêtre */
     min-height: 100vh;
 }
 
-/* Layout structural */
+/* Conteneur fluide responsive */
 .container {
     width: 100%;
-    padding-right: 15px;
-    padding-left: 15px;
+    padding-right: 20px;
+    padding-left: 20px;
     margin-right: auto;
     margin-left: auto;
 }
 
-/* ----------------------------------------------------
-   DESIGN PAR DÉFAUT (MOBILE FIRST)
-   ---------------------------------------------------- */
+
+/* ==========================================================================
+   EN-TÊTE GLOBALE (MAIN HEADER)
+   ========================================================================== */
 .main-header {
-    background-color: var(--primary-color);
-    color: var(--white);
+    background-color: var(--bg-header-footer);
+    border-bottom: 1px solid var(--input-border);
     padding: 1rem 0;
 }
 
-.main-header .container {
+.header-grid {
     display: flex;
-    flex-direction: column; /* Empilé sur mobile */
+    flex-direction: column; /* Empilé par défaut sur Mobile */
     align-items: center;
     gap: 1rem;
 }
 
-/* Conteneur du logo et du texte */
+/* Bloc Logo / Titre */
 .logo {
-    color: var(--white);
+    color: var(--text-primary);
     text-decoration: none;
-    font-weight: bold;
-    font-size: 1.5rem;       /* Grossit légèrement le texte du titre */
+    font-weight: 700;
+    font-size: 1.3rem;
     display: flex;
-    align-items: center;    /* Aligne verticalement l'icône et le texte */
-    gap: 12px;              /* Espace entre l'icône SVG et le texte */
+    align-items: center;
+    gap: 12px;
 }
 
-/* Style de l'image du logo */
 .logo img {
-    width: 36px;            /* Ajustez cette valeur pour grossir ou réduire l'icône */
-    height: auto;           /* Conserve les proportions du SVG */
-    display: block;
-    flex-shrink: 0;
-}
-
-
-.main-content {
-    flex: 1; /* Pousse le footer vers le bas */
-    padding: 2rem 0;
-}
-
-.main-footer {
-    background-color: #ecf0f1;
-    text-align: center;
-    padding: 1rem 0;
-    font-size: 0.875rem;
-}
-
-/* ----------------------------------------------------
-   SÉLECTEUR DE LANGUES
-   ---------------------------------------------------- */
-
-/* Conteneur principal */
-.lang-dropdown {
-    position: relative;
-    display: inline-block;
-    pointer-events: auto; /* Garantit la capture correcte des clics */
-}
-
-/* Bouton du menu (Drapeau courant) */
-.lang-summary {
-    list-style: none;  /*Cache la flèche par défaut Chrome/Firefox */
-    cursor: pointer;
-    display: block;   /* Force le summary à prendre la taille exacte du drapeau */
-}
-
-.lang-summary::-webkit-details-marker {
-    display: none;  /*Cache la flèche par défaut Safari */
-}
-
-/* Menu déroulant (Popup parfaitement aligné) */
-.lang-list {
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%); /* Centre horizontalement par rapport au drapeau actif */
-    margin-top: 12px;            /* Espace vertical sous le drapeau principal */
-    padding: 12px 10px;
-    background-color: var(--primary-color);
-    border-radius: 8px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    list-style: none;
-    display: flex;
-    flex-direction: column;      /* Alignement vertical des options */
-    gap: 12px;                   /* Espace uniforme entre chaque drapeau */
-    z-index: 1000;
-}
-
-/* Style des liens et drapeaux */
-.lang-link {
-    display: block;
-    line-height: 0;
-    padding: 2px;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-}
-
-.flag-icon {
     width: 32px;
-    aspect-ratio: 3 / 2;
-    object-fit: cover;
-    object-position: center;
-    border-radius: 2px;
+    height: auto;
     display: block;
-    transition: opacity 0.2s ease; /* Transition fluide pour tous les changements */
+    flex-shrink: 0; /* Empêche le logo de rétrécir sur mobile */
+}
+
+/* Zone d'action de connexion/inscription */
+.header-auth-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.link-bold {
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-icon {
+    width: 16px;
+    height: 16px;
+    display: block;
+}
+
+
+/* ==========================================================================
+   ZONE DE CONTENU PRINCIPALE (MAIN CONTENT)
+   ========================================================================== */
+.main-content {
+    /* Précision 2 : flex-grow: 1 occupe tout l'espace restant pour repousser le footer,
+       sans bloquer le défilement naturel si le contenu déborde (pas de overflow: hidden) */
+    flex: 1 0 auto;
+    display: flex;
+    align-items: center;
+    padding: 2.5rem 0;
+}
+
+
+/* ==========================================================================
+   FORMULAIRES D'AUTHENTIFICATION (LOGIN & REGISTER)
+   ========================================================================== */
+.auth-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-card {
+    background-color: var(--bg-card);
+    width: 100%;
+    max-width: 440px;
+    padding: 2.5rem 1.75rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    text-align: center;
+}
+
+/* Icône centrale au-dessus du titre */
+.auth-icon-center {
+    background-color: var(--bg-auth-icon-center);
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 1.25rem;
+}
+
+.auth-icon-center img {
+    width: 24px;
+    height: 24px;
+}
+
+.auth-card h2 {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.auth-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+}
+
+/* Champs textuels stylisés avec icônes internes */
+.input-group {
+    margin-bottom: 1.25rem;
+}
+
+.input-icon-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.field-icon {
+    position: absolute;
+    left: 14px;
+    width: 18px;
+    height: 18px;
     opacity: 1;
 }
 
-/* Quand le dropdown s'ouvre : TOUS les drapeaux passent à 0.8 */
-details[open] .flag-icon {
-    opacity: 0.6;
+.input-icon-wrapper input {
+    width: 100%;
+    padding: 14px 14px 14px 44px;
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    background-color: transparent;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-/* Au survol : le drapeau survolé (actif ou dans la liste) remonte à 1 */
-.lang-summary:hover .flag-icon,
-.lang-link:hover .flag-icon {
-    opacity: 1 !important; /* Le !important force le survol à gagner sur l'état [open] */
+.input-icon-wrapper input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* Barre de force de mot de passe */
+.password-strength-meter {
+    text-align: left;
+    margin-bottom: 1.5rem;
+}
+
+.meter-text {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.meter-bar {
+    width: 100%;
+    height: 5px;
+    background-color: var(--input-border);
+    border-radius: 3px;
+    margin-top: 6px;
+}
+
+.bar-fill {
+    width: 35%; /* Évolutif plus tard */
+    height: 100%;
+    background-color: #10b981; /* Vert conforme au modèle */
+    border-radius: 3px;
+}
+
+/* Liens annexes (Mot de passe oublié) */
+.auth-extra-links {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1.5rem;
+}
+
+.forgot-password-link {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.forgot-password-link:hover {
+    color: var(--accent);
+}
+
+/* Erreurs de validation de session Django */
+.form-errors {
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 1.25rem;
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+/* Bouton principal de soumission */
+.btn-primary {
+    width: 100%;
+    background-color: var(--accent);
+    color: var(--accent-constrast);
+    border: none;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-hover);
 }
 
 
+/* ==========================================================================
+   COMPOSANT SÉLECTEUR DE LANGUE ACCESSIBLE (DETAILS / SUMMARY)
+   ========================================================================== */
+.lang-selector {
+    position: relative;
+    display: inline-block;
+}
 
-/* ----------------------------------------------------
-   RESPONSIVE DESIGN (TABLETTES & ÉCRANS LARGES)
-   ---------------------------------------------------- */
+.lang-dropdown-summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 6px 12px;
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    user-select: none;
+}
+
+.lang-dropdown-summary::-webkit-details-marker {
+    display: none;
+}
+
+.global-icon {
+    width: 16px;
+    height: 16px;
+    display: block;
+}
+
+.dropdown-arrow {
+    font-size: 0.6rem;
+    color: var(--text-secondary);
+    transition: transform 0.2s ease;
+}
+
+.dropdown-arrow img{
+    width: 10px;
+    height: auto;
+}
+
+.lang-dropdown-details[open] .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+/* Déroulement vers le haut (Adapté au footer) */
+.lang-dropdown-list {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    right: 0;
+    background-color: var(--bg-card);
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    list-style: none;
+    padding: 6px;
+    min-width: 140px;
+    z-index: 100;
+}
+
+.lang-dropdown-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    border-radius: 4px;
+}
+
+.lang-dropdown-link:hover {
+    background-color: var(--bg-main-content);
+}
+
+.lang-dropdown-link.active {
+    color: var(--accent);
+    background-color: rgba(37, 99, 235, 0.08);
+    font-weight: 600;
+}
+
+.lang-name-label {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+}
+
+
+/* ==========================================================================
+   PIED DE PAGE GLOBAL (MAIN FOOTER)
+   ========================================================================== */
+.main-footer {
+    /* Précision 2 : flex-shrink: 0 garantit que le footer conserve sa hauteur
+       et se place naturellement à la suite du flux s'il y a un scroll vertical */
+    flex-shrink: 0;
+    background-color: var(--bg-header-footer);
+    border-top: 1px solid var(--input-border);
+    padding: 1.25rem 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.footer-grid {
+    display: flex;
+    flex-direction: column; /* Empilé par défaut sur Mobile */
+    align-items: center;
+    gap: 1rem;
+}
+
+
+/* ==========================================================================
+   MEDIA QUERIES (ÉCRANS DE TABLETTES ET ORDINATEURS)
+   ========================================================================== */
 @media (min-width: 768px) {
-    .container {
-        max-width: 720px;
-    }
-
-    .main-header .container {
-        flex-direction: row; /* Alignés côte à côte sur grand écran */
+    /* Ajustement des grilles en ligne */
+    .header-grid,
+    .footer-grid {
+        flex-direction: row;
         justify-content: space-between;
+        gap: 0;
     }
-}
 
-@media (min-width: 992px) {
+    /* Calibrage des largeurs de conteneur */
     .container {
-        max-width: 960px;
+        max-width: 1200px;
     }
 }

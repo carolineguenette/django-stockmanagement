@@ -5,55 +5,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% translate "Stock Management" %}{% endblock %}</title>
 
-    <!-- Favicon -->
+    <title>{% block title %}{% translate "Stock Management" %}{% endblock %}</title>
     <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
 
-    <!-- CSS Global (Mobile First) -->
+    <!-- CSS -->
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    {% block extra_css %}{% endblock %}
+    {% block extra_head_css %}{% endblock %}
 
-    <!-- Chargement du script JS de manière asynchrone -->
+    <!-- Script JS (asynchrone) -->
     <script src="{% static 'js/main.js' %}"></script>
 </head>
 <body>
 
     <!-- En-tête globale -->
     <header class="main-header">
-        <div class="container">
+        <div class="container header-grid">
+            <!-- Logo et titre -->
             <a href="{% url 'home' %}" class="logo">
                 <img src="{% static 'img/logo.svg' %}" alt="{% translate 'Stock Management Logo' %}" class="logo-img">
                 {% translate "Stock Management" %}
             </a>
 
-            <nav class="lang-selector">
-                {% include '_lang_selector.html' %}
-            </nav>
+            <!-- Liens d'en-tête dynamiques selon la page d'authentification -->
+            <div class="header-auth-action">
+                {% if request.resolver_match.url_name == 'login' %}
+                    <span>{% translate "Don't have an account?" %}</span>
+                    <a href="{% url 'register' %}" class="link-bold">
+                        {% translate "Sign Up" %} <img src="{% static 'img/register.svg' %}" alt="" class="btn-icon">
+                    </a>
+                {% elif request.resolver_match.url_name == 'register' or request.resolver_match.url_name == 'password_reset' %}
+                    <span>{% translate "Have an account?" %}</span>
+                    <a href="{% url 'login' %}" class="link-bold">
+                        {% translate "Login" %} <img src="{% static 'img/login.svg' %}" alt="" class="btn-icon">
+                    </a>
+                {% endif %}
+                {% include '_user_info.html' %}
+            </div>
         </div>
     </header>
 
     <!-- Contenu Principal de l'application -->
     <main class="main-content">
         <div class="container">
-            <h2>{% translate "Welcome to your Stock Management System" %}</h2>
-            <p>{% translate "Devise:" %} {% translate "$" %}</p>
-            <p>{% translate "Select a language or navigate to the catalog." %}</p>
-TEST
-
             {% block content %}
-            <!-- Le contenu spécifique des vues s'injectera ici -->
+            <!-- Le contenu spécifique des vues -->
             {% endblock %}
         </div>
     </main>
-
+    
     <!-- Pied de page global -->
     <footer class="main-footer">
-        <div class="container">
-            <p>&copy; {% now "Y" %} - {% translate "Stock Management" %} - {% translate "by" %} {{ PROJECT_AUTHOR }}</p>
+        <div class="container footer-grid">
+            <div class="footer-left">
+                <p>&copy; {% now "Y" %} - {% translate "Stock Management" %} - {% translate "by" %} {{ PROJECT_AUTHOR }}</p>
+            </div>
+            <div class="footer-right">
+                {% include '_lang_selector.html' %}
+            </div>
         </div>
     </footer>
 
-    {% block extra_js %}{% endblock %}
+    {% block extra_body_js %}{% endblock %}
 </body>
 </html>

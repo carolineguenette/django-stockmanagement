@@ -17,24 +17,38 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.i18n import i18n_patterns
-from django.views.generic.base import RedirectView
-from django.conf import settings
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import views as auth_views
 
 # TODO Temporaire
+@login_required
 def home_view(request):
     return render(request, 'main.html')
 
+# Vues publiques temporaires pour le design
+def register_view(request):
+    return render(request, 'users/register.html')
+
+def password_reset_view(request):
+    return render(request, 'users/password_reset.html')
 
 # Les URLs sans préfixe de langue (ex: API ou Webhooks)
 urlpatterns = [
-    path('favicon.ico', RedirectView.as_view(url=settings.STATIC_URL + 'img/favicon.ico')), #TODO Temporaire
     path('i18n/', include('django.conf.urls.i18n')),
 ]
 
 # Les URLs traduits et préfixés (ex: /fr/admin/, /en/catalogue/)
 urlpatterns += i18n_patterns(
     path('', home_view, name='home'),
+
+    # Routes de connexion et déconnexion
+    # Routes d'authentification publiques (Non bloquées par @login_required)
+    path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
+    path('register/', register_view, name='register'),
+    path('password-reset/', password_reset_view, name='password_reset'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+
     path('admin/', admin.site.urls),
     path('catalogue/', include('src.catalogue.urls')),
 

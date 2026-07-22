@@ -1,27 +1,31 @@
 {% load i18n %}
 {% load static %}
 
-{% get_current_language as CURRENT_LANG %}
-{% get_available_languages as AVAILABLE_LANGS %}
+<nav class="lang-selector">
+    <!-- Le composant details gère nativement l'ouverture/fermeture au clic -->
+    <details class="lang-dropdown-details">
+        <summary class="lang-dropdown-summary" title="{% translate 'Change language' %}">
+            <img src="{% static 'img/international.svg' %}" alt="" class="global-icon">
+            {% get_current_language as CURRENT_LANG %}
+            <span class="current-lang-text">{{ CURRENT_LANG|upper }}</span>
+            <span class="dropdown-arrow">
+                <img src="{% static 'img/arrow-down-gray.svg' %}" alt="▼">
+            </span>
+        </summary>
 
-<details class="lang-dropdown">
-    <!-- Le résumé (summary) sert de bouton et affiche la langue active -->
-    <summary class="lang-summary">
-        {% include "_lang_flag.html" with target_lang=CURRENT_LANG %}
-    </summary>
-
-    <!-- La liste déroulante avec les autres options -->
-    <ul class="lang-list">
-        {% for lang in AVAILABLE_LANGS %}
-            {% if lang.0 != CURRENT_LANG %}
+        <ul class="lang-dropdown-list">
+            {% get_available_languages as AVAILABLE_LANGS %}
+            {% for lang in AVAILABLE_LANGS %}
                 <li>
                     {% language lang.0 %}
-                    <a href="{% url 'home' %}" class="lang-link" title="{{ lang.1 }}">
-                        {% include "_lang_flag.html" with target_lang=lang.0 %}
-                    </a>
+                        <!-- On utilise la balise de routage dynamique vers la page d'accueil de la langue -->
+                        <a href="{% url 'home' %}" class="lang-dropdown-link {% if lang.0 == CURRENT_LANG %}active{% endif %}">
+                            <span class="lang-code-label">{{ lang.0|upper }}</span>
+                            <span class="lang-name-label">{{ lang.1 }}</span>
+                        </a>
                     {% endlanguage %}
                 </li>
-            {% endif %}
-        {% endfor %}
-    </ul>
-</details>
+            {% endfor %}
+        </ul>
+    </details>
+</nav>

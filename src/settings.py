@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Applications locales
+    'src.users.apps.UsersConfig',
     'src.catalogue.apps.CatalogueConfig',
 ]
 
@@ -67,7 +68,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [BASE_DIR / 'src' / 'templates'],
-        'APP_DIRS': False,
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
@@ -119,13 +120,12 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-ca'
+LANGUAGE_CODE = env('DEFAULT_LANG') #Apps default language
 USE_I18N = True
 LANGUAGES = [
-    # En mettant 'fr', l'URL /fr/ devient valide et utilisera le dossier languages/fr_FR
-    ('en-ca', _('English')),
-    ('fr-ca', _('French (Canada)')),
-    ('fr-fr', _('French (France)')),
+    ('en', _('English')),
+    ('fr', _('French')),
+    ('es', _('Spanish')),
 ]
 TIME_ZONE = env('TIME_ZONE')
 USE_TZ = True
@@ -147,9 +147,17 @@ STATICFILES_DIRS = [
 
 PROJECT_AUTHOR = "Caroline Guénette"
 
-# Fonction personnalisée pour injecter l'auteur globalement
+# Fonction personnalisée pour injecter constantes de settings globalement
 def project_context(request):
     return {
         'PROJECT_AUTHOR': PROJECT_AUTHOR,
     }
 
+# Utilisé présentement seulement par product_image
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Gestion login/logout et redirection
+LOGIN_URL           = 'login'     # L'URL vers laquelle Django redirigera les utilisateurs non connectés
+LOGIN_REDIRECT_URL  = 'home'      # L'URL où l'utilisateur est envoyé après s'être connecté avec succès
+LOGOUT_REDIRECT_URL = 'login'     # L'URL où l'utilisateur est envoyé après s'être déconnecté

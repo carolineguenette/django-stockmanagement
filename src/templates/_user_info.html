@@ -1,0 +1,17 @@
+{% load i18n %}
+{% load static %}
+
+<!-- Info sur l'utilisateur connecté -->
+{% if request.user.is_authenticated %}
+    <span class="welcome-user">
+        {{ request.user.username }}
+    </span>
+    <!-- Formulaire sécurisé pour se déconnecter proprement en Django 5+ -->
+    <form action="{% url 'logout' %}" method="post" class="logout-form">
+        {% csrf_token %}
+        <button type="submit" class="btn-logout" title="{% translate 'Disconnect' %}">
+            <!-- Icône de déconnexion ou texte brut (TODO) -->
+            <img src="{% static 'img/logout.svg' %}" alt="{% translate 'Logout' %}"  class="btn-icon">
+        </button>
+    </form>
+{% endif %}

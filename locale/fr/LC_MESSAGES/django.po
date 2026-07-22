@@ -1,0 +1,209 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-21 21:12-0400\n"
+"PO-Revision-Date: 2026-07-21 02:16-0400\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: French (France) <fr_FR@li.org>\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/catalogue/models/product.py:13
+msgid "SKU"
+msgstr "UGS"
+
+#: src/catalogue/models/product.py:14
+msgid "Unique stock keeping unit identifier."
+msgstr "Identifiant unique de l'unité de gestion des stocks."
+
+#: src/catalogue/models/product.py:19
+msgid "Name"
+msgstr "Nom"
+
+#: src/catalogue/models/product.py:24
+msgid "Description"
+msgstr "Description"
+
+#: src/catalogue/models/product.py:31
+msgid "Price"
+msgstr "Prix"
+
+#: src/catalogue/models/product.py:34
+msgid "Alert Threshold"
+msgstr "Seuil d'alerte"
+
+#: src/catalogue/models/product.py:37 src/catalogue/models/product_image.py:43
+msgid "Created at"
+msgstr "Créé le"
+
+#: src/catalogue/models/product.py:43
+msgid "Created by"
+msgstr "Créé par"
+
+#: src/catalogue/models/product.py:45
+msgid "Updated at"
+msgstr "Modifié le"
+
+#: src/catalogue/models/product.py:51
+msgid "Updated by"
+msgstr "Modifié par"
+
+#: src/catalogue/models/product.py:55 src/catalogue/models/product_image.py:22
+msgid "Product"
+msgstr "Produit"
+
+#: src/catalogue/models/product.py:56
+msgid "Products"
+msgstr "Produits"
+
+#: src/catalogue/models/product_image.py:28
+msgid "Image"
+msgstr "Image"
+
+#: src/catalogue/models/product_image.py:34
+msgid "Alternative text"
+msgstr "Texte alternatif"
+
+#: src/catalogue/models/product_image.py:40
+msgid "Main image"
+msgstr "Image principale"
+
+#: src/catalogue/models/product_image.py:46
+msgid "Product Image"
+msgstr "Image du produit"
+
+#: src/catalogue/models/product_image.py:47
+msgid "Product Images"
+msgstr "Images du produit"
+
+#: src/settings.py:126
+#, fuzzy
+#| msgid "English (Canada)"
+msgid "English"
+msgstr "Anglais"
+
+#: src/settings.py:127
+msgid "French"
+msgstr "Français"
+
+#: src/settings.py:128
+msgid "Spanish"
+msgstr ""
+
+#: src/templates/_lang_selector.html:7
+msgid "Change language"
+msgstr ""
+
+#: src/templates/_log_controls.html:12
+#, fuzzy
+#| msgid "Connect"
+msgid "Disconnect"
+msgstr "Se connecter"
+
+#: src/templates/_log_controls.html:14
+msgid "Logout"
+msgstr ""
+
+#: src/templates/main.html:9 src/templates/main.html:28
+#: src/templates/main.html:61
+msgid "Stock Management"
+msgstr "Gestion de stocks"
+
+#: src/templates/main.html:27
+#, fuzzy
+#| msgid "Stock Management"
+msgid "Stock Management Logo"
+msgstr "Logo de Gestion de stocks"
+
+#: src/templates/main.html:34
+msgid "Don't have an account?"
+msgstr ""
+
+#: src/templates/main.html:36 src/users/templates/users/register.html:50
+#, fuzzy
+#| msgid "Sign In"
+msgid "Sign Up"
+msgstr "Se connecter"
+
+#: src/templates/main.html:39
+msgid "Have an account?"
+msgstr ""
+
+#: src/templates/main.html:41 src/users/templates/users/login.html:4
+msgid "Login"
+msgstr "Connexion"
+
+#: src/templates/main.html:61
+msgid "by"
+msgstr "par"
+
+#: src/users/templates/users/login.html:9
+msgid "Sign In"
+msgstr "Se connecter"
+
+#: src/users/templates/users/login.html:18
+msgid "Invalid username or password. Please try again."
+msgstr "Identifiant ou mot de passe invalide. Veuillez réessayer."
+
+#: src/users/templates/users/login.html:24
+msgid "Username"
+msgstr "Identifiant"
+
+#: src/users/templates/users/login.html:30
+msgid "Password"
+msgstr "Mot de passe"
+
+#: src/users/templates/users/login.html:35
+msgid "Connect"
+msgstr "Se connecter"
+
+#: src/users/templates/users/register.html:14
+#, fuzzy
+#| msgid "Created at"
+msgid "Create a new account"
+msgstr "Créé le"
+
+#: src/users/templates/users/register.html:15
+msgid "Enter your details to register."
+msgstr ""
+
+#: src/users/templates/users/register.html:24
+msgid "john doe"
+msgstr ""
+
+#: src/users/templates/users/register.html:32
+msgid "sajidagolo@gmail.com"
+msgstr ""
+
+#: src/users/templates/users/register.html:46
+#, fuzzy
+#| msgid "Password"
+msgid "Password Strength"
+msgstr "Mot de passe"
+
+#~ msgid "French (Canada)"
+#~ msgstr "Français (Canada)"
+
+#~ msgid "French (France)"
+#~ msgstr "Français (France)"
+
+#~ msgid "Welcome to your Stock Management System"
+#~ msgstr "Bienvenue dans votre système de Gestion de stocks"
+
+#~ msgid "Devise:"
+#~ msgstr "Devise :"
+
+#~ msgid "$"
+#~ msgstr "€"
+
+#~ msgid "Select a language or navigate to the catalog."
+#~ msgstr "Sélectionner une langue ou naviguer dans le catalogue."

@@ -2,11 +2,12 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     document.addEventListener('click', function(event) {
-        const dropdown = document.querySelector('.lang-dropdown');
+        const langDetails = document.querySelector('.lang-dropdown-details');
 
-        // Si le dropdown existe et que le clic est à l'extérieur
-        if (dropdown && !dropdown.contains(event.target)) {
-            dropdown.removeAttribute('open');
+        // Si le menu est actuellement ouvert ET que le clic a eu lieu à l'extérieur du composant
+        if (langDetails && langDetails.open && !langDetails.contains(event.target)) {
+            // Fermeture propre et native
+            langDetails.open = false;
         }
     });
 
