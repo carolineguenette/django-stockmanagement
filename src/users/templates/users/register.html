@@ -21,7 +21,7 @@
             <div class="input-group">
                 <div class="input-icon-wrapper">
                     <img src="{% static 'img/person.svg' %}" alt="" class="field-icon">
-                    <input type="text" name="username" placeholder="{% translate 'Username' %}" required>
+                    <input type="text" name="username" placeholder="{% translate 'Username' %}" aria-label="{% translate 'Username' %}" required>
                 </div>
             </div>
 
@@ -29,7 +29,7 @@
             <div class="input-group">
                 <div class="input-icon-wrapper">
                     <img src="{% static 'img/email.svg' %}" alt="" class="field-icon">
-                    <input type="email" name="email" placeholder="{% translate 'Email' %}" required>
+                    <input type="email" name="email" placeholder="{% translate 'Email' %}" aria-label="{% translate 'Email' %}" required>
                 </div>
             </div>
 
@@ -37,7 +37,7 @@
             <div class="input-group">
                 <div class="input-icon-wrapper">
                     <img src="{% static 'img/keys.svg' %}" alt="" class="field-icon">
-                    <input type="password" name="password" placeholder="{% translate 'Password' %}" required>
+                    <input type="password" name="password" placeholder="{% translate 'Password' %}" aria-label="{% translate 'Password' %}" required>
                 </div>
             </div>
 

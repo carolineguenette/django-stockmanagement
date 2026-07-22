@@ -32,7 +32,7 @@
             <div class="input-group">
                 <div class="input-icon-wrapper">
                     <img src="{% static 'img/person.svg' %}" alt="" class="field-icon">
-                    <input type="text" name="username" placeholder="{% translate 'Username' %}" required autofocus>
+                    <input type="text" name="username" placeholder="{% translate 'Username' %}" aria-label="{% translate 'Username' %}" required autofocus>
                 </div>
             </div>
 
@@ -40,7 +40,7 @@
             <div class="input-group">
                 <div class="input-icon-wrapper">
                     <img src="{% static 'img/keys.svg' %}" alt="" class="field-icon">
-                    <input type="password" name="password" placeholder="{% translate 'Password' %}" required>
+                    <input type="password" name="password" placeholder="{% translate 'Password' %}" aria-label="{% translate 'Password' %}" required>
                 </div>
             </div>
 
