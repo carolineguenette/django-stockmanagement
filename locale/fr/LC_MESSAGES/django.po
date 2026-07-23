@@ -1,9 +1,8 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Caroline Guénette <cguenette@telus.net>, 2026.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -86,8 +85,6 @@ msgid "Product Images"
 msgstr "Images du produit"
 
 #: src/settings.py:126
-#, fuzzy
-#| msgid "English (Canada)"
 msgid "English"
 msgstr "English"
 
@@ -104,8 +101,6 @@ msgid "Change language"
 msgstr "Changer de language"
 
 #: src/templates/_user_info.html:12
-#, fuzzy
-#| msgid "Connect"
 msgid "Disconnect"
 msgstr "Déconnexion"
 
@@ -119,20 +114,16 @@ msgid "Stock Management"
 msgstr "Gestion de stocks"
 
 #: src/templates/main.html:26
-#, fuzzy
-#| msgid "Stock Management"
 msgid "Stock Management Logo"
-msgstr "Logo de Gestion de stocks"
+msgstr "Logo Gestion de stocks"
 
 #: src/templates/main.html:33
 msgid "Don't have an account?"
 msgstr "Vous n’avez pas de compte ?"
 
 #: src/templates/main.html:35 src/users/templates/users/register.html:45
-#, fuzzy
-#| msgid "Sign In"
 msgid "Sign Up"
-msgstr "Se connecter"
+msgstr "S'inscrire"
 
 #: src/templates/main.html:38
 msgid "Have an account?"
@@ -140,7 +131,7 @@ msgstr "Vous avez déjà un compte ?"
 
 #: src/templates/main.html:40 src/users/templates/users/login.html:50
 msgid "Login"
-msgstr "Connexion"
+msgstr "Se connecter"
 
 #: src/templates/main.html:61
 msgid "by"
@@ -174,10 +165,9 @@ msgid "Forgot password?"
 msgstr "Mot de passe oublié ?"
 
 #: src/users/templates/users/register.html:9
-#, fuzzy
 #| msgid "Created at"
 msgid "Create a new account"
-msgstr "Créé le"
+msgstr "Créer un nouveau compte"
 
 #: src/users/templates/users/register.html:10
 msgid "Enter your details to register."
@@ -188,7 +178,5 @@ msgid "Email"
 msgstr "Courriel"
 
 #: src/users/templates/users/register.html:41
-#, fuzzy
-#| msgid "Password"
 msgid "Password Strength"
-msgstr "Mot de passe"
+msgstr "Niveau de sécurité du mot de passe"

@@ -36,6 +36,7 @@ def password_reset_view(request):
 # Les URLs sans préfixe de langue (ex: API ou Webhooks)
 urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
+    path("__reload__/", include("django_browser_reload.urls")),
 ]
 
 # Les URLs traduits et préfixés (ex: /fr/admin/, /en/catalogue/)

@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
+
 from pathlib import Path
 from django.utils.translation import gettext_lazy as _
 
@@ -18,84 +19,83 @@ import environ
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Initialiser environ
-env = environ.Env(
-    DEBUG=(bool, False),
-    TIME_ZONE=(str, 'UTC')
-)
+env = environ.Env(DEBUG=(bool, False), TIME_ZONE=(str, "UTC"))
 # Lire le fichier .env
-environ.Env.read_env( BASE_DIR / '.env' )
+environ.Env.read_env(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
+DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = ['stock', '127.0.0.1', 'localhost', '0.0.0.0']
+ALLOWED_HOSTS = ["stock", "127.0.0.1", "localhost", "0.0.0.0"]
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
     # Applications locales
-    'src.main.apps.MainConfig',
-    'src.users.apps.UsersConfig',
-    'src.catalogue.apps.CatalogueConfig',
+    "src.main.apps.MainConfig",
+    "src.users.apps.UsersConfig",
+    "src.catalogue.apps.CatalogueConfig",
+    # Outils
+    "django_browser_reload",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
-ROOT_URLCONF = 'src.urls'
+ROOT_URLCONF = "src.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'src' / 'main/templates'],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.i18n',
-                'src.settings.project_context', # TODO: encore requis??
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "src" / "main/templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.i18n",
+                "src.settings.project_context",  # TODO: encore requis??
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'src.wsgi.application'
+WSGI_APPLICATION = "src.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': env('DB_NAME'),
-	'USER': env('DB_USER'),
-	'PASSWORD': env('DB_PASSWORD'),
-	'HOST': env('DB_HOST'),
-	'PORT': env('DB_PORT'),
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": env("DB_NAME"),
+        "USER": env("DB_USER"),
+        "PASSWORD": env("DB_PASSWORD"),
+        "HOST": env("DB_HOST"),
+        "PORT": env("DB_PORT"),
     }
 }
 
@@ -104,63 +104,71 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = "users.User"
 
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = env('DEFAULT_LANG') #Apps default language
+LANGUAGE_CODE = env("DEFAULT_LANG")  # Apps default language
 USE_I18N = True
 LANGUAGES = [
-    ('en', _('English')),
-    ('fr', _('French')),
-    ('es', _('Spanish')),
+    ("en", _("English")),
+    ("fr", _("French")),
+    ("es", _("Spanish")),
 ]
-TIME_ZONE = env('TIME_ZONE')
+TIME_ZONE = env("TIME_ZONE")
 USE_TZ = True
 
 # Dossier où seront stockés les fichiers de traduction (.po/.mo)
 LOCALE_PATHS = [
-    BASE_DIR / 'locale',
+    BASE_DIR / "locale",
 ]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'assets/'
+STATIC_URL = "assets/"
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'assets',
+    BASE_DIR / "assets",
 ]
 
 
 PROJECT_AUTHOR = "Caroline Guénette"
 
+
 # Fonction personnalisée pour injecter constantes de settings globalement
 def project_context(request):
     return {
-        'PROJECT_AUTHOR': PROJECT_AUTHOR,
+        "PROJECT_AUTHOR": PROJECT_AUTHOR,
     }
 
+
 # Utilisé présentement seulement par product_image
-MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Gestion login/logout et redirection
-LOGIN_URL           = 'login'     # L'URL vers laquelle Django redirigera les utilisateurs non connectés
-LOGIN_REDIRECT_URL  = 'home'      # L'URL où l'utilisateur est envoyé après s'être connecté avec succès
-LOGOUT_REDIRECT_URL = 'login'     # L'URL où l'utilisateur est envoyé après s'être déconnecté
+LOGIN_URL = (
+    "login"  # L'URL vers laquelle Django redirigera les utilisateurs non connectés
+)
+LOGIN_REDIRECT_URL = (
+    "home"  # L'URL où l'utilisateur est envoyé après s'être connecté avec succès
+)
+LOGOUT_REDIRECT_URL = (
+    "login"  # L'URL où l'utilisateur est envoyé après s'être déconnecté
+)

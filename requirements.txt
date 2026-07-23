@@ -1,0 +1,8 @@
+asgiref==3.12.1
+Django==6.0.7
+django-browser-reload==1.21.0
+django-environ==0.14.0
+mysqlclient==2.2.8
+pillow==12.3.0
+ruff==0.15.22
+sqlparse==0.5.5

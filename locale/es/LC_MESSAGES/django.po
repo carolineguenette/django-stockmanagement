@@ -1,7 +1,7 @@
 # Translation of stock management platform to Spanish.
 # Copyright (C) 2026
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+# Caroline Guénette <cguenette@telus.net>, 2026 - généré par IA
 #
 msgid ""
 msgstr ""
