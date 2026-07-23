@@ -14,6 +14,8 @@ App Web Django — par [Caroline Guénette](mailto:cguenette@telus.net)
 
 </div>
 
+---
+
 > **Statut du projet :** ⚠️ En cours de développement | [Plan de développement](#️-plan-de-développement--task-list)
 
 ---
