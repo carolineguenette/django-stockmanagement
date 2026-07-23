@@ -6,15 +6,15 @@
 
 App Web Django — par [Caroline Guénette](mailto:cguenette@telus.net)
 
+<h3>
+  <a href="#%EF%B8%8F-stack-technique--dépendances">Stack technique</a> | 
+  <a href="#-fonctionnalités-clés-objectifs">Fonctionnalités clés</a> | 
+  <a href="#-devops--qualité">Dev Ops</a>
+</h3>
+
 </div>
 
 > **Statut du projet :** ⚠️ En cours de développement | [Plan de développement](#️-plan-de-développement--task-list)
-
-<p size="4">
-  <a href="#-stack-technique--dépendances">Stack technique</a> | 
-  <a href="#-fonctionnalités-clés-objectifs">Fonctionnalités clés</a> | 
-  <a href="#-devops--qualité">Dev Ops</a>
-</p>
 
 ---
 
