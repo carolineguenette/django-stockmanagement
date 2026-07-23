@@ -33,7 +33,7 @@ class Product(models.Model):
 
     alert_threshold = models.PositiveIntegerField(default=5, verbose_name=_("Alert Threshold"))
 
-    # Audit - horodatage et user id
+    # Audit : horodatage et user id
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created at"))
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,

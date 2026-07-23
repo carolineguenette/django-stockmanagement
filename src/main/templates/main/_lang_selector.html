@@ -1,0 +1,35 @@
+{% load i18n %}
+{% load i18n_urls %}
+{% load static %}
+
+<nav class="lang-selector">
+    <details class="lang-dropdown-details">
+        {% get_current_language as CURRENT_LANG %}
+        {% with clean_current_lang=CURRENT_LANG|slice:":2" %}
+
+        <summary class="lang-dropdown-summary" title="{% translate 'Change language' %}">
+            <img src="{% static 'img/international.svg' %}" alt="" class="global-icon">
+            <span class="current-lang-text">{{ clean_current_lang|upper }}</span>
+            <span class="dropdown-arrow">
+                <img src="{% static 'img/arrow-down-gray.svg' %}" alt="▼">
+            </span>
+        </summary>
+
+        <ul class="lang-dropdown-list">
+            {% get_available_languages as AVAILABLE_LANGS %}
+            {% for lang in AVAILABLE_LANGS %}
+                {% with clean_list_lang=lang.0|slice:":2" %}
+                <li>
+                    {# MODIFICATION : translate_url génère le bon chemin relatif pour chaque langue #}
+                    <a href="{% custom_translate_url lang.0 %}" class="lang-dropdown-link {% if clean_list_lang == clean_current_lang %}active{% endif %}">
+                        <span class="lang-code-label">{{ clean_list_lang|upper }}</span>
+                        <span class="lang-name-label">{{ lang.1 }}</span>
+                    </a>
+                </li>
+                {% endwith %}
+            {% endfor %}
+        </ul>
+
+        {% endwith %}
+    </details>
+</nav>

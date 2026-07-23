@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Applications locales
+    'src.main.apps.MainConfig',
     'src.users.apps.UsersConfig',
     'src.catalogue.apps.CatalogueConfig',
 ]
@@ -67,7 +68,7 @@ ROOT_URLCONF = 'src.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'src' / 'templates'],
+        'DIRS': [BASE_DIR / 'src' / 'main/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -75,7 +76,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.i18n',
-                'src.settings.project_context',
+                'src.settings.project_context', # TODO: encore requis??
             ],
         },
     },
@@ -115,6 +116,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+AUTH_USER_MODEL = 'users.User'
 
 
 # Internationalization

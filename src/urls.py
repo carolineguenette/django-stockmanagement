@@ -24,7 +24,7 @@ from django.contrib.auth import views as auth_views
 # TODO Temporaire
 @login_required
 def home_view(request):
-    return render(request, 'main.html')
+    return render(request, 'main/main.html')
 
 # Vues publiques temporaires pour le design
 def register_view(request):

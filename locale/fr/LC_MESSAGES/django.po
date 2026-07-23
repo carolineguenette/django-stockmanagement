@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-21 21:12-0400\n"
+"POT-Creation-Date: 2026-07-22 19:02-0400\n"
 "PO-Revision-Date: 2026-07-21 02:16-0400\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French (France) <fr_FR@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 
 #: src/catalogue/models/product.py:13
 msgid "SKU"
-msgstr "UGS"
+msgstr "SKU"
 
 #: src/catalogue/models/product.py:14
 msgid "Unique stock keeping unit identifier."
@@ -89,7 +89,7 @@ msgstr "Images du produit"
 #, fuzzy
 #| msgid "English (Canada)"
 msgid "English"
-msgstr "Anglais"
+msgstr "English"
 
 #: src/settings.py:127
 msgid "French"
@@ -97,48 +97,48 @@ msgstr "Français"
 
 #: src/settings.py:128
 msgid "Spanish"
-msgstr ""
+msgstr "Español"
 
 #: src/templates/_lang_selector.html:7
 msgid "Change language"
-msgstr ""
+msgstr "Changer de language"
 
-#: src/templates/_log_controls.html:12
+#: src/templates/_user_info.html:12
 #, fuzzy
 #| msgid "Connect"
 msgid "Disconnect"
-msgstr "Se connecter"
+msgstr "Déconnexion"
 
-#: src/templates/_log_controls.html:14
+#: src/templates/_user_info.html:14
 msgid "Logout"
-msgstr ""
+msgstr "Se déconnecter"
 
-#: src/templates/main.html:9 src/templates/main.html:28
+#: src/templates/main.html:9 src/templates/main.html:27
 #: src/templates/main.html:61
 msgid "Stock Management"
 msgstr "Gestion de stocks"
 
-#: src/templates/main.html:27
+#: src/templates/main.html:26
 #, fuzzy
 #| msgid "Stock Management"
 msgid "Stock Management Logo"
 msgstr "Logo de Gestion de stocks"
 
-#: src/templates/main.html:34
+#: src/templates/main.html:33
 msgid "Don't have an account?"
-msgstr ""
+msgstr "Vous n’avez pas de compte ?"
 
-#: src/templates/main.html:36 src/users/templates/users/register.html:50
+#: src/templates/main.html:35 src/users/templates/users/register.html:45
 #, fuzzy
 #| msgid "Sign In"
 msgid "Sign Up"
 msgstr "Se connecter"
 
-#: src/templates/main.html:39
+#: src/templates/main.html:38
 msgid "Have an account?"
-msgstr ""
+msgstr "Vous avez déjà un compte ?"
 
-#: src/templates/main.html:41 src/users/templates/users/login.html:4
+#: src/templates/main.html:40 src/users/templates/users/login.html:50
 msgid "Login"
 msgstr "Connexion"
 
@@ -146,64 +146,49 @@ msgstr "Connexion"
 msgid "by"
 msgstr "par"
 
-#: src/users/templates/users/login.html:9
+#: src/users/templates/users/login.html:5
+#: src/users/templates/users/login.html:11
 msgid "Sign In"
 msgstr "Se connecter"
 
-#: src/users/templates/users/login.html:18
+#: src/users/templates/users/login.html:12
+msgid "Enter your details to access your account."
+msgstr "Saisissez vos informations pour accéder à votre compte."
+
+#: src/users/templates/users/login.html:22
 msgid "Invalid username or password. Please try again."
 msgstr "Identifiant ou mot de passe invalide. Veuillez réessayer."
 
-#: src/users/templates/users/login.html:24
+#: src/users/templates/users/login.html:30
+#: src/users/templates/users/register.html:19
 msgid "Username"
 msgstr "Identifiant"
 
-#: src/users/templates/users/login.html:30
+#: src/users/templates/users/login.html:38
+#: src/users/templates/users/register.html:35
 msgid "Password"
 msgstr "Mot de passe"
 
-#: src/users/templates/users/login.html:35
-msgid "Connect"
-msgstr "Se connecter"
+#: src/users/templates/users/login.html:45
+msgid "Forgot password?"
+msgstr "Mot de passe oublié ?"
 
-#: src/users/templates/users/register.html:14
+#: src/users/templates/users/register.html:9
 #, fuzzy
 #| msgid "Created at"
 msgid "Create a new account"
 msgstr "Créé le"
 
-#: src/users/templates/users/register.html:15
+#: src/users/templates/users/register.html:10
 msgid "Enter your details to register."
-msgstr ""
+msgstr "Saisissez vos informations pour vous inscrire."
 
-#: src/users/templates/users/register.html:24
-msgid "john doe"
-msgstr ""
+#: src/users/templates/users/register.html:27
+msgid "Email"
+msgstr "Courriel"
 
-#: src/users/templates/users/register.html:32
-msgid "sajidagolo@gmail.com"
-msgstr ""
-
-#: src/users/templates/users/register.html:46
+#: src/users/templates/users/register.html:41
 #, fuzzy
 #| msgid "Password"
 msgid "Password Strength"
 msgstr "Mot de passe"
-
-#~ msgid "French (Canada)"
-#~ msgstr "Français (Canada)"
-
-#~ msgid "French (France)"
-#~ msgstr "Français (France)"
-
-#~ msgid "Welcome to your Stock Management System"
-#~ msgstr "Bienvenue dans votre système de Gestion de stocks"
-
-#~ msgid "Devise:"
-#~ msgstr "Devise :"
-
-#~ msgid "$"
-#~ msgstr "€"
-
-#~ msgid "Select a language or navigate to the catalog."
-#~ msgstr "Sélectionner une langue ou naviguer dans le catalogue."

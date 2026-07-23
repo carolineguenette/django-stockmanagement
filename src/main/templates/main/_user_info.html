@@ -11,7 +11,7 @@
         {% csrf_token %}
         <button type="submit" class="btn-logout" title="{% translate 'Disconnect' %}">
             <!-- Icône de déconnexion ou texte brut (TODO) -->
-            <img src="{% static 'img/logout.svg' %}" alt="{% translate 'Logout' %}"  class="btn-icon">
+            <img src="{% static 'img/logout.svg' %}" alt="{% translate 'Logout' %}" class="btn-icon">
         </button>
     </form>
 {% endif %}

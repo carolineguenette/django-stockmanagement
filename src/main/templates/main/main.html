@@ -40,7 +40,7 @@
                         {% translate "Login" %} <img src="{% static 'img/login.svg' %}" alt="" class="btn-icon">
                     </a>
                 {% endif %}
-                {% include '_user_info.html' %}
+                {% include 'main/_user_info.html' %}
             </div>
         </div>
     </header>
@@ -61,7 +61,7 @@
                 <p>&copy; {% now "Y" %} - {% translate "Stock Management" %} - {% translate "by" %} {{ PROJECT_AUTHOR }}</p>
             </div>
             <div class="footer-right">
-                {% include '_lang_selector.html' %}
+                {% include 'main/_lang_selector.html' %}
             </div>
         </div>
     </footer>

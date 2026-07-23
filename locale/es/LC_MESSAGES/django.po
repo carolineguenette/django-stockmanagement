@@ -1,179 +1,182 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Translation of stock management platform to Spanish.
+# Copyright (C) 2026
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-21 21:11-0400\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"POT-Creation-Date: 2026-07-22 19:02-0400\n"
+"PO-Revision-Date: 2026-07-22 19:12-0400\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language-Team: Spanish <es@li.org>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
 #: src/catalogue/models/product.py:13
 msgid "SKU"
-msgstr ""
+msgstr "SKU (Unidad de mantenimiento de existencias)"
 
 #: src/catalogue/models/product.py:14
 msgid "Unique stock keeping unit identifier."
-msgstr ""
+msgstr "Identificador único de la unidad de mantenimiento de existencias."
 
 #: src/catalogue/models/product.py:19
 msgid "Name"
-msgstr ""
+msgstr "Nombre"
 
 #: src/catalogue/models/product.py:24
 msgid "Description"
-msgstr ""
+msgstr "Descripción"
 
 #: src/catalogue/models/product.py:31
 msgid "Price"
-msgstr ""
+msgstr "Precio"
 
 #: src/catalogue/models/product.py:34
 msgid "Alert Threshold"
-msgstr ""
+msgstr "Umbral de alerta"
 
 #: src/catalogue/models/product.py:37 src/catalogue/models/product_image.py:43
 msgid "Created at"
-msgstr ""
+msgstr "Creado el"
 
 #: src/catalogue/models/product.py:43
 msgid "Created by"
-msgstr ""
+msgstr "Creado por"
 
 #: src/catalogue/models/product.py:45
 msgid "Updated at"
-msgstr ""
+msgstr "Actualizado el"
 
 #: src/catalogue/models/product.py:51
 msgid "Updated by"
-msgstr ""
+msgstr "Actualizado por"
 
 #: src/catalogue/models/product.py:55 src/catalogue/models/product_image.py:22
 msgid "Product"
-msgstr ""
+msgstr "Producto"
 
 #: src/catalogue/models/product.py:56
 msgid "Products"
-msgstr ""
+msgstr "Productos"
 
 #: src/catalogue/models/product_image.py:28
 msgid "Image"
-msgstr ""
+msgstr "Imagen"
 
 #: src/catalogue/models/product_image.py:34
 msgid "Alternative text"
-msgstr ""
+msgstr "Texto alternativo"
 
 #: src/catalogue/models/product_image.py:40
 msgid "Main image"
-msgstr ""
+msgstr "Imagen principal"
 
 #: src/catalogue/models/product_image.py:46
 msgid "Product Image"
-msgstr ""
+msgstr "Imagen del producto"
 
 #: src/catalogue/models/product_image.py:47
 msgid "Product Images"
-msgstr ""
+msgstr "Imágenes del producto"
 
 #: src/settings.py:126
 msgid "English"
-msgstr ""
+msgstr "English"
 
 #: src/settings.py:127
 msgid "French"
-msgstr ""
+msgstr "Français"
 
 #: src/settings.py:128
 msgid "Spanish"
-msgstr ""
+msgstr "Español"
 
 #: src/templates/_lang_selector.html:7
 msgid "Change language"
-msgstr ""
+msgstr "Cambiar de idioma"
 
-#: src/templates/_log_controls.html:12
+#: src/templates/_user_info.html:12
 msgid "Disconnect"
-msgstr ""
+msgstr "Desconectar"
 
-#: src/templates/_log_controls.html:14
+#: src/templates/_user_info.html:14
 msgid "Logout"
-msgstr ""
+msgstr "Cerrar sesión"
 
-#: src/templates/main.html:9 src/templates/main.html:28
+#: src/templates/main.html:9 src/templates/main.html:27
 #: src/templates/main.html:61
 msgid "Stock Management"
-msgstr ""
+msgstr "Gestión de existencias"
 
-#: src/templates/main.html:27
+#: src/templates/main.html:26
 msgid "Stock Management Logo"
-msgstr ""
+msgstr "Logotipo de gestión de existencias"
 
-#: src/templates/main.html:34
+#: src/templates/main.html:33
 msgid "Don't have an account?"
-msgstr ""
+msgstr "¿No tienes una cuenta?"
 
-#: src/templates/main.html:36 src/users/templates/users/register.html:50
+#: src/templates/main.html:35 src/users/templates/users/register.html:45
 msgid "Sign Up"
-msgstr ""
+msgstr "Registrarse"
 
-#: src/templates/main.html:39
+#: src/templates/main.html:38
 msgid "Have an account?"
-msgstr ""
+msgstr "¿Ya tienes una cuenta?"
 
-#: src/templates/main.html:41 src/users/templates/users/login.html:4
+#: src/templates/main.html:40 src/users/templates/users/login.html:50
 msgid "Login"
-msgstr ""
+msgstr "Iniciar sesión"
 
 #: src/templates/main.html:61
 msgid "by"
-msgstr ""
+msgstr "por"
 
-#: src/users/templates/users/login.html:9
+#: src/users/templates/users/login.html:5
+#: src/users/templates/users/login.html:11
 msgid "Sign In"
-msgstr ""
+msgstr "Iniciar sesión"
 
-#: src/users/templates/users/login.html:18
+#: src/users/templates/users/login.html:12
+msgid "Enter your details to access your account."
+msgstr "Introduce tus datos para acceder a tu cuenta."
+
+#: src/users/templates/users/login.html:22
 msgid "Invalid username or password. Please try again."
-msgstr ""
-
-#: src/users/templates/users/login.html:24
-msgid "Username"
-msgstr ""
+msgstr "Nombre de usuario o contraseña incorrectos. Por favor, inténtalo de nuevo."
 
 #: src/users/templates/users/login.html:30
+#: src/users/templates/users/register.html:19
+msgid "Username"
+msgstr "Nombre de usuario"
+
+#: src/users/templates/users/login.html:38
+#: src/users/templates/users/register.html:35
 msgid "Password"
-msgstr ""
+msgstr "Contraseña"
 
-#: src/users/templates/users/login.html:35
-msgid "Connect"
-msgstr ""
+#: src/users/templates/users/login.html:45
+msgid "Forgot password?"
+msgstr "¿Has olvidado tu contraseña?"
 
-#: src/users/templates/users/register.html:14
+#: src/users/templates/users/register.html:9
 msgid "Create a new account"
-msgstr ""
+msgstr "Crear una nueva cuenta"
 
-#: src/users/templates/users/register.html:15
+#: src/users/templates/users/register.html:10
 msgid "Enter your details to register."
-msgstr ""
+msgstr "Introduce tus datos para registrarte."
 
-#: src/users/templates/users/register.html:24
-msgid "john doe"
-msgstr ""
+#: src/users/templates/users/register.html:27
+msgid "Email"
+msgstr "Correo electrónico"
 
-#: src/users/templates/users/register.html:32
-msgid "sajidagolo@gmail.com"
-msgstr ""
-
-#: src/users/templates/users/register.html:46
+#: src/users/templates/users/register.html:41
 msgid "Password Strength"
-msgstr ""
+msgstr "Fortaleza de la contraseña"
