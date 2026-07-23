@@ -219,3 +219,6 @@ __marimo__/
 
 # Fichiers médias locaux (Téléversements utilisateurs)
 media/
+
+# Fichier initial du projet
+docs/GestionStock_projet_portefolio.pdf
