@@ -15,6 +15,8 @@ App Web Django — par [Caroline Guénette](mailto:cguenette@telus.net)
   <a href="#installation-configuration-et-tests-qualité">Installation, configuration et tests qualité</a>
 </h3>
 
+</div>
+
 Consulter les documents de conception (en cours de rédaction):
 
 <h4>
@@ -22,8 +24,6 @@ Consulter les documents de conception (en cours de rédaction):
   <a href="./data-security.md">Sécurité des données</a> | 
   <a href="./docs/apps_and_models.md">Apps django et modèles (database)</a>
 </h3>
-
-</div>
 
 ---
 
