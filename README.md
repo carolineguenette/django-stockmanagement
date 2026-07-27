@@ -17,12 +17,13 @@ App Web Django — par [Caroline Guénette](mailto:cguenette@telus.net)
 
 </div>
 
-Consulter les documents de conception (en cours de rédaction):
+Consulter les documents de conception:
 
 <h4>
+  <a href="./docs/specifications.md">Cahier des charges</a> |
   <a href="./docs/dev-plan.md">Plan de développement</a> |
-  <a href="./data-security.md">Sécurité des données</a> | 
-  <a href="./docs/apps_and_models.md">Apps django et modèles (database)</a>
+  <a href="./docs/data-security.md">Sécurité des données</a> | 
+  <a href="./docs/database.md">Modèles et apps Django (database)</a>
 </h3>
 
 ---

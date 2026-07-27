@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # Applications locales
-    "src.main.apps.MainConfig",
+    "src.core.apps.CoreConfig",
     "src.users.apps.UsersConfig",
     "src.catalogue.apps.CatalogueConfig",
     # Outils
