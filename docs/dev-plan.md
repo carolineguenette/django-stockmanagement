@@ -9,7 +9,7 @@ Projet Gestion de stocks — document de travail
 ![Statut](https://img.shields.io/badge/Statut_du_document-Document_vivant_(plan_de_route_dynamique)-purple.svg)
 
 <h3>
-  <a href="#2-analyse-et-conception">Étape courante</a> | 
+  <a href="#current">Étape courante</a> | 
   <a href="#backlog">Backlog</a>
 </h3>
 
@@ -55,21 +55,21 @@ Le développement entre MVP et V1 est jalonné par des sous-version (V0.1, V0.2,
 ### Sécurité des données
 
 * [X]  Analyse du fonctionnement des permissions et du système de rôles natif de Django
-* [ ]  **EN COURS** — Documentation des choix d'architecture concernant les permissions (document  [docs/data-security.md](data-security.md)).
+* [X]  Documentation des choix d'architecture concernant les permissions (document  [docs/data-security.md](data-security.md)).
 
 ### Base de données
 
-* [ ]  **EN COURS** — Modélisation de la base de données
-* [ ]  **EN COURS** — Documentation des choix d'architecture concernant la base de données (document  [docs/database.md](database.md)).
-* [ ]  **EN COURS** — [Schématisation de la base de données avec LucidChart](https://lucid.app/lucidchart/786327e6-745d-4881-95e1-39f3fdf33c66/edit?view_items=9Jse575XVdt2&page=0_0&invitationId=inv_16c572fc-aaf2-4b0e-9e8f-636d2cf04698)
+* [X]  Modélisation de la base de données
+* [X]  Documentation des choix d'architecture concernant la base de données (document  [docs/database.md](database.md)).
+* [X]  [Schématisation de la base de données avec LucidChart](https://lucid.app/lucidchart/786327e6-745d-4881-95e1-39f3fdf33c66/edit?view_items=9Jse575XVdt2&page=0_0&invitationId=inv_16c572fc-aaf2-4b0e-9e8f-636d2cf04698)
 * [ ]  Discussion avec des collègues / recueil d'avis externes
 
-## 3. Proof of Concept (POC)
+## <a id="current">3. Proof of Concept (POC)
 
 *Objectif : Valider la structure de données et l'étanchéité du cloisonnement des données.*
 
 * [ ]  **Création des modèles de bases :**
-  * [ ]  users.User (Absractuser)
+  * [X]  users.User (Absractuser)
   * [ ]  users.Role
   * [ ]  companies.Company
   * [ ]  companies.Location
