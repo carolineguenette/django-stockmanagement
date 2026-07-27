@@ -11,7 +11,7 @@ Projet Gestion de stocks — document de travail
 <h3>
   <a href="#core">Core</a> | 
   <a href="#users">Users</a> | 
-  <a href="#companies">Company</a> | 
+  <a href="#company">Company</a> | 
   <a href="#catalogue">Catalogue</a> | 
   <a href="#inventory">Inventory</a> | 
   <a href="#reporting">Reporting</a> |
@@ -73,7 +73,7 @@ Table de liaison tripartite entre `users_user `et `auth_permission`. Elle sert �
 
 ---
 
-# <a id="companies"> ![](https://img.shields.io/badge/-App-darkblue.svg) Company
+# <a id="company"> ![](https://img.shields.io/badge/-App-darkblue.svg) Company
 
 Gère les entreprises et leurs locations. Il s'agit du pivot central du multi-tenant permettant de cloisonner hermétiquement le catalogue et les stocks de chaque organisation.
 
@@ -182,11 +182,11 @@ Sigle pour "Unit of Measure". Fonctionnalité ajoutée dans la  ![](https://img.
 Journal d'historique des mouvements d'inventaires.
 
 
-| ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                                           |
-| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| source_location_id                                     | Pour les mouvements internes (inter-location ou inter-company), renseigne la provenance de haut-niveau (`companies_location.parent_id = null`) du mouvement   |
-| dest_location_id                                       | Pour les mouvements internes (inter-location ou inter-company), renseigne la destination de haut-niveau (`companies_location.parent_id = null`) du mouvement |
-| unit_price                                             | Permet d'immortaliser la valeur financière du produit au moment du mouvement                                                                                  |
+| ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                                         |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| source_location_id                                     | Pour les mouvements internes (inter-location ou inter-company), renseigne la provenance de haut-niveau (`company_location.parent_id = null`) du mouvement   |
+| dest_location_id                                       | Pour les mouvements internes (inter-location ou inter-company), renseigne la destination de haut-niveau (`company_location.parent_id = null`) du mouvement |
+| unit_price                                             | Permet d'immortaliser la valeur financière du produit au moment du mouvement                                                                                |
 
 ---
 
@@ -198,7 +198,7 @@ Journal d'historique des mouvements d'inventaires.
 # <a id="others"> Autres fonctionnalités
 
 * Gestion des tiers (fournisseurs et clients):
-  * Application `partners `avec modèles Supplier et Customer, lié au modèle companies.Company
+  * Application `partners `avec modèles Supplier et Customer, lié au modèle `company.Company`
   * Pour le modèle Movement: héritage de modèle ou table d'extension en relation OneToOne.
 * Liaison avec des documents justificatifs:
   * Ajout d'un champ `reference_document` ou d'une table dédiée aux commandes/factures permettant de lier le mouvement à sa source légale ou commerciale.
