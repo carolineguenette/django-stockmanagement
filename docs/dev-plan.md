@@ -6,7 +6,7 @@
 
 Projet Gestion de stocks — document de travail
 
-![Statut](https://img.shields.io/badge/Statut_du_document-WIP-purple.svg)
+![Statut](https://img.shields.io/badge/Statut_du_document-Document_vivant_(plan_de_route_dynamique)-purple.svg)
 
 <h3>
   <a href="#2-analyse-et-conception">Étape courante</a> | 

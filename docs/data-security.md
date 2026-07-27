@@ -6,7 +6,7 @@
 
 Projet Gestion de stocks — document de travail
 
-![Statut](https://img.shields.io/badge/Statut_du_document-En_cours_de_rédaction-purple.svg)
+![Statut](https://img.shields.io/badge/Statut_du_document-V1_Prêt_pour_POC-purple.svg)
 
 </div>
 

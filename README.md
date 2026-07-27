@@ -9,9 +9,9 @@ App Web Django — par [Caroline Guénette](mailto:cguenette@telus.net)
 ![Statut](https://img.shields.io/badge/Statut_du_projet-Phase_analyse_et_conception-purple.svg) ![Version](https://img.shields.io/badge/Implémentation-POC-blue.svg) ![Python](https://img.shields.io/badge/Python-3.11+-green.svg)  ![Django](https://img.shields.io/badge/Django-6.0.7-green.svg)
 
 <h3>
-  <a href="#-presentation-du-projet">Projet</a> |
-  <a href="#-fonctionalités-clés">Fonctionalités clés</a> | 
-  <a href="#-spécifications-techniques">Spécifications techniques</a> | 
+  <a href="#presentation-du-projet">Projet</a> |
+  <a href="#fonctionalités-clés">Fonctionalités clés</a> | 
+  <a href="#spécifications-techniques">Spécifications techniques</a> | 
   <a href="#installation-configuration-et-tests-qualité">Installation, configuration et tests qualité</a>
 </h3>
 
@@ -28,11 +28,11 @@ Consulter les documents de conception:
 
 ---
 
-## 📋 Présentation du projet
+## Présentation du projet
 
 Conception et développement d'une application web complète, moderne et professionnelle dédiée à la **gestion de stocks multi-entreprises**. *Ce projet met l'accent sur la sécurité des données, une architecture modulaire évolutive, l'expérience utilisateur et l'intégration de pratiques DevOps*
 
-## ✨ Fonctionalités clés
+## Fonctionalités clés
 
 1. **Gestion des utilisateurs et rôles :** Inscription, authentification, réinitialisation de mot de passe et attribution de droits d'accès spécifiques par entreprise.
 2. **Catalogue produits :** Opérations CRUD complètes et module d'import/export au format CSV.
@@ -43,7 +43,7 @@ Conception et développement d'une application web complète, moderne et profess
 7. **Tableau de bord & Statistiques :** Visualisation graphique des quantités par catégorie et de l'évolution mensuelle grâce à **Chart.js**.
 8. **Administration personnalisée :** Interface Django Admin optimisée avec des filtres et outils de recherche avancés pour piloter l'écosystème.
 
-## 🛠️ Spécifications techniques
+## Spécifications techniques
 
 * **Langage & Framework :** Python 3.11+ / Django 6.0.7
 * **Base de données :** MySQL (via `mysqlclient`). Code compatible avec PostgreSQL, SQLLite et MariaDB
