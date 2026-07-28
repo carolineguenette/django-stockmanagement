@@ -6,10 +6,12 @@
 
 App Web Django — par [Caroline Guénette](mailto:cguenette@telus.net)
 
-![Statut](https://img.shields.io/badge/Statut_du_projet-Phase_analyse_et_conception-purple.svg) ![Version](https://img.shields.io/badge/Implémentation-POC-blue.svg) ![Python](https://img.shields.io/badge/Python-3.11+-green.svg)  ![Django](https://img.shields.io/badge/Django-6.0.7-green.svg)
+![Statut](https://img.shields.io/badge/Statut_du_projet-Phase_analyse_et_conception-purple.svg) ![Version](https://img.shields.io/badge/Implémentation-POC-purple.svg) ![Python](https://img.shields.io/badge/Python-3.11+-green.svg)  ![Django](https://img.shields.io/badge/Django-6.0.7-green.svg) ![Test](https://img.shields.io/badge/Test-À_venir-yellow.svg)
+
+[![Schema](https://img.shields.io/badge/Gestion_du_projet-Jira-blue.svg)](https://solution-cg.atlassian.net/jira/software/c/projects/SD/list)  [![Schema](https://img.shields.io/badge/Schema_DB-LucidChart-F45D22.svg)](https://lucid.app/lucidchart/786327e6-745d-4881-95e1-39f3fdf33c66/edit?viewport_loc=4219%2C-3440%2C2860%2C1419%2C0_0&invitationId=inv_16c572fc-aaf2-4b0e-9e8f-636d2cf04698)
 
 <h3>
-  <a href="#presentation-du-projet">Projet</a> |
+  <a href="#présentation-du-projet">Projet</a> |
   <a href="#fonctionalités-clés">Fonctionalités clés</a> | 
   <a href="#spécifications-techniques">Spécifications techniques</a> | 
   <a href="#installation-configuration-et-tests-qualité">Installation, configuration et tests qualité</a>
@@ -25,6 +27,8 @@ Consulter les documents de conception:
   <a href="./docs/data-security.md">Sécurité des données</a> | 
   <a href="./docs/database.md">Modèles et apps Django (database)</a>
 </h3>
+
+*Note sur Jira et LucidChart: il faut être connecté pour avoir accès aux informations en consultation (comptes gratuits).*
 
 ---
 
