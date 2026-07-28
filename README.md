@@ -26,7 +26,7 @@ Consulter les documents de conception:
   <a href="./docs/dev-plan.md">Plan de développement</a> |
   <a href="./docs/data-security.md">Sécurité des données</a> | 
   <a href="./docs/database.md">Modèles et apps Django (database)</a>
-</h3>
+</h4>
 
 *Note sur Jira et LucidChart: il faut être connecté pour avoir accès aux informations en consultation (comptes gratuits).*
 
