@@ -1,6 +1,6 @@
 # Gestion de stocks — Projet Portfolio
 
-![Statut](https://img.shields.io/badge/Statut_du_document-Final-purple.svg)
+<img src="https://img.shields.io/badge/Statut_du_document-Final-purple.svg" alt="Statut" />
 
 ## Contexte et vision
 

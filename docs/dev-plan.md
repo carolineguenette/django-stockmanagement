@@ -4,12 +4,7 @@
 
 # Plan de développement
 
-![Statut](https://img.shields.io/badge/Statut_du_document-Document_vivant_(plan_de_route)-purple.svg)
-
-<h3>
-  <a href="#current">Étape courante</a> | 
-  <a href="#backlog">Backlog</a>
-</h3>
+<img src="https://img.shields.io/badge/Statut_du_document-Document_vivant_(plan_de_route)-purple.svg" alt="Statut" /> [![Schema](https://img.shields.io/badge/Gestion_du_projet-Jira-blue.svg)](https://solution-cg.atlassian.net/jira/software/c/projects/SD/list)
 
 </div>
 
@@ -20,12 +15,6 @@ Pour ce projet portfolio, j'ai mis en place une gestion sous Jira en combinant u
 [Accéder au Tableau de bord Jira et backlog en direct](https://solution-cg.atlassian.net/jira/software/c/projects/SD/list) (À noter que Jira est un peu capricieux avec les utilisateurs non connectés, malgré la configuration adéquate des permissions)
 
 ---
-> [!WARNING]
-> OLD - En cours de migration vers JIRA
-
-# Introduction
-
-Ce plan de développement fait office de feuille de route centralisant l'avancement du projet. Il permet aussi de prioriser les tâches selon une approche itérative (POC, MVP, V1).
 
 ### Jalons du projet
 
