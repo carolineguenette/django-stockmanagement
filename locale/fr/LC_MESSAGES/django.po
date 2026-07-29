@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-22 19:02-0400\n"
+"POT-Creation-Date: 2026-07-27 02:55-0400\n"
 "PO-Revision-Date: 2026-07-21 02:16-0400\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French (France) <fr_FR@li.org>\n"
@@ -40,7 +40,7 @@ msgstr "Prix"
 msgid "Alert Threshold"
 msgstr "Seuil d'alerte"
 
-#: src/catalogue/models/product.py:37 src/catalogue/models/product_image.py:43
+#: src/catalogue/models/product.py:37 src/catalogue/models/product_image.py:42
 msgid "Created at"
 msgstr "Créé le"
 
@@ -56,7 +56,7 @@ msgstr "Modifié le"
 msgid "Updated by"
 msgstr "Modifié par"
 
-#: src/catalogue/models/product.py:55 src/catalogue/models/product_image.py:22
+#: src/catalogue/models/product.py:55 src/catalogue/models/product_image.py:26
 msgid "Product"
 msgstr "Produit"
 
@@ -64,11 +64,11 @@ msgstr "Produit"
 msgid "Products"
 msgstr "Produits"
 
-#: src/catalogue/models/product_image.py:28
+#: src/catalogue/models/product_image.py:31
 msgid "Image"
 msgstr "Image"
 
-#: src/catalogue/models/product_image.py:34
+#: src/catalogue/models/product_image.py:36
 msgid "Alternative text"
 msgstr "Texte alternatif"
 
@@ -76,66 +76,141 @@ msgstr "Texte alternatif"
 msgid "Main image"
 msgstr "Image principale"
 
-#: src/catalogue/models/product_image.py:46
+#: src/catalogue/models/product_image.py:45
 msgid "Product Image"
 msgstr "Image du produit"
 
-#: src/catalogue/models/product_image.py:47
+#: src/catalogue/models/product_image.py:46
 msgid "Product Images"
 msgstr "Images du produit"
 
-#: src/settings.py:126
-msgid "English"
-msgstr "English"
+#: src/company/models/company.py:6 src/company/models/location.py:13
+#| msgid "Username"
+msgid "name"
+msgstr "Identifiant"
 
-#: src/settings.py:127
-msgid "French"
-msgstr "Français"
+#: src/company/models/company.py:7
+#| msgid "Created at"
+msgid "created at"
+msgstr "Créé le"
 
-#: src/settings.py:128
-msgid "Spanish"
-msgstr "Español"
+#: src/company/models/company.py:11
+msgid "Company"
+msgstr "Entreprise"
 
-#: src/templates/_lang_selector.html:7
+#: src/company/models/company.py:12
+msgid "Companies"
+msgstr "Entreprises"
+
+#: src/company/models/location.py:11 src/users/models/role.py:20
+msgid "company"
+msgstr "entreprise"
+
+#: src/company/models/location.py:15
+msgid "street address"
+msgstr "rue"
+
+#: src/company/models/location.py:18
+msgid "city"
+msgstr "ville"
+
+#: src/company/models/location.py:21
+msgid "country"
+msgstr "pays"
+
+#: src/company/models/location.py:24
+msgid "postal code"
+msgstr "code postal"
+
+#: src/company/models/location.py:33
+msgid "parent location"
+msgstr "emplacement parent"
+
+#: src/company/models/location.py:38
+msgid "Location"
+msgstr "Emplacement"
+
+#: src/company/models/location.py:39
+msgid "Locations"
+msgstr "Emplacements"
+
+#: src/core/templates/core/_lang_selector.html:10
 msgid "Change language"
 msgstr "Changer de language"
 
-#: src/templates/_user_info.html:12
+#: src/core/templates/core/_user_info.html:12
 msgid "Disconnect"
 msgstr "Déconnexion"
 
-#: src/templates/_user_info.html:14
+#: src/core/templates/core/_user_info.html:14
 msgid "Logout"
 msgstr "Se déconnecter"
 
-#: src/templates/main.html:9 src/templates/main.html:27
-#: src/templates/main.html:61
+#: src/core/templates/core/main.html:9 src/core/templates/core/main.html:27
+#: src/core/templates/core/main.html:61
 msgid "Stock Management"
 msgstr "Gestion de stocks"
 
-#: src/templates/main.html:26
+#: src/core/templates/core/main.html:26
 msgid "Stock Management Logo"
 msgstr "Logo Gestion de stocks"
 
-#: src/templates/main.html:33
+#: src/core/templates/core/main.html:33
 msgid "Don't have an account?"
 msgstr "Vous n’avez pas de compte ?"
 
-#: src/templates/main.html:35 src/users/templates/users/register.html:45
+#: src/core/templates/core/main.html:35
+#: src/users/templates/users/register.html:45
 msgid "Sign Up"
 msgstr "S'inscrire"
 
-#: src/templates/main.html:38
+#: src/core/templates/core/main.html:38
 msgid "Have an account?"
 msgstr "Vous avez déjà un compte ?"
 
-#: src/templates/main.html:40 src/users/templates/users/login.html:50
+#: src/core/templates/core/main.html:40 src/users/templates/users/login.html:50
 msgid "Login"
 msgstr "Se connecter"
 
-#: src/templates/main.html:61
+#: src/core/templates/core/main.html:61
 msgid "by"
 msgstr "par"
+
+#: src/settings.py:130
+msgid "English"
+msgstr "English"
+
+#: src/settings.py:131
+msgid "French"
+msgstr "Français"
+
+#: src/settings.py:132
+msgid "Spanish"
+msgstr "Español"
+
+#: src/users/models/role.py:14
+msgid "user"
+msgstr "utilisateur"
+
+#: src/users/models/role.py:26
+msgid "role"
+msgstr "rôle"
+
+#: src/users/models/role.py:34
+msgid "location"
+msgstr "Emplacement"
+
+#: src/users/models/role.py:40
+msgid "Role by company"
+msgstr "Rôle par compagnie"
+
+#: src/users/models/role.py:41
+msgid "Roles by company"
+msgstr "Rôles par compagnie"
+
+#: src/users/models/user.py:9
+msgid "Preferred language"
+msgstr "Langue préférée"
 
 #: src/users/templates/users/login.html:5
 #: src/users/templates/users/login.html:11
@@ -165,7 +240,6 @@ msgid "Forgot password?"
 msgstr "Mot de passe oublié ?"
 
 #: src/users/templates/users/register.html:9
-#| msgid "Created at"
 msgid "Create a new account"
 msgstr "Créer un nouveau compte"
 

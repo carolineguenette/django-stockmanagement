@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # Applications locales
     "src.core.apps.CoreConfig",
     "src.users.apps.UsersConfig",
+    "src.company.apps.CompanyConfig",
     "src.catalogue.apps.CatalogueConfig",
     # Outils
     "django_browser_reload",
