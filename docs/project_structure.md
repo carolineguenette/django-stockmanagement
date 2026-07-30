@@ -24,6 +24,7 @@ django-stock/
 │   ├── reporting/
 │   ├── users/
 │   │
+│   ├── __init__.py
 │   ├── settings.py
 │   └── urls.py
 │
