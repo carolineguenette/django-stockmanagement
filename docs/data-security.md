@@ -92,7 +92,7 @@ Pour exploiter cette structure, le modèle d'utilisateur personnalisé expose un
 class User(AbstractUser):
     # Champs personnalisés...
 
-    def has_location_perm(self, company_id, location_id=None, permission_codename):
+    def has_location_perm(self, company_id, permission_codename, location_id=None):
         """Vérifie si l'utilisateur a une permission spécifique dans une entreprise donnée.
         Prend en charge la restriction optionnelle par location."""
         if self.is_superuser:
@@ -254,14 +254,14 @@ Pilote l'accès aux indicateurs de performance, d'audit et d'analyse financière
 
 Lorsqu'une nouvelle entreprise (`Company`) est initialisée dans le système, l'application génère automatiquement 4 rôles (Groupes Django) prédéfinis pour cette organisation. Le propriétaire de l'entreprise peut ensuite personnaliser la liste des permissions de ces rôles ou en créer de nouveaux depuis son espace d'administration.
 
-### 1. Propriétaire (`Owner`)
+### A. Propriétaire (`Owner`)
 
 Possède l'intégralité des permissions disponibles dans l'application pour son organisation. C'est le seul rôle à détenir initialement le droit de gestion administrative des accès.
 
 * **Permissions affectées** : Toutes les permissions des scopes `users.*`, `companies.*`, `catalogue.*`, `inventory.*` et `reporting.*`.
 * **Périmètre par défaut** : Global (Entreprise complète).
 
-### 2. Gestionnaire d'Entrepôt / Magasinier en Chef
+### B. Gestionnaire d'Entrepôt / Magasinier en Chef
 
 Responsable de l'approvisionnement, de la justesse des inventaires physiques et de la configuration du catalogue d'articles locaux.
 
@@ -273,7 +273,7 @@ Responsable de l'approvisionnement, de la justesse des inventaires physiques et 
   * `reporting.view_stock_levels`
 * **Périmètre recommandé** : Global (ou restreint à un grand entrepôt de stockage).
 
-### 3. Opérateur / Employé de Magasin
+### C. Opérateur / Employé de Magasin
 
 Profil terrain dédié aux tâches logistiques quotidiennes : réception, rangement et expédition. Il ne peut pas modifier les fiches produits ni déclarer des pertes sèches sans validation.
 
@@ -284,7 +284,7 @@ Profil terrain dédié aux tâches logistiques quotidiennes : réception, rangem
   * `inventory.movement_transfer_in`, `inventory.movement_relocate`
 * **Périmètre recommandé** : Restreint à l'emplacement physique d'affectation (ex: Boutique B uniquement).
 
-### 4. Auditeur / Comptable (Lecture Seule)
+### D. Auditeur / Comptable (Lecture Seule)
 
 Profil de consultation destiné au suivi de la santé financière, à la valorisation des stocks et aux inventaires comptables de fin d'année.
 
@@ -294,3 +294,8 @@ Profil de consultation destiné au suivi de la santé financière, à la valoris
   * `inventory.view_stock`, `inventory.view_movement`
   * `reporting.view_stock_levels`, `reporting.view_financials`
 * **Périmètre recommandé** : Global (Entreprise complète).
+
+
+### <a id="isolation_rôles">4.1. Choix architectural : Isolation des Rôles (Groupes Django)
+
+Django ne permet pas de définir un AbstractGroup personnalisé comme il le fait pour le AbstractUser. AInsi, pour permettre à chaque entreprise de personnaliser les permissions de ses rôles sans affecter les autres entreprise, l'application utilise la nomenclature technique suivante en arrière-plan sur le champ `Group.name` : `{company_id}_{nom_du_role}` À l'affichage (Interface Utilisateur et Administration), le préfixe numérique est masqué via un traitement de chaîne (`name.split('_')[-1]`) pour offrir une expérience utilisateur naturelle et standardisée.**. Il est aussi envisager de permettre des rôles globaux pour toutes les compagnies à la fois en utilisant le préfixe "0_".
