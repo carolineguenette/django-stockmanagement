@@ -26,3 +26,16 @@ Pour ce projet portfolio, j'ai mis en place une gestion sous Jira en combinant u
 | 0.3 Next    | Déclinaision de versions 0.3 à 0.9 qui ajoute des couches de fonctionnalités de manière incrémentielle, jusqu'à arriver à la version V1. Un tag (remplaçant "NEXT") sera donné pour décrire la fonctionnalité majeure implémentée. |
 | 1.0 V1      | Première version incluant tous les éléments du cahier des charges                                                                                                                                                                             |
 | Future (VX) | Version future (fonctionnalités non prévues dans le développement pour le moment)
+
+### Automatisation GitHub <-> Jira
+
+GitHub et Jira communiquent via des *automations*. Ces automations permettent de synchroniser automatiquement les informations entre les deux plateformes, facilitant ainsi le suivi des tâches et la gestion du projet.
+
+Pour qu'un ticket soit déplacé vers la colonne "En cours", il faut que le message de commit contienne la clé du ticket (**Ex: SD-1**)
+
+#### Trois automations ont été créées.
+
+* Quand un 1er commit est effectué --> Déplacer le ticket vers la colonne "En cours"
+* Quand le message de commit contient "-TEST" --> Déplacer le ticket vers la colonne "En test"
+  * **Ex: git commit -m "SD-1-TEST: fonctionnalité dont on est en train d'écrire les pytests..."
+* Quand une pull request est mergée -> déplacer le ticket vers la colonne "Terminé"
