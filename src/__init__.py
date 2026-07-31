@@ -20,5 +20,5 @@ Jalons du projet :
         Versions futures pour les fonctionnalités prévues durant la conception
         mais non prévues dans le développement actuel.
 """
-__version__ = "0.0.1"
+__version__ = "0.0.1 (vers le POC)"
 
