@@ -52,13 +52,4 @@ jobs:
         DEFAULT_LANG: "fr"
         TIME_ZONE: "America/Toronto"
       run: |
-        pytest --cov=src --cov-report=term-missing > pytest-coverage.txt
-
-    - name: Générer le Badge de Couverture
-      uses: MishaKav/pytest-coverage-comment@main
-      with:
-        pytest-coverage-path: ./pytest-coverage.txt
-        badge-title: Test coverage
-        hide-report: true
-        create-new-comment: false
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        pytest --cov=src --cov-report=term-missing
