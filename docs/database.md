@@ -6,7 +6,7 @@
 
 Projet Gestion de stocks — document de travail
 
-![Statut](https://img.shields.io/badge/Statut_du_document-V1_Prêt_pour_POC-purple.svg)  [![Schema](https://img.shields.io/badge/Schema_DB-LucidChart-F45D22.svg)](https://lucid.app/lucidchart/786327e6-745d-4881-95e1-39f3fdf33c66/edit?viewport_loc=4219%2C-3440%2C2860%2C1419%2C0_0&invitationId=inv_16c572fc-aaf2-4b0e-9e8f-636d2cf04698)
+![Statut](https://img.shields.io/badge/Statut_du_document-V1_Prêt_pour_POC-purple.svg)  [![Schema](https://img.shields.io/badge/Schema_DB-LucidChart-F45D22.svg)](https://lucid.app/lucidchart/786327e6-745d-4881-95e1-39f3fdf33c66/view)
 
 <h3>
 
