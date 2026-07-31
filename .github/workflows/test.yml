@@ -28,7 +28,7 @@ jobs:
     - name: Configurer Python
       uses: actions/setup-python@v5
       with:
-        python-node-version: '3.12'
+        python-version: '3.12'
 
     - name: Installer les dépendances
       run: |
@@ -42,10 +42,8 @@ jobs:
     - name: Générer le Badge de Couverture
       uses: MishaKav/pytest-coverage-comment@main
       with:
-        pytest-coverage-format: svg
+        pytest-coverage-path: ./pytest-coverage.txt
         title: Coverage Report
         badge-title: Test coverage
-        hide-badge: false
         hide-report: true
         create-new-comment: false
-        junitxml-path: ./pytest.xml
