@@ -75,7 +75,7 @@ jobs:
         # Création directe du JSON attendu par Shields.io
         python -c "
         import json
-        data = {'schemaVersion': 1, 'label': 'Test Cov', 'message': '$PERCENT%', 'color': 'COLOR_COV'}
+        data = {'schemaVersion': 1, 'label': 'Test Cov', 'message': '$PERCENT%', 'color': '$COLOR_COV'}
         with open('django-stock-coverage.json', 'w') as f:
             json.dump(data, f)
         "
