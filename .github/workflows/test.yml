@@ -36,6 +36,17 @@ jobs:
         pip install -r requirements.txt
 
     - name: Exécuter les tests avec Pytest & Coverage
+      env:
+        # Données factuelles pour que django-environ ne lève pas d'erreur
+        DEBUG: "True"
+        SECRET_KEY: "DJANGO-SECRET-KEY-TO-DEFINE-FOR-CI"
+        DB_NAME: "test_django_stock"
+        DB_USER: "root"        # Le conteneur MySQL de GitHub utilise 'root' par défaut
+        DB_PASSWORD: ""        # Le conteneur MySQL de GitHub a un mot de passe vide par défaut
+        DB_HOST: "127.0.0.1"
+        DB_PORT: "3306"
+        DEFAULT_LANG: "fr"
+        TIME_ZONE: "America/Toronto"
       run: |
         pytest --cov=src --cov-report=term-missing > pytest-coverage.txt
 
