@@ -29,15 +29,21 @@ django-stock/
 │   └── urls.py
 │
 ├── tests/                      # Dossier centralisé des tests automatisés
+│   ├── htmlcov/
+│   │
 │   ├── __init__.py
-│   ├── conftest.py             # Contiendra vos futures fixtures globales (Entreprises, Utilisateurs)
-│   └── test_infrastructure.py  # Votre premier test bidon
+│   ├── conftest.py             # Fixtures globales (Entreprises, Utilisateurs)
+│   └── test_motor.py           # Un premier test pour valider que pytest-django fonctionne
+│
+├── .coveragerc
 │
 ├── .env
 │
 ├── .gitignore
 │
 ├── manage.py
+│
+├── pytest.ini
 │
 ├── README.md
 │

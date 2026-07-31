@@ -1,0 +1,51 @@
+name: Django CI & Coverage
+
+on:
+  push:
+    branches: [ master, tests ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    # Configuration du service MySQL pour la base de données de test
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: test_django_stock
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - name: Récupérer le code source
+      uses: actions/checkout@v4
+
+    - name: Configurer Python
+      uses: actions/setup-python@v5
+      with:
+        python-node-version: '3.12'
+
+    - name: Installer les dépendances
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Exécuter les tests avec Pytest & Coverage
+      run: |
+        pytest --cov=src --cov-report=term-missing | tee pytest-coverage.txt
+
+    - name: Générer le Badge de Couverture
+      uses: MishaKav/pytest-coverage-comment@main
+      with:
+        pytest-coverage-format: svg
+        title: Coverage Report
+        badge-title: Test coverage
+        hide-badge: false
+        hide-report: true
+        create-new-comment: false
+        junitxml-path: ./pytest.xml
