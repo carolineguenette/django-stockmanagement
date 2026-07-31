@@ -1,4 +1,4 @@
-name: Django CI & Coverage
+name: Django CI
 
 on:
   push:
@@ -28,6 +28,8 @@ jobs:
     steps:
     - name: Récupérer le code source
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Nécessaire pour pouvoir basculer de branche proprement
 
     - name: Configurer Python
       uses: actions/setup-python@v5
@@ -43,7 +45,7 @@ jobs:
       env:
         # Données factuelles pour que django-environ ne lève pas d'erreur
         DEBUG: "True"
-        SECRET_KEY: "DJANGO-SECRET-KEY-TO-DEFINE-FOR-CI"
+        SECRET_KEY: "DJANGO-SECRET-KEY-TO-DEFINE-FOR-CI"  # A fake SECRET_KEY
         DB_NAME: "test_django_stock"
         DB_USER: "root"        # Le conteneur MySQL de GitHub utilise 'root' par défaut
         DB_PASSWORD: ""        # Le conteneur MySQL de GitHub a un mot de passe vide par défaut
@@ -52,4 +54,78 @@ jobs:
         DEFAULT_LANG: "fr"
         TIME_ZONE: "America/Toronto"
       run: |
-        pytest --cov=src --cov-report=term-missing
+        pytest --cov=src --cov-report=json
+
+    - name: Extraire les données (cov percent, version)
+      # Cette étape s'exécutera UNIQUEMENT lors d'un vrai push sur master
+      if: github.ref == 'refs/heads/master'
+      run: |
+        # ---------------------------------------------- 
+        # 1. Gestion du badge de Couverture de test
+        
+        # Récupère le score depuis le JSON généré par pytest-cov et l'arrondit
+        PERCENT=$(python -c "import json; print(round(json.load(open('.coverage'))['totals']['percent_covered']))" 2>/dev/null || python -c "import json; print(round(json.load(open('coverage.json'))['totals']['percent_covered']))")
+
+        # Détermine la couleur selon le score
+        COLOR_COV=$(python -c "
+        p = $PERCENT
+        if p >= 85: print('brightgreen')
+        elif p >= 60: print('yellow')
+        else: print('red')
+        ")
+        
+        # Création directe du JSON attendu par Shields.io
+        python -c "
+        import json
+        data = {'schemaVersion': 1, 'label': 'Test Cov', 'message': '$PERCENT%', 'color': '$COLOR_COV'}
+        with open('django-stock-coverage.json', 'w') as f:
+            json.dump(data, f)
+        "
+
+        # ---------------------------------------------- 
+        # 2. Gestion du badge de Version
+        VERSION=$(python -c "import sys; sys.path.insert(0, './src'); import __init__; print(__init__.__version__)")
+        
+        python -c "
+        import json
+        data = {'schemaVersion': 1, 'label': 'Version', 'message': '$VERSION', 'color': 'purple'}
+        with open('django-stock-version.json', 'w') as f:
+            json.dump(data, f)
+        "
+
+        # ----------------------------------------------
+        # 3. SAUVEGARDE DES VARIABLES POUR L'ÉTAPE SUIVANTE
+        echo "BADGE_PERCENT=$PERCENT" >> $GITHUB_ENV
+        echo "BADGE_VERSION=$VERSION" >> $GITHUB_ENV
+        
+        # ---------------------------------------------- 
+        # 4. Sauvegarde temporaire des deux fichiers
+        mkdir -p /tmp/badges_generated
+        cp django-stock-coverage.json /tmp/badges_generated/
+        cp django-stock-version.json /tmp/badges_generated/
+
+    - name: Pousser les badges sur la branche 'badges'
+      # Cette étape s'exécutera UNIQUEMENT lors d'un vrai push sur master
+      if: github.ref == 'refs/heads/master'
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+        # Nettoyage des fichiers JSON locaux pour éviter le conflit au checkout
+        rm -f django-stock-coverage.json django-stock-version.json
+          
+        # Tente de récupérer la branche existante, sinon crée une branche orpheline propre
+        if git fetch origin badges; then
+          git checkout badges
+          # Supprime le reste des anciens fichiers de la branche badges pour repartir propre
+          rm -rf *
+        else
+          git checkout --orphan badges
+          git rm -rf . --quiet
+        fi
+          
+        # Récupération et déploiement des deux fichiers JSON depuis le dossier temporaire
+        cp /tmp/badges_generated/* ./
+        git add django-stock-coverage.json django-stock-version.json
+        git commit -m "Update badges: Version '$BADGE_VERSION' - Test Coverage $BADGE_PERCENT%" || exit 0
+        git push origin badges --force
