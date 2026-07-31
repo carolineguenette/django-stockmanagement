@@ -80,7 +80,12 @@ class Role(models.Model):
    )
 
    class Meta:
-      unique_together = ('user', 'company', 'role', 'location')
+       constraints = [
+           models.UniqueConstraint(
+               fields=['user', 'company', 'location', 'role'], 
+               name='unique_users_role'
+            )
+    ]
       verbose_name = _("Company Access")
       verbose_name_plural = _("Company Accesses")
 ```

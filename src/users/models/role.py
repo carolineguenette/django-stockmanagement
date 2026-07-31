@@ -11,34 +11,43 @@ class Role(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="user_roles",
-        verbose_name=_("user"),
+        verbose_name=_('user')
     )
+
     company = models.ForeignKey(
         Company,
         on_delete=models.CASCADE,
-        related_name="company_roles",
-        verbose_name=_("company"),
+        related_name="roles",
+        verbose_name=_("company role"),
     )
-    role = models.ForeignKey(
-        Group,
-        on_delete=models.CASCADE,
-        related_name="role_assignments",
-        verbose_name=_("role"),
-    )
+
     location = models.ForeignKey(
         Location,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name="location_roles",
-        verbose_name=_("location"),
+        verbose_name=_("location_role"),
+    )
+
+    role = models.ForeignKey(
+        Group,
+        on_delete=models.CASCADE,
+        related_name='user_roles',
+        verbose_name=_('auth group role')
     )
 
     class Meta:
         db_table = "users_role"
-        unique_together = ("user", "company", "role", "location")
-        verbose_name = _("Role by company")
-        verbose_name_plural = _("Roles by company")
+        verbose_name = _("role")
+        verbose_name_plural = _("roles")
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "company", "role", "location"],
+                name='unique_users_role'
+            )
+        ]
 
     def __str__(self):
         loc_str = (
