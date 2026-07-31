@@ -25,7 +25,7 @@ Projet Gestion de stocks — document de travail
 
 Ce document ajoute des commentaires explicatifs sur le schéma de la base de données (choix technique, notes de développement, etc.). Les apps django, modèles, table ou noms des champs ne sont pas listés de manière exhaustives dans le présent document (se référer au schéma).
 
-[![](django_stock.svg)](django_stock.svg)
+[![](django_stock.svg)](django_stock.svg
 [Voir le Schéma de la base de données sur LucidChart](https://lucid.app/lucidchart/786327e6-745d-4881-95e1-39f3fdf33c66/view)
 
 ---
@@ -205,7 +205,6 @@ Liste des permissions de mouvement de stocks :
 * `OUT` : La quantité est soustraite du stock courant.
 * `NONE` : Le niveau global de stock ne change pas (lié à `mouvement.relocate`).
 
-Sécurité
 
 ### ![](https://img.shields.io/badge/-Model-blue.svg) Uom(table `inventory_uom`)
 
@@ -221,6 +220,11 @@ Journal d'historique des mouvements d'inventaires.
 | source_location_id                                     | Pour les mouvements internes (inter-location ou inter-company), renseigne la provenance de haut-niveau (`company_location.parent_id = null`) du mouvement   |
 | dest_location_id                                       | Pour les mouvements internes (inter-location ou inter-company), renseigne la destination de haut-niveau (`company_location.parent_id = null`) du mouvement |
 | unit_price                                             | Permet d'immortaliser la valeur financière du produit au moment du mouvement                                                                                |
+
+
+### ![](https://img.shields.io/badge/-Model-blue.svg) Transit(table `inventory_transit`)
+
+Cette table gère l'état temporaire des marchandises qui ont quitté leur emplacement d'origine mais n'ont pas encore été réceptionnées à leur destination finale. Elle empêche le stock de disparaître ou de se déplacer de manière "magique" (notion de temps entre deux mouvements).
 
 ---
 
