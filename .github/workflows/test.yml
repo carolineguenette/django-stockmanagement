@@ -37,7 +37,7 @@ jobs:
 
     - name: Exécuter les tests avec Pytest & Coverage
       run: |
-        pytest --cov=src --cov-report=term-missing --cov-report=text:pytest-coverage.txt
+        pytest --cov=src --cov-report=term-missing > pytest-coverage.txt
 
     - name: Générer le Badge de Couverture
       uses: MishaKav/pytest-coverage-comment@main
