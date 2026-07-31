@@ -20,5 +20,7 @@ Jalons du projet :
         Versions futures pour les fonctionnalités prévues durant la conception
         mais non prévues dans le développement actuel.
 """
+# TODO Présentement utilisé seulement par .github/workflows/test.yml, qui extrait cette variable pour le badge du README.md.
+#      Au lieu d'écrire en dur ici, utiliser tag Git et l'extraire automatiquement (git describe --tags)
 __version__ = "0.0.1"
 

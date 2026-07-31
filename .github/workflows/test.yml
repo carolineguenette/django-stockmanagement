@@ -84,8 +84,7 @@ jobs:
 
         # ---------------------------------------------- 
         # 2. Gestion du badge de Version
-        VERSION=$(python -c "import sys; sys.path.insert(0, './src'); import __init__; print(__init__.__version__)")
-        
+        VERSION=$(python -c "import sys; sys.path.insert(0, './src'); from config import __version__; print(__version__)")
         python -c "
         import json
         data = {'schemaVersion': 1, 'label': 'Version', 'message': '$VERSION', 'color': 'purple'}
