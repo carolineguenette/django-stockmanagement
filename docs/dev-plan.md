@@ -29,9 +29,9 @@ Pour ce projet portfolio, j'ai mis en place une gestion sous Jira en combinant u
 
 ### Automatisation GitHub <-> Jira
 
-GitHub et Jira communiquent via des *automations*. Ces automations permettent de synchroniser automatiquement les informations entre les deux plateformes, facilitant ainsi le suivi des tâches et la gestion du projet.
+GitHub et Jira communiquent via des *automations*. Ces automations permettent de synchroniser automatiquement des informations entre les deux plateformes, facilitant ainsi le suivi des tâches et la gestion du projet.
 
-Pour qu'un ticket soit déplacé vers la colonne "En cours", il faut que le message de commit contienne la clé du ticket (**Ex: SD-1**)
+Pour qu'un git commit soit associé à un ticket Jira, il faut que le message de commit contienne la clé du ticket (**Ex: SD-1**)
 
 #### Trois automations ont été créées.
 
