@@ -61,3 +61,4 @@ jobs:
         badge-title: Test coverage
         hide-report: true
         create-new-comment: false
+        github-token: ${{ secrets.GITHUB_TOKEN }}
