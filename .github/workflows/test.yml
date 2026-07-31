@@ -28,6 +28,8 @@ jobs:
     steps:
     - name: Récupérer le code source
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Nécessaire pour pouvoir basculer de branche proprement
 
     - name: Configurer Python
       uses: actions/setup-python@v5
@@ -43,7 +45,7 @@ jobs:
       env:
         # Données factuelles pour que django-environ ne lève pas d'erreur
         DEBUG: "True"
-        SECRET_KEY: "DJANGO-SECRET-KEY-TO-DEFINE-FOR-CI"
+        SECRET_KEY: "DJANGO-SECRET-KEY-TO-DEFINE-FOR-CI"  # A fake SECRET_KEY
         DB_NAME: "test_django_stock"
         DB_USER: "root"        # Le conteneur MySQL de GitHub utilise 'root' par défaut
         DB_PASSWORD: ""        # Le conteneur MySQL de GitHub a un mot de passe vide par défaut
@@ -52,4 +54,47 @@ jobs:
         DEFAULT_LANG: "fr"
         TIME_ZONE: "America/Toronto"
       run: |
-        pytest --cov=src --cov-report=term-missing
+        pytest --cov=src --cov-report=json
+
+    - name: Extraire le pourcentage de couverture et déterminer la couleur du badge
+      run: |
+        # Récupère le score depuis le JSON généré par pytest-cov et l'arrondit
+        PERCENT=$(python -c "import json; print(round(json.load(open('.coverage'))['totals']['percent_covered']))" 2>/dev/null || python -c "import json; print(round(json.load(open('coverage.json'))['totals']['percent_covered']))")
+
+        # Détermine la couleur selon le score
+        COLOR=$(python -c "
+        p = $PERCENT
+        if p >= 85: print('brightgreen')
+        elif p >= 60: print('yellow')
+        else: print('red')
+        ")
+        
+        # Création directe du JSON attendu par Shields.io
+        python -c "
+        import json
+        data = {'schemaVersion': 1, 'label': 'Test Cov', 'message': '$PERCENT%', 'color': '$COLOR'}
+        with open('django-stock-coverage.json', 'w') as f:
+            json.dump(data, f)
+        "
+        # Sauvegarde temporaire pour la récupérer après le changement de branche
+        cp django-stock-coverage.json /tmp/django-stock-coverage.json
+
+    - name: Pousser le badge sur la branche 'badges'
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@://github.com"
+        
+        # Tente de récupérer la branche existante, sinon crée une branche orpheline propre
+        if git fetch origin badges; then
+          git checkout badges
+          rm -rf *
+        else
+          git checkout --orphan badges
+          git rm -rf . --quiet
+        fi
+        
+        # Récupération du JSON généré et commit
+        cp /tmp/django-stock-coverage.json ./django-stock-coverage.json
+        git add django-stock-coverage.json
+        git commit -m "Update coverage badge" || exit 0
+        git push origin badges --force
