@@ -25,7 +25,7 @@ Projet Gestion de stocks — document de travail
 
 Ce document ajoute des commentaires explicatifs sur le schéma de la base de données (choix technique, notes de développement, etc.). Les apps django, modèles, table ou noms des champs ne sont pas listés de manière exhaustives dans le présent document (se référer au schéma).
 
-[![](django_stock.svg)](django_stock.svg))
+[![](django_stock.svg)](django_stock.svg)
 [Voir le Schéma de la base de données sur LucidChart](https://lucid.app/lucidchart/786327e6-745d-4881-95e1-39f3fdf33c66/view)
 
 ---
