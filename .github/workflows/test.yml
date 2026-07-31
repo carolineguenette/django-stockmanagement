@@ -97,22 +97,25 @@ jobs:
         cp django-stock-coverage.json /tmp/badges_generated/
         cp django-stock-version.json /tmp/badges_generated/
 
-
     - name: Pousser les badges sur la branche 'badges'
       run: |
         git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@://github.com"
-        
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+        # Nettoyage des fichiers JSON locaux pour éviter le conflit au checkout
+        rm -f django-stock-coverage.json django-stock-version.json
+          
         # Tente de récupérer la branche existante, sinon crée une branche orpheline propre
         if git fetch origin badges; then
           git checkout badges
+          # Supprime le reste des anciens fichiers de la branche badges pour repartir propre
           rm -rf *
         else
           git checkout --orphan badges
           git rm -rf . --quiet
         fi
-        
-        # Récupération et déploiement des deux fichiers JSON
+          
+        # Récupération et déploiement des deux fichiers JSON depuis le dossier temporaire
         cp /tmp/badges_generated/* ./
         git add django-stock-coverage.json django-stock-version.json
         git commit -m "Update coverage and version badges" || exit 0
