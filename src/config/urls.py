@@ -1,63 +1,30 @@
 """
-URL configuration for src project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/6.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+URL configuration for django-stock project.
+Centralized router linking language prefixes and local applications.
 """
 
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.i18n import i18n_patterns
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import views as auth_views
+from src.core.views import HomeView  # Import propre depuis le package de vues de core
 
-
-# TODO Temporaire
-@login_required
-def home_view(request):
-    return render(request, "core/main.html")
-
-
-# Vues publiques temporaires pour le design
-def register_view(request):
-    return render(request, "users/register.html")
-
-
-def password_reset_view(request):
-    return render(request, "users/password_reset.html")
-
-
-# Les URLs sans préfixe de langue (ex: API ou Webhooks)
+# -----------------------------------------------------------
+# URLs globales et techniques (Sans préfixe de langue)
+# -----------------------------------------------------------
 urlpatterns = [
     path("i18n/", include("django.conf.urls.i18n")),
     path("__reload__/", include("django_browser_reload.urls")),
 ]
 
-# Les URLs traduits et préfixés (ex: /fr/admin/, /en/catalogue/)
+# -----------------------------------------------------------
+# URLs de l'interface utilisateur (Traduites et préfixées par la langue - ex: /fr/admin/, /en/catalogue/)
+# -----------------------------------------------------------
 urlpatterns += i18n_patterns(
-    path("", home_view, name="home"),
-    # Routes de connexion et déconnexion
-    # Routes d'authentification publiques (Non bloquées par @login_required)
-    path(
-        "login/",
-        auth_views.LoginView.as_view(template_name="users/login.html"),
-        name="login",
-    ),
-    path("register/", register_view, name="register"),
-    path("password-reset/", password_reset_view, name="password_reset"),
-    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
-    path("admin/", admin.site.urls),
+    path("", HomeView.as_view(), name="home"),
+
+    path("", include("src.users.urls")),
     path("catalogue/", include("src.catalogue.urls")),
+    path("admin/", admin.site.urls),
+
     prefix_default_language=False,
 )
