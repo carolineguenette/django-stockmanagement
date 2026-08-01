@@ -81,7 +81,7 @@ ROOT_URLCONF = "src.config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "src" / "main/templates"],
+        "DIRS": [str(BASE_DIR / "src" / "core" / "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -89,7 +89,8 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "django.template.context_processors.i18n",
-                "src.config.settings.project_context",  # TODO: encore requis??
+
+                "src.core.context_processors.project_context",
             ],
         },
     },
