@@ -41,7 +41,7 @@
 
             <!-- Lien mot de passe oublié discret et aligné à droite -->
             <div class="auth-extra-links">
-                <a href="{% url 'password_reset' %}" class="forgot-password-link">
+                <a href="{% url 'users:password_reset' %}" class="forgot-password-link">
                     {% translate "Forgot password?" %} <img src="{% static 'img/password-lost.svg' %}" alt="" class="btn-icon">
                 </a>
             </div>

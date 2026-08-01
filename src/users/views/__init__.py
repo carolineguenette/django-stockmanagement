@@ -1,0 +1,1 @@
+from .auth_views import register_view, password_reset_view

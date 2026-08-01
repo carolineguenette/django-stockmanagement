@@ -31,12 +31,12 @@
             <div class="header-auth-action">
                 {% if request.resolver_match.url_name == 'login' %}
                     <span>{% translate "Don't have an account?" %}</span>
-                    <a href="{% url 'register' %}" class="link-bold">
+                    <a href="{% url 'users:register' %}" class="link-bold">
                         {% translate "Sign Up" %} <img src="{% static 'img/register.svg' %}" alt="" class="btn-icon">
                     </a>
                 {% elif request.resolver_match.url_name == 'register' or request.resolver_match.url_name == 'password_reset' %}
                     <span>{% translate "Have an account?" %}</span>
-                    <a href="{% url 'login' %}" class="link-bold">
+                    <a href="{% url 'users:login' %}" class="link-bold">
                         {% translate "Login" %} <img src="{% static 'img/login.svg' %}" alt="" class="btn-icon">
                     </a>
                 {% endif %}
