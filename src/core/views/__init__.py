@@ -1,1 +1,1 @@
-from .base_views import home_view
+from .base_views import HomeView

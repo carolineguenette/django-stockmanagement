@@ -129,9 +129,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = "users.User"
 
-LOGIN_URL           = ( "login" )   # L'URL vers laquelle Django redirigera les utilisateurs non connectés
-LOGIN_REDIRECT_URL  = ( "home" )    # L'URL où l'utilisateur est envoyé après s'être connecté avec succès
-LOGOUT_REDIRECT_URL = ( "login" )   # L'URL où l'utilisateur est envoyé après s'être déconnecté
+LOGIN_URL           = ( "users:login" )   # L'URL vers laquelle Django redirigera les utilisateurs non connectés
+LOGIN_REDIRECT_URL  = ( "home" )          # L'URL où l'utilisateur est envoyé après s'être connecté avec succès
+LOGOUT_REDIRECT_URL = ( "users:login" )   # L'URL où l'utilisateur est envoyé après s'être déconnecté
 
 # --------------------------------------------------------------------------------
 # INTERNATIONALISATION & CODES RÉGIONAUX (i18n / l10n)

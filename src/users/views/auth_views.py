@@ -1,9 +1,13 @@
-from django.shortcuts import render
+from django.views.generic import TemplateView
 
-def register_view(request):
+# TemplateView (une vue générique de Django) fait qu'on n'a même pas besoin d'écrire la méthode get()
+# car django sait qu'il doit simplement renvoyer le template_name
+
+class RegisterView(TemplateView):
     """Vue publique temporaire pour le design de la page d'inscription."""
-    return render(request, "users/register.html")
+    template_name = "users/register.html"
 
-def password_reset_view(request):
+
+class PasswordResetView(TemplateView):
     """Vue publique temporaire pour le design de la réinitialisation de mot de passe."""
-    return render(request, "users/password_reset.html")
+    template_name = "users/password_reset.html"
