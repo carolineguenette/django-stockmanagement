@@ -1,13 +1,12 @@
 import pytest
+from django.urls import reverse
 
-
-def test_infrastructure_minimal():
-    """Un test simple pour valider que le moteur de test tourne."""
-    assert 1 == 1
-
+def test_pytest_django_motor_is_working():
+    """Vérifie simplement que pytest-django est correctement configuré."""
+    assert True
 
 @pytest.mark.django_db
-def test_acces_base_de_donnees():
+def test_db_access():
     """Valide que pytest-django initialise, écrit et lit dans la base de données de test."""
     from django.contrib.auth import get_user_model
 
@@ -21,3 +20,19 @@ def test_acces_base_de_donnees():
 
     # 3. On vérifie que le compteur a bien augmenté de exactement 1
     assert User.objects.count() == nb_utilisateurs_depart + 1
+
+
+@pytest.mark.django_db
+def test_login_url_resolution_and_status_code(client):
+    """
+    Vérifie que la route 'users:login' est correctement cartographiée
+    et qu'elle répond un code HTTP 200 (OK).
+    """
+    # Utilise le reverse matching pour trouver l'URL (/login/)
+    url = reverse("users:login")
+
+    # Simule une requête GET sur cette URL
+    response = client.get(url)
+
+    # Valide que la page se charge sans erreur
+    assert response.status_code == 200
