@@ -137,16 +137,39 @@ LOGOUT_REDIRECT_URL = ( "users:login" )   # L'URL où l'utilisateur est envoyé 
 # INTERNATIONALISATION & CODES RÉGIONAUX (i18n / l10n)
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 # --------------------------------------------------------------------------------
-LANGUAGE_CODE = env("DEFAULT_LANG")  # Apps default language
+LANGUAGE_CODE = env("DEFAULT_LANG")  # Définit la langue par défaut si aucune n'est détectée
 USE_I18N = True
 USE_TZ = True
-TIME_ZONE = env("TIME_ZONE")
+TIME_ZONE = env("TIME_ZONE") # Format dans lequel les dates sont stockées brutes en base de données
 
 LANGUAGES = [
-    ("en", _("English")),
-    ("fr", _("French")),
-    ("es", _("Spanish")),
+    ('fr', 'Français'),
+    ('fr-ca', 'Français (Canada)'),
+    ('fr-fr', 'Français (France)'),
+    ('en', 'English'),
+    ('en-ca', 'English (Canada)'),
+    ('en-us', 'English (United States)'),
 ]
+
+VISIBLE_LANGUAGES = [
+    ('fr', 'Français'),
+    ('en', 'English'),
+]
+
+PARLER_LANGUAGES = {
+    1: (
+        {'code': 'fr'},
+        {'code': 'fr-ca', 'fallback': 'fr'},
+        {'code': 'fr-fr', 'fallback': 'fr'},
+        {'code': 'en'},
+        {'code': 'en-ca', 'fallback': 'en'},
+        {'code': 'en-us', 'fallback': 'en'},
+    ),
+    'default': {
+        'fallbacks': ['fr', 'en'], # Si même le 'fr' est vide, prend le français global ou l'anglais
+        'hide_untranslated': False, # Évite de retourner une erreur si non traduit
+    }
+}
 
 # Dossier où seront stockés les fichiers de traduction (.po/.mo)
 LOCALE_PATHS = [

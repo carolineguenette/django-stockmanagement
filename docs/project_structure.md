@@ -6,30 +6,41 @@ django-stock/
 │   └── js/
 │
 ├── docs/
+│   ├── conceptions.md
 │   ├── data-security.md        # Fichier de conception sur la sécurité des données et le système d'accès
 │   ├── database.md             # Fichier de conception sur la base de données
 │   ├── dev-plan.md             # Explication des jalons de développement du projet et lien vers JIRA
+│   ├── django-applications.md  # Fichier de conception sur les applications
+│   ├── django-models.md        # Fichier de conception sur les modèles
+│   ├── django-urls.md          # Fichier de conception sur les urls 
+│   ├── django_stock.svg        # Image de la Database exportée de LucidChart
+│   ├── project_structure.md    # Fichier de conception sur la structure du projet
 │   ├── specifications.md       # Cahier des charges - 1er doc du projet
 │   └── structure_directory.md  # Fichier de documentation de la structure du projet
 │
-├── locale/                     # Fichiers de traduction (i18n). fr, en, etc mais besoin aussi locale avec pays pour currency, affichage particulier, etc (ex: ZIP en_US vs Postal Code en_CA)
+├── locale/                     # Fichiers de traduction (i18n). fr, en, etc mais besoin aussi locale avec pays pour currency, affichage particulier (ex: ZIP en_US vs Postal Code en_CA), etc.
 │
 ├── medias/                     # Fichiers multimédias téléversées à partir de l'interface UI (exclut dans le .gitignore)
 │
-├── src/                        # Code source du projet (apps catalogue en détail: toutes les apps sont sur le même modèle)
-│   ├── catalogue/
+├── src/                        # Code source du projet (apps core en détail: toutes les apps sont sur le même modèle)
+│   ├── access/                 # Permissions métier, rôles et RBAC custom des employés
 │   │   ├── models/
-│   │   ├── templates/
-│   │   │   └── catalogue/
-│   │   ├── templatetags/
-│   │   │
-│   │   ├── __init__.py
+│   │   ├── services/
+│   │   ├── decorators.py
+│   │   ├── mixins.py
+│   │   ├── validators.py
 │   │   ├── admin.py
-│   │   ├── apps.py
-│   │   ├── views.py
-│   │   └── admin.py
+│   │   └── apps.py
 │   │
-│   ├── company/
+│   ├── catalogue/              # Catalogue de produits, catégories, images et configurations produit
+│   │
+│   ├── company/                # Entreprises, locations et structure organisationnelle
+│   │   ├── models/
+│   │   ├── services/
+│   │   ├── validators.py
+│   │   ├── admin.py
+│   │   └── apps.py
+│   │
 │   ├── config/                 # DOSSIER DE CONFIGURATION (Pas une application)
 │   │   ├── __init__.py
 │   │   ├── asgi.py
@@ -37,10 +48,39 @@ django-stock/
 │   │   ├── urls.py             # URLconf racine
 │   │   └── wsgi.py
 │   │
-│   ├── core/                   # APPLICATION PARTAGÉE (master template, utils, etc)
-│   ├── inventory/
-│   ├── reporting/
-│   └── users/
+│   ├── core/                   # Socle technique partagé : modèles abstraits, templates, utils
+│   │   ├── models/
+│   │   ├── templates/
+│   │   │   └── core/
+│   │   ├── templatetags/
+│   │   ├── views/
+│   │   │
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   └── admin.py
+│   │
+│   ├── inventory/              # Stocks, mouvements, unités de mesure et transit
+│   │
+│   ├── reporting/              # Rapports company-scoped et rapports globaux owner
+│   │
+│   ├── scope/                  # Contexte compagnie courant, middleware et managers filtrants
+│   │   ├── context.py          # Stockage du contexte compagnie courant
+│   │   ├── exceptions.py       # Erreurs liées au scope courant
+│   │   ├── managers.py         # CompanyScopedManager
+│   │   ├── middleware.py       # CompanyMiddleware
+│   │   ├── querysets.py        # CompanyScopedQuerySet
+│   │   ├── mixins.py
+│   │   └── apps.py
+│   │
+│   └── users/                  # Identité utilisateur et infrastructure d'authentification Django
+│       ├── models/
+│       ├── services/
+│       │   └── owner_service.py
+│       ├── forms/
+│       ├── views/
+│       ├── admin.py
+│       └── apps.py
 │
 ├── tests/                      # Dossier centralisé des tests automatisés. TODO: structure à définir
 │   ├── htmlcov/

@@ -2,22 +2,15 @@
 
 <img src="../assets/img/logo.svg" alt="Logo Gestion de stocks" width="60" />
 
-# Database (models django)
+# Django Models (database only)
 
 Projet Gestion de stocks — document de travail
 
-![Statut](https://img.shields.io/badge/Statut_du_document-Prêt_pour_POC-purple.svg)  [![Schema](https://img.shields.io/badge/Schema_DB-LucidChart-F45D22.svg)](https://lucid.app/lucidchart/786327e6-745d-4881-95e1-39f3fdf33c66/view)
+![Statut](https://img.shields.io/badge/Statut_du_document-À_réviser-purple.svg)  [![Schema](https://img.shields.io/badge/Schema_DB-LucidChart-F45D22.svg)](https://lucid.app/lucidchart/786327e6-745d-4881-95e1-39f3fdf33c66/view)
 
 <h3>
 
-<a href="#access">Access</a> |
-<a href="#core">Core</a> |
-<a href="#users">Users</a> |
-<a href="#company">Company</a> |
-<a href="#catalogue">Catalogue</a> |
-<a href="#inventory">Inventory</a> |
-<a href="#reporting">Reporting</a> |
-<a href="#others">Autres...</a>
+<a href="#access">Access</a> | <a href="#core">Core</a> | <a href="#users">Users</a> | <a href="#company">Company</a> | <a href="#catalogue">Catalogue</a> | <a href="#inventory">Inventory</a> | <a href="#reporting">Reporting</a> | <a href="#others">Autres...</a>
 
 </h3>
 
@@ -32,31 +25,40 @@ Ce document ajoute des commentaires explicatifs sur le schéma de la base de don
 
 ## <a id="access"> ![](https://img.shields.io/badge/-App-darkblue.svg) Access
 
-Application qui gère les accès utilisateurs. Permet de définir les roles.
+Application responsable du contrôle d'accès métier. Elle implémente un RBAC custom utilisé pour limiter les droits des employés par compagnie, par location et par permission.
+
+L'application n'utilise pas les permissions natives `auth_permission` de Django pour les droits métier. Django Auth est conservé pour l'identité, l'authentification, les sessions et l'administration technique.
+
+Le statut propriétaire n'est pas représenté par un rôle RBAC. Il est porté directement par le champ `users.User.is_owner`.
 
 ### ![](https://img.shields.io/badge/-Model-blue.svg) Permission (table `access_permission`)
 
-Cette table stocke les détails des permissions pour gérer les autorisations. Ses données sont insérées à l'initialisation du système et ne changeront plus (à moins d'autres développements...). Le référentiel des permissions (les données de cette table) se trouve dans [data-securiy.md](data-securiy.md#permissions).
+Catalogue des permissions métier disponibles dans l'application. Les données de cette table sont insérées à l'initialisation du système et ne changeront plus (à moins d'autres développements...). Le référentiel des permissions (les données de cette table) est documenté dans [data-securiy.md](data-securiy.md#permissions).
 
 ![](https://img.shields.io/badge/Unique-codename-blueviolet.svg)
 
 | ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                                                       |
 |:------------------------------------------------------:| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `codename`                                             | Un code name respecte toujours la convention de nommage suivante: `app_name`.`model_name`.`permission_name`                                                                |
+| `codename`                                             | Code unique de la permission métier. Un code name respecte toujours la convention de nommage suivante: `app_name`.`model_name`.`permission_name`                           |
+| `name`                                                 | Nom lisible                                                                                                                                                                |
 | `need_companycontext`<br/>`need_globalcontext`         | Type de contexte requis pour la permission                                                                                                                                 |
 | `is_movementreason`                                    | Flag déterminant si c'est une permission granulaire pour la gestion des quantités en inventaire.                                                                           |
 | `is_owner_perm`                                        | Flag déterminant si cette permission est habituellement réservée uniquement au propriétaire. Pourrait servir à mettre en place des avertissements de "Permission sensible" |
+| `is_active`                                            | Permet de désactiver une permission sans la supprimer. Accessible uniquement dans l'admin django.                                                                          |
 | `display_order`                                        | Sert de premier tri pour une meilleure UX lors de la gestion des permissions.                                                                                              |
 
 ## ![](https://img.shields.io/badge/-Model-blue.svg) Role (table `access_role `)
 
-Cette table stocke les détails des rôles.
+Rôle métier assignable aux employés. Un rôle regroupe plusieurs permissions.
+
+Aucun rôle `Owner` ne doit être créé car le statut propriétaire est géré par `users.User.is_owner`.
 
 ![](https://img.shields.io/badge/Unique-slug,_company__id-blueviolet.svg)
 
-| ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                                                                  |
-|:------------------------------------------------------:| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `company_id`                                           | **NULL** : Permet de créer un rôle global (*ex: Gestionnaire*)<br/>**COMPANY_ID**: Permet de créer un rôle explicitement restreint à une entreprise (*ex: Gestionnaire Boutique ABC*) |
+| ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                                                                 |
+|:------------------------------------------------------:| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `company_id`                                           | **NULL** : Permet de créer un rôle global (*ex: Gestionnaire*)<br/>**RENSEIGNÉ**: Permet de créer un rôle explicitement restreint à une entreprise (*ex: Gestionnaire Boutique ABC*) |
+| `is_active`                                            | Permet de désactiver un rôle                                                                                                                                                         |
 
 ## ![](https://img.shields.io/badge/-Model-blue.svg) RolePermission (table `access_rolepermissions `)
 
@@ -96,7 +98,7 @@ Historique de toutes les modifications qui ont été réalisées dans les accès
 
 ## <a id="core"> ![](https://img.shields.io/badge/-App-darkblue.svg) Core
 
-Application qui rassemble le core de l'application web.
+Application qui rassemble le core de l'application web et les éléments partagés.
 
 ### ![](https://img.shields.io/badge/-Model-blue.svg) Settings (table `core_settings`)
 
@@ -114,7 +116,16 @@ Modèle centralisé pour encadrer les images téléversées par les utilisateurs
 
 ## <a id="users">  Users
 
-Gère les utilisateurs et leur permission. [Voir le document data-security.md](data-security.md) pour plus de détails sur la mise en oeuvre des accès et les choix techniques réalisés à ce niveau.
+Application responsable de l'identité utilisateur et de l'infrastructure d'authentification. 
+
+Elle s'appuie sur Django Auth pour :
+
+- l'authentification ;
+- les sessions ;
+- les mots de passe ;
+- les champs standards comme `is_active`, `is_staff` et `is_superuser`.
+
+Les permissions métier ne sont pas gérées par les tables natives `auth_group` ou `auth_permission`. Elles sont gérées dans l'application `access`. [Voir le document data-security.md](data-security.md) pour plus de détails sur la mise en oeuvre des accès et les choix techniques réalisés à ce niveau.
 
 ### ![](https://img.shields.io/badge/-Model-blue.svg) User (table `users_user`)
 
@@ -133,18 +144,28 @@ Entité centrale des utilisateurs étandant le modèle de base de Django (`Abstr
 | `preferred_language`                                   | Option permettant de définir la langue d'affichage de l'interface et des données dynamiques.                                                                                                                                              |
 | `preferred_home_page`                                  | Option permettant de charger la page d'accueil el plus souvent utilisé par l'utilisateur (ex: propriétaire veut voir le dashboard global alors qu'un commis d'entrepôt utilisera principalement une vue simple pour scanner des produits) |
 
+Règles liées à `is_owner` :
+
+- plusieurs propriétaires peuvent exister ;
+- seul un propriétaire peut créer un autre propriétaire ;
+- un propriétaire peut être désactivé seulement s'il reste au moins un autre propriétaire actif ;
+- un propriétaire peut être supprimé seulement s'il n'a aucun lien FK dans aucune table ;
+- il doit toujours exister au moins un propriétaire actif ;
+- le statut propriétaire est distinct de `is_superuser`.
+
+Les employés sont des utilisateurs avec `is_owner=False`. Leurs accès sont gérés par les rôles et permissions de la table `users_userrole`.
+
 ### ![](https://img.shields.io/badge/-Model-blue.svg) UserRole (table `users_userrole`)
 
 Table de liaison entre les utilisateurs (`users_user`) et les rôles (`access_roles`) . Remplace le modèle par défaut de Django pour l'attribution des permissions, qui n'avait aucun moyen d'isoler les données de chaque entreprise (company).
 
-Le modèle définit une méthode pour vérifier si l'utilisateur a une permission donnée: `has_loc_perm()`.
-
 ![](https://img.shields.io/badge/Unique-user__id,_role__id,_company__id,_location__id-blueviolet.svg)
 
-| ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-|:------------------------------------------------------:| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| company_id                                             | * Si `NULL` et que le rôle est global (`access_role.company_id` est `NULL` aussi), l'utilisateur a accès à toutes les entreprises.<br/>* Si `NULL `et que le rôle n'est pas global ou que `NON NULL`, l'utilisateur est limité à l'entreprise défini par le rôle.<br/>*À noter que si les deux champs `company_id `(au niveau du rôle et au niveau de l'utilisateur) sont définis mais non équals, la permission sera nécessairement refusée (le contexte d'entreprise ne peut pas être défini sur 2 entreprises en même temps)* |
-| `location_id`                                          | Permet de restreindre le champs d'accès à un emplacement paritculier. L'accès aux enfants de la `location_id `est permis si l'acces au parent est permis.                                                                                                                                                                                                                                                                                                                                                                        |
+| ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+|:------------------------------------------------------:| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| company_id                                             | * Si `NULL` et que le rôle est global (`access_role.company_id` est `NULL` aussi), l'utilisateur a accès à toutes les entreprises.<br/>* Si `NULL `et que le rôle n'est pas global ou que `NON NULL`, l'utilisateur est limité à l'entreprise défini par le rôle.<br/>*À noter que si les deux champs `company_id `(au niveau de access_role et au niveau de users_userrole) sont définis mais non identiques, la permission sera nécessairement refusée (le contexte d'entreprise ne peut pas être défini sur 2 entreprises en même temps)* |
+| `location_id`                                          | Permet de restreindre le champs d'accès à un emplacement paritculier. L'accès aux enfants de la `location_id `est permis si l'acces au parent est permis.                                                                                                                                                                                                                                                                                                                                                                                    |
+| `is_active`                                            | Permet de suspendre une assignation sans la supprimer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
 ### ![](https://img.shields.io/badge/-Model-blue.svg) UserRoleLog(table `users_userrolelog`)
 
@@ -173,7 +194,11 @@ Enregistre toutes modifications à la table `users_userrole`.
 
 ## <a id="company"> ![](https://img.shields.io/badge/-App-darkblue.svg) Company
 
-Gère les entreprises et leurs emplacements. Il s'agit du pivot central du multi-entreprises permettant de cloisonner le catalogue et l'inventaire de chaque organisation.
+Gère les entreprises et leurs emplacements.
+
+Dans le modèle d'usage retenu, toutes les compagnies présentes en base appartiennent au même périmètre propriétaire global. Un utilisateur avec `users.User.is_owner=True` peut accéder à toutes les compagnies.
+
+Les employés n'ont accès qu'aux compagnies autorisées par le RBAC custom.
 
 ### ![](https://img.shields.io/badge/-Model-blue.svg) Company (table `company_company`)
 
@@ -181,11 +206,19 @@ Gère les entreprises et leurs emplacements. Il s'agit du pivot central du multi
 
 ![](https://img.shields.io/badge/Unique-slug-blueviolet.svg)
 
-Liste des entreprises et de leurs caractéristiques. Chaque compagnie est indépendante et isolée des autres.
+Liste des entreprises et de leurs caractéristiques. Chaque compagnie est indépendante et isolée des autres. Les compagnies sont le pivot principal de séparation des données, même si elles appartiennent toutes au même propriétaire métier global. Ce rattachement permet :
+
+- le filtrage des vues company-scoped ;
+- la séparation des catalogues ;
+- la séparation des stocks ;
+- les permissions par compagnie ;
+- les rapports par compagnie ;
+- les rapports globaux réservés aux propriétaires.
 
 | ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 |:------------------------------------------------------:| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `official_name`                                        | Nom officiel enregistré pour l'entreprise                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `official_name`                                        | Nom officiel enregistré pour l'entreprise (non traduisible)                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `slug`                                                 | Identifiant unique utilisé dans les URLs `/c/<company_slug>/...`                                                                                                                                                                                                                                                                                                                                                                                                      |
 | :globe_with_meridians: `name`                          | Nom commercial de l'entreprise (traduisible)                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | `is_archived`                                          | ![](https://img.shields.io/badge/DEV-POC-green.svg) Toujours `Faux`<br/>![](https://img.shields.io/badge/DEV-V1-green.svg) Permet d'archiver une entreprise. Toutes ses caractéristiques, incluant son catalogue de produit et son inventaire, passe en mode lecture seule. Une entreprise archivée n'apparaît plus dans les rapports globaux mais ses rapports spécifiques sont toujours disponibles à la consultation. L'archivage nécessite une permission dédiée. |
 | `is_productvariant_on`                                 | ![](https://img.shields.io/badge/DEV-POC-green.svg) Toujours `Faux` Le système crée un modèle de produit et un variant unique, sans aucun attribut, de manière transparente pour l'utilisateur.<br/>![](https://img.shields.io/badge/DEV-VX-green.svg) Permet d'activer la gestion des produits par modèles et variants (ex: T-Shirt couleur bleue et grandeur Petit, T-Shirt couleur rouge et grandeur Moyen).                                                       |
@@ -268,7 +301,7 @@ Application gérant le référentiel des produits.
 
 Un produit peut se décliner en plusieurs variantes ayant chacun aucun à plusieurs attributs. La définition commune de ces variantes est le « modèle ». Le modèle peut avoir de zéro à plusieurs catégories. Modèles et variantes peuvent avoir des images associées. Le seuil d'inventaire bas est configuré par variant et par emplacement. 
 
-*Exemple: Un T-Shirt  est le modèle, dans la catégorie Vêtement. Il se décline en 2 variantes de couleur: rouge et bleu.* 
+*Exemple: Un T-Shirt  est le modèle, dans la catégorie Vêtement. Il se décline en 2 variantes de couleur: rouge et bleu. À la Boutique ABC, le seuil d'alerte bas est de 10 unités alors que dans l'Entrepôt X, il est de 50 unités* 
 
 ### ![](https://img.shields.io/badge/-Model-blue.svg) ProductModel (table `catalogue_productmodel`)
 
@@ -338,7 +371,7 @@ Table de jointure entre un produit et ses images (`core.image`).
 
 ## <a id="inventory"> ![](https://img.shields.io/badge/-App-darkblue.svg) Inventory
 
-Application gérant le suivi des stocks physiques, les unités de mesure et leur conversion ainsi que la traçabilité des flux de marchandises et les raisons du mouvement.
+Application gérant le suivi des stocks physiques, les unités de mesure et leur conversion ainsi que la traçabilité des flux de marchandises et les raisons des mouvements de stock.
 
 ### ![](https://img.shields.io/badge/-Model-blue.svg) Stock (table `inventory_stock`)
 
@@ -454,27 +487,38 @@ Une entrée de transit est créée pour les mouvements d'inventaire suivant:
 > [!WARNING]
 > TODO: Toute la logique sur l'aspect des rapports et graphiques doit faire l'objet d'une réflexion plus poussée en lien avec les besoins DB
 
+---
+
 ## <a id="others"> Autres fonctionnalités pouvant éventuellement étendre le système de Gestion de stocks
 
 * Évolution vers un vrai système multi-tenants
+  
   * Ajout d'une app `account` entre le propriétaire et les entreprises
 
 * Gestion des tiers (fournisseurs et clients):
+  
   * Application `partners `avec modèles `Supplier `et `Customer`
+
 * Intégration de scan pour les barcode (interface adaptée)
 
 * Liaison avec des documents justificatifs:
+  
   * Ajout d'un champ `reference_document` ou d'une table dédiée aux commandes/factures permettant de lier le mouvement à sa source légale ou commerciale.
+
 * Traçabilité fine de l'inventaire (lots, numéros de série, date de péremption / expiration)
+  
   * batch_number
   * serial_number, 
   * expiration_date
 
 * Ajouter la notion de Link entre produits (produits similaires)
+  
   * Links entre produit d'une même compagnie (ok, pas de risque de fuite de données)
   * Links entre produits de compagnie différentes (implique permissions très élevées genre super-user pour modifier les liens et éviter fuite de données)
   * Apps GlobalCatalogue, réservé aux admin
+
 * Gestion financière
+  
   * Prix de gros, de vente, ect
   * Devises selon les locations
   * Dashboard avec des graphiques sur les états financiers

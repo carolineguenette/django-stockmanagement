@@ -36,6 +36,8 @@ Dans le cadre de ce projet, vous serez amenés à réaliser une application web 
 
 > En tant que propriétaire de plusieurs entreprises, je veux pouvoir gérer les stocks de mes différentes entreprises depuis une seule interface, afin de suivre facilement les niveaux d'inventaire et d'être alerté quand les produits atteignent un seuil critique.
 
+> NOTE (Ajout): le propriétaire possède toutes les entreprises de l'application
+
 ### Exemple concret d'utilisation
 
 * Le propriétaire dispose d'un compte administrateur et peut créer des entreprises, des produits, des stocks et des utilisateurs.
@@ -85,9 +87,8 @@ Jeu de tests automatisés :
 
 ## Gestion des risques
 
-
-| Risque                                          | Mesure préventive                                                                              |
-| :---------------------------------------------- | :---------------------------------------------------------------------------------------------- |
+| Risque                                         | Mesure préventive                                                                            |
+|:---------------------------------------------- |:-------------------------------------------------------------------------------------------- |
 | **Complexité de la gestion multi-entreprises** | Commencer par un POC simple, valider l'architecture des modèles avec le mentor dès le début. |
-| **Problèmes de performance BDD**               | Optimiser les requêtes, utiliser`select_related`/`prefetch_related`.                           |
-| **Difficultés avec GitHub Actions**            | Partir de templates, commencer avec des tests basiques.                                         |
+| **Problèmes de performance BDD**               | Optimiser les requêtes, utiliser`select_related`/`prefetch_related`.                         |
+| **Difficultés avec GitHub Actions**            | Partir de templates, commencer avec des tests basiques.                                      |
