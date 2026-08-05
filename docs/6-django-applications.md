@@ -10,7 +10,7 @@ Projet Gestion de stocks — document de travail
 
 <h3>
 
-<a href="#access">Access</a> | <a href="#scope">Scope</a> | <a href="#core">Core</a> | <a href="#users">Users</a> | <a href="#company">Company</a> | <a href="#catalogue">Catalogue</a> | <a href="#inventory">Inventory</a> | <a href="#reporting">Reporting</a> |
+<a href="#access">Access</a> | <a href="#scope">Scope</a> | <a href="#core">Core</a> | <a href="#users">Users</a> | <a href="#company">Company</a> | <a href="#catalogue">Catalogue</a> | <a href="#inventory">Inventory</a> | <a href="#reporting">Reporting</a>
 
 </h3>
 

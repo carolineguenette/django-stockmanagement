@@ -16,7 +16,7 @@ Projet Gestion de stocks — document de travail
 
 </div>
 
-Ce document discute de la sécurité des données et du contrôle d'accès. La première partie analyse et documente les choix techniques réalisés alors que la suite présente la structure du système de contrôle d'accès basé sur les rôles (**RBAC - Role-Based Access Control**) personnalisé et les barrières de sécurité mis en place.
+Ce document discute de la sécurité des données et du contrôle d'accès. La première partie analyse et documente les choix techniques réalisés alors que la suite présente la structure du système de contrôle d'accès basé sur les rôles (**RBAC - Role-Based Access Control**) personnalisé et les barrières de sécurité mises en place.
 
 ---
 
@@ -31,9 +31,9 @@ Le projet n'est donc pas conçu, dans sa version actuelle, comme une plateforme 
 Conséquences :
 
 - un utilisateur propriétaire (`is_owner=True`) a accès à toutes les entreprises présentes en base ;
-- les employés (`is_owner=False`) ont des accès limités par le RBAC custom ;
+- les employés (`is_owner=False`) ont des accès limités par un RBAC custom ;
 - les données restent rattachées à une compagnie afin de permettre le filtrage, les rapports, les permissions et l'intégrité métier ;
-- les vues company-scoped et les vues globales owner sont explicitement séparées.
+- les vues company-scoped (url /c/company-slug/...) et les vues globales owner (url /g/...) sont explicitement séparées.
 
 ### Types d'utilisateurs
 
@@ -41,14 +41,24 @@ Conséquences :
 | ------------------- | ----------------------------------- | ------------------------------------------------------ |
 | Propriétaire métier | `User.is_owner=True`                | Accès métier global à toutes les compagnies            |
 | Employé             | `User.is_owner=False` + RBAC custom | Accès limité par compagnie, location et permission     |
-| Staff technique     | `User.is_staff=True`                | Accès éventuel à l'administration Django               |
+| Staff technique     | `User.is_staff=True`                | Accès à l'administration Django                        |
 | Superuser technique | `User.is_superuser=True`            | Accès technique total, distinct du propriétaire métier |
 
 Le champ `is_owner` ne remplace pas `is_superuser`. Le propriétaire est un rôle métier. Le superuser est un rôle technique lié à l'administration Django.
 
 Un propriétaire peut promouvoir un autre utilisateur propriétaire. L'application doit toujours avoir au moins un propriétaire actif.
 
-Les employés sont des utilisateurs globaux de l'application dont les droits sont limités par le RBAC custom. Un employé peut avoir accès à une ou plusieurs entreprises avec des rôles différents. Un employé peut créer d'autres employés s'il possède la permission adéquate. Cependant, cette permission n'inclut jamais le changement de la propriété `user.is_owner`. Un employé peut assigner des rôles à d'autres employés s'il possède la permission adéquate. Encore une fois, cette permission est limitée: les accès qu'il peut attribuer son limité par son propre périmère autorisé.
+Les employés sont des utilisateurs globaux de l'application dont les droits sont limités par le RBAC custom. 
+
+* Un employé peut avoir accès à une ou plusieurs entreprises avec des rôles différents. 
+
+* Un employé peut créer d'autres employés s'il possède la permission adéquate. 
+  
+  * Cette permission n'inclut jamais le changement de la propriété `user.is_owner`. 
+
+* Un employé peut assigner des rôles à d'autres employés s'il possède la permission adéquate. 
+  
+  * Cette permission est toujours limitée par son propre périmère autorisé.
 
 ### URLs company-scoped et vues globales owner
 
@@ -63,7 +73,7 @@ Ces vues sont toujours filtrées sur la compagnie courante, y compris lorsque l'
 Les **vues globales** sont séparées et explicitement réservées aux propriétaires :
 
 ```text
-/owner/...
+/g/...
 ```
 
 ---
@@ -490,7 +500,7 @@ Les tests de sécurité doivent couvrir au minimum :
 - un propriétaire peut accéder à toutes les compagnies ;
 - un propriétaire ne voit que la compagnie courante dans une vue `/c/<company_slug>/...` ;
 - un employé ne peut accéder qu'aux compagnies autorisées ;
-- un employé ne peut pas accéder aux vues `/owner/...` ;
+- un employé ne peut pas accéder aux vues globales `/g/...` ;
 - un employé autorisé peut créer un autre employé ;
 - un employé ne peut pas créer, modifier ou désactiver un propriétaire ;
 - il est impossible de désactiver le dernier propriétaire actif ;
@@ -504,7 +514,7 @@ Les tests de sécurité doivent couvrir au minimum :
 
 - owner peut accéder à /c/company-b/...;
 
-- owner peut accéder à /owner/dashboard/;
+- owner peut accéder à /g/dashboard/;
 
 - owner voit les rapports consolidés ;
 
@@ -520,7 +530,7 @@ Les tests de sécurité doivent couvrir au minimum :
 
 - employé de A ne peut pas accéder à B ;
 
-- employé de A ne peut pas accéder à /owner/...;
+- employé de A ne peut pas accéder à /g/...;
 
 - employé multi-company peut accéder à A et B ;
 
@@ -532,6 +542,6 @@ Les tests de sécurité doivent couvrir au minimum :
 
 - sur /c/company-a/..., même owner voit par défaut les données de A seulement ;
 
-- sur /owner/..., seulement owner peut utiliser les querysets globaux ;
+- sur /g/..., seulement owner peut utiliser les querysets globaux ;
 
 - sans contexte company/global explicite, les requêtes échouent.

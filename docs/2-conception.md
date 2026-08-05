@@ -134,9 +134,9 @@ Ces vues doivent évidemment rester accessibles sans contexte.
 #### Vues propriétaire
 
 ```
-.../owner/dashboard/
-.../owner/inventory/
-.../owner/reports/
+.../g/dashboard/
+.../g/inventory/
+.../g/reports/
 ```
 
 Ces vues ne doivent pas utiliser le même contexte par entreprise car elles *doivent* récupérer l'information de plusieurs entreprises. Elles ont besoin d'un contexte explicite (ou un manager non filtré?)

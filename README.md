@@ -6,7 +6,7 @@
 
 App Web Django — par [Caroline Guénette](mailto:cguenette@telus.net)
 
-<img src="https://img.shields.io/badge/Statut_du_projet-Codage_POC-purple.svg" alt="Statut" /> ![Version](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/carolineguenette/django-stockmanagement/badges/django-stock-version.json) ![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/carolineguenette/django-stockmanagement/badges/django-stock-coverage.json) <img src="https://img.shields.io/badge/Python-3.11+-green.svg" alt="Python" /> <img src="https://img.shields.io/badge/Django-6.0.7-green.svg" alt="Django" /> 
+<img src="https://img.shields.io/badge/Statut_du_projet-Révision_docs_de_conception-purple.svg" alt="Statut" /> ![Version](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/carolineguenette/django-stockmanagement/badges/django-stock-version.json) ![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/carolineguenette/django-stockmanagement/badges/django-stock-coverage.json) <img src="https://img.shields.io/badge/Python-3.11+-green.svg" alt="Python" /> <img src="https://img.shields.io/badge/Django-6.0.7-green.svg" alt="Django" />
 
 [![Schema](https://img.shields.io/badge/Gestion_du_projet-Jira-blue.svg)](https://solution-cg.atlassian.net/jira/software/c/projects/SD/list) (lien vers Jira*) [![Schema](https://img.shields.io/badge/Schema_DB-LucidChart-F45D22.svg)](https://lucid.app/lucidchart/786327e6-745d-4881-95e1-39f3fdf33c66/view)) (lien vers LucidChart)
 
@@ -22,10 +22,11 @@ App Web Django — par [Caroline Guénette](mailto:cguenette@telus.net)
 Consulter les documents de conception:
 
 <h4>
-  <a href="./docs/specifications.md">Cahier des charges</a> |
-  <a href="./docs/dev-plan.md">Plan de développement</a> |
-  <a href="./docs/data-security.md">Sécurité des données</a> | 
-  <a href="./docs/database.md">Base de données</a>
+  <a href="./docs/1-specifications.md">Cahier des charges</a> |
+  <a href="./docs/2-conception.md">Plan de conception</a> |
+  <a href="./docs/3-dev-plan.md">Plan de développement</a> |
+  <a href="./docs/5-data-security.md">Sécurité des données</a> | 
+  <a href="./docs/8-django-models.md">Base de données</a>
 </h4>
 
 **À noter que Jira est un peu capricieux pour les accès anonymes malgré une configuration en lecture adéquate.*

@@ -18,7 +18,7 @@ Projet Gestion de stocks — document de travail
 
 Ce document ajoute des commentaires explicatifs sur le schéma de la base de données (choix architecturale, notes de développement, etc.). Les apps django, modèles, table ou noms des champs ne sont pas listés de manière exhaustives dans le présent document (se référer au schéma dans LucidChart).
 
-[![](django_stock.svg)](django_stock.svg
+[![](schema_database.svg)](schema_database.svg
 [Voir le Schéma de la base de données sur LucidChart](https://lucid.app/lucidchart/786327e6-745d-4881-95e1-39f3fdf33c66/view)
 
 ---
@@ -88,9 +88,9 @@ Historique de toutes les modifications qui ont été réalisées dans les accès
 * Ajout d'une permission à un rôle (target_table = 'role_permission'):
 
 ```json
-  { 
-     "permission_id": { "old": null, "new": 14 } 
-     "permission_codename": { "old": null, "new": 14 }  
+  {
+     "permission_id": { "old": null, "new": 14 }
+     "permission_codename": { "old": null, "new": 14 } 
   }
 ```
 
