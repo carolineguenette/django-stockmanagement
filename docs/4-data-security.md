@@ -93,9 +93,11 @@ Les permissions métier sont gérées par un système custom. Les modèles sont 
 
 ---
 
-### Méthode pour vérifier les permissions
+### Vérification des permissions
 
-Le `PermissionService` est responsable de répondre à la question :
+**Le système de permissions natif de Django est conçu pour être étendu et remplacé** grâce à un mécanisme appelé les **Authentications Backends**. Ainsi, la question des permissions du Custom RBAC peut être répondu avec `user.has_perm()` avec, en coulisse, un arbre de décision custom. 
+
+La question:
 
 ```text
 Cet utilisateur peut-il effectuer cette action dans ce contexte et ce périmètre?
@@ -125,91 +127,115 @@ Cet utilisateur peut-il effectuer cette action dans ce contexte et ce périmètr
                                        │
                                        └── [Oui] ──> Le Lieu matche-t-il (ou est-il un enfant) ?
                                        │                │
-                                       │                └── [Oui] ──> RETOURNER VRAI
-                                       │                 
+                                       │                └── [Oui] ──> RETOURNER VRAI                 
                                        │
                                        └── [Non] ──> RETOURNER FAUX
 ```
 
-#### PermissionService
+#### Backend d'Authentification personnalisé
 
 ```python
-from django.db.models import Prefetch
+# django-stock/src/access/backends.py
 
-class PermissionService:
-    @staticmethod
-    def has_perm(user, permission_codename: str, context_company_id: int = None, context_location_id: int = None) -> bool:
+from django.db.models import Prefetch
+from django.core.exceptions import ObjectDoesNotExist
+# Importez les modèles ici (UserRole, AccessPermission, CompanyLocation, etc.)
+
+class CompanyRBACBackend:
+    """
+    Backend de permission personnalisé pour gérer le RBAC par Compagnie et Lieu.
+    """
+
+    def authenticate(self, request, username=None, password=None, **kwargs):
+        # On ne gère pas l'authentification (login) dans ce backend, 
+        # on retourne None pour laisser les autres backends s'en charger.
+        return None
+
+    def has_perm(self, user_obj, perm, obj=None):
         """
-        Version optimisée pour des appels fréquents.
-        Exécute au maximum 1 à 2 requêtes SQL ciblées et résout le reste en mémoire.
+        Surcharge la vérification des permissions.
+        :param user_obj: L'instance de l'utilisateur connecté.
+        :param perm: Le codename string de la permission (ex: 'catalogue.product.delete').
+        :param obj: Un dictionnaire optionnel contenant le contexte : 
+                    {"company_id": X, "location_id": Y}
         """
-        # 1. Protection & Fast-Bypass (0 requête SQL)
-        if not user or not user.is_active:
+        # 1. Protection & Fast-Bypass
+        if not user_obj or not user_obj.is_active:
             return False
 
-        if getattr(user, 'is_owner', False):
+        if getattr(user_obj, 'is_owner', False):
             return True
 
-        # 2. Récupération TOUT-EN-UN (1 seule requête SQL avec jointures)
-        # On récupère les rôles de l'utilisateur, les infos de lieu de l'assignation,
-        # et UNIQUEMENT la permission demandée si elle y est associée.
+        # 2. Détermination automatique du contexte de compagnie
+        context_company_id = None
+        context_location_id = None
+
+        if isinstance(obj, dict):
+            context_company_id = obj.get('company_id')
+            context_location_id = obj.get('location_id')
+        else:
+            # Récupération automatique depuis le CompanyContext (Thread-Safe)
+            current_company = CompanyContext.get()
+            if current_company:
+                context_company_id = current_company.id
+        
+            # Si obj est directement une instance de modèle "Location", on extrait son ID
+            if hasattr(obj, 'location_id'): # Si c'est un objet possédant un lieu (ex: Stock)
+                context_location_id = obj.location_id
+            elif hasattr(obj, 'path'): # Si obj est directement l'instance de CompanyLocation
+                context_location_id = obj.id
+
+        # 3. Récupération TOUT-EN-UN (Filtres is_active inclus)
         user_roles = UserRole.objects.filter(
-            user_id=user.id,
-            is_active=True,
-            role__is_active=True
+            user_id=user_obj.id,
+            is_active=True,         # Validation de l'assignation active
+            role__is_active=True    # Validation du rôle actif
         ).select_related(
             'role', 
-            'location'  # Requis pour récupérer le 'path' treebeard de l'assignation sans refaire de SQL
+            'location'
         ).prefetch_related(
             Prefetch(
                 'role__permissions',
-                queryset=AccessPermission.objects.filter(codename=permission_codename, is_active=True),
+                queryset=AccessPermission.objects.filter(codename=perm, is_active=True), # Permission active
                 to_attr='matching_permissions'
             )
         )
 
-        # Si l'utilisateur n'a aucun rôle actif
         if not user_roles:
             return False
 
-        # Variable pour stocker le path du lieu du contexte (chargé à la demande, max 1 fois)
         context_location_path = None
 
-        # 3. Évaluation ultra-rapide en mémoire Python
+        # 4. Évaluation en mémoire Python
         for user_role in user_roles:
             role = user_role.role
 
-            # Si la permission demandée n'est pas présente dans ce rôle, on passe immédiatement
-            if not user_role.role.matching_permissions:
+            if not role.matching_permissions:
                 continue
 
-            # On extrait la permission pré-chargée
-            permission = user_role.role.matching_permissions[0]
+            permission = role.matching_permissions[0] # Récupère la perm de la liste to_attr
 
-            # --- CAS CONTEXTE GLOBAL (ex: core.settings.change) ---
+            # --- CAS CONTEXTE GLOBAL ---
             if permission.need_globalcontext and not permission.need_companycontext:
                 if user_role.company_id is None and user_role.location_id is None:
                     return True
                 continue
 
-            # --- CAS CONTEXTE COMPAGNIE (ex: catalogue.product.delete) ---
+            # --- CAS CONTEXTE COMPAGNIE ---
             elif permission.need_companycontext:
                 if context_company_id is None:
                     continue
 
                 company_access_granted = False
 
-                # Règle 1 : Rôle global + Assignation globale
                 if role.company_id is None and user_role.company_id is None:
                     company_access_granted = True
 
-                # Règle 2 : Rôle strict lié à une compagnie spécifique
                 elif role.company_id is not None:
                     if role.company_id == context_company_id:
                         if user_role.company_id is None or user_role.company_id == context_company_id:
                             company_access_granted = True
 
-                # Règle 3 : Rôle global mais restriction au niveau de l'assignation user
                 elif role.company_id is None and user_role.company_id is not None:
                     if user_role.company_id == context_company_id:
                         company_access_granted = True
@@ -217,27 +243,21 @@ class PermissionService:
                 if not company_access_granted:
                     continue
 
-                # --- ÉTAPE B : VALIDATION DU PÉRIMÈTRE LOCATION (EN MÉMOIRE) ---
+                # --- ÉTAPE B : VALIDATION DU PÉRIMÈTRE LOCATION ---
                 if user_role.location_id is None:
                     return True 
 
                 if context_location_id is not None:
-                    # Correspondance exacte directe (0 requête)
                     if user_role.location_id == context_location_id:
                         return True
 
-                    # Vérification Treebeard sans SQL via le champ 'path'
-                    # Un nœud est descendant d'un autre si son path commence par le path du parent
                     if user_role.location and user_role.location.path:
-                        # On récupère le path du contexte (uniquement si nécessaire et une seule fois)
                         if context_location_path is None:
                             try:
                                 context_location_path = CompanyLocation.objects.values_list('path', flat=True).get(id=context_location_id)
                             except CompanyLocation.DoesNotExist:
                                 context_location_path = ""
 
-                        # Logique Treebeard (MP_Node) : 
-                        # Le descendant a un chemin plus long et commence strictement par le chemin du parent
                         parent_path = user_role.location.path
                         if context_location_path.startswith(parent_path) and len(context_location_path) > len(parent_path):
                             return True
@@ -245,7 +265,18 @@ class PermissionService:
         return False
 ```
 
-##### Dernière étape d'optimisation: cache applicatif
+##### Enregistrer le Backend dans `settings.py`
+
+```python
+# django-stock/src/config/settings.py
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend', # Le backend par défaut de Django
+    'mon_projet.authentication.backends.CompanyRBACBackend', # Votre nouveau backend
+]
+```
+
+##### Dernière étape d'optimisation de CompanyRBACBackend: cache applicatif
 
 Si la méthode consomme encore trop de ressources lors de pics de charge, l'étape ultime consiste à mettre le résultat de cette fonction dans le **Cache de Django** (`django.core.cache`) avec une clé unique basée sur l'utilisateur et le contexte :
 
@@ -255,27 +286,90 @@ f"rbac_{user.id}_{permission_codename}_{context_company_id}_{context_location_id
 
 Il faudra penser à invalider (supprimer) cette clé de cache à chaque fois qu'un objet de la table `UserRole` est modifié ou supprimé (via un signal Django `post_save` / `post_delete`).
 
-#### Application dans les Vues Django :
+##### Application dans les Vues Django :
 
 ```python
 # Exemple 1 : Vérification d'une action globale
-has_access = PermissionService.has_perm(
-    user=current_user, 
-    permission_codename="core.settings.change"
-)
-if not has_access:
-    raise PermissionDenied()
+# Pas besoin de passer de contexte
+if user.has_perm('core.settings.change'):
+    print("Accès accordé au panneau global !")
 
 # Exemple 2 : Vérification d'une action métier (need_companycontext=True) :
-has_access = PermissionService.has_perm(
-    user=current_user, 
-    permission_codename="catalogue.product.delete",
-    context_company_id=42,
-    context_location_id=115
-)
-if not has_access:
+contexte = {
+    "company_id": current_company.id, 
+    "location_id": current_location.id
+}
+
+if user.has_perm('catalogue.product.delete', obj=contexte):
+    print("L'utilisateur a le droit de supprimer ce produit dans cette filiale.")
+else:
     raise PermissionDenied()
 ```
+
+Ou, encore mieux, créer un décorateur de vue personnalisé, dans un mixin!
+
+###### Mixin
+
+```python
+# django-stock/access/mixins.py
+
+from django.contrib.auth.mixins import AccessMixin
+from django.core.exceptions import PermissionDenied
+
+class RBACRequiredMixin(AccessMixin):
+    """
+    Mixin pour les Class-Based Views de Django.
+    Vérifie si l'utilisateur possède la permission RBAC requise.
+    """
+    # Attribut à définir obligatoirement dans vos vues
+    permission_codename = None 
+
+    def dispatch(self, request, *args, **kwargs):
+        # 1. Sécurité de développement : s'assurer que le développeur a configuré le codename
+        if self.permission_codename is None:
+            raise NotImplementedError(
+                f"{self.__class__.__name__} requiert la définition de l'attribut 'permission_codename'."
+            )
+
+        # 2. Vérifier si l'utilisateur est connecté et actif
+        if not request.user.is_authenticated or not request.user.is_active:
+            return self.handle_no_permission()
+
+        # 3. Appel de la méthode user.has_perm native (qui utilise le backend personnalisé)
+        # Le CompanyContext est déjà alimenté par le CompanyMiddleware à ce stade de la requête.
+        if not request.user.has_perm(self.permission_codename):
+            raise PermissionDenied("Vous n'avez pas les droits nécessaires pour accéder à cette ressource.")
+
+        # 4. Si tout est valide, on laisse Django continuer le cycle normal de la vue (dispatch)
+        return super().dispatch(request, *args, **kwargs)
+```
+
+###### Utilisation
+
+```python
+# django-stock/catalogue/views.py
+
+from django.views.generic import DeleteView
+from django.urls import reverse_lazy
+from src.access.mixins import RBACRequiredMixin
+from .models import Product
+
+class ProductDeleteView(RBACRequiredMixin, DeleteView):
+    model = Product
+    template_name = 'catalogue/product_confirm_delete.html'
+    success_url = reverse_lazy('product_list')
+    
+    # LA ligne magique : le mixin s'occupe de tout le reste !
+    permission_codename = 'catalogue.product.delete'
+    
+    def get_object(self, queryset=None):
+        """
+        Le CompanyScopedManager filtre déjà les produits de la compagnie courante.
+        On récupère l'objet de manière sécurisée.
+        """
+        return super().get_object(queryset)
+```
+
 
 ---
 
@@ -283,7 +377,7 @@ if not has_access:
 
 `CompanyMiddleware `sert à établir le **contexte d'entreprise courante** pour les URLs company-scoped
 
-Responsabilités :
+**Responsabilités**:
 
 1. détecter les URLs contenant un slug d'entreprise (/c/<company_slug>/...) ;
 2. charger la compagnie correspondante
@@ -605,7 +699,7 @@ Les tests de sécurité doivent couvrir au minimum :
 - employé avec location limitée ne voit pas les autres locations ;
 - employé sans permission stock ne peut pas modifier stock.
 
-### Tests contexte
+### Tests context
 
 - sur /c/company-a/..., même owner voit par défaut les données de A seulement ;
 - sur /g/..., seulement owner peut utiliser les querysets globaux ;
@@ -700,5 +794,16 @@ Validation des paramètres de la fonction de service
   - Le Rôle 1 l'autorise sur la Compagnie A (Lieu exact `Paris`).
   - Le Rôle 2 l'autorise sur la Compagnie A (Lieu exact `Lyon`).
   - **Test :** L'utilisateur demande l'accès pour la Compagnie A à `Lyon`. Le système doit analyser le Rôle 1 (qui échoue), continuer la boucle, analyser le Rôle 2 et enfin accorder l'accès. *(Attendu : Retourne `True`)*.
+
+### Test natif de Django pour `user.has_perm`
+
+L'intégration native dans `user.has_perm` simplifie l'écriture des tests car il est possible d'utiliser le test natif de Django (`django.test.Client`) ou simuler les requêtes en alimentant manuellement votre conteneur `CompanyContext` lors du `setUp` de vos tests.
+
+Pour tester le cloisonnement, la configuration actuelle est idéale :
+
+1. Les tests simuleront des requêtes sur les URLs .
+2. Le `CompanyMiddleware` s'exécutera.
+3. Le `CompanyContext` sera alimenté.
+4. `user.has_perm()` interceptera la bonne compagnie sans aucune plomberie additionnelle.
 
 ---
