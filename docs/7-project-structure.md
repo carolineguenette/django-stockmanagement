@@ -8,12 +8,6 @@ Projet Gestion de stocks — document de conception
 
 ![Statut](https://img.shields.io/badge/Statut_du_document-En_révision-purple.svg)
 
-<h3>
-
-[Custom RBAC](#rbac) | [CompanyMiddleware](#midleware) | [CompanyScopedManager](#manager) | [Permissions](#permissions) | [Roles](#roles) | [Tests de sécurité](#tests)
-
-</h3>
-
 </div>
 
 Ce document présente l'arborescence projetée des fichiers composant le projet
