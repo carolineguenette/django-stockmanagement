@@ -2,13 +2,34 @@
 
 <img src="../assets/img/logo.svg" alt="Logo Gestion de stocks" width="60" />
 
-# Conception
+# Conception — Sommaire
 
 Projet Gestion de stocks — document de travail
 
+![Statut](https://img.shields.io/badge/Statut_du_document-En_cours_de_rédaction-purple.svg)
+
+<h3>
+
+[Introduction](#introduction) | [Utilisateurs](#utilisateurs) | [Authentification et permissions](#authentification-et-permissions) | [Barrières de sécurité](#barrières-de-sécurité) 
+
+</h3>
+
 </div>
 
-Ce fichier documente les assertions et choix architecturaux du projet.
+Ce fichier présente un sommaire du projet, présente les éléments de base et agit comme table des matières globale des documents de conception.
+
+[← Spécifications](1-specifications.md) | [README](../README.md) |  [Analyse →](3-choices-and-analysis.md)
+
+Table des matières globale des documents de conception :
+
+1. [Cahier des charges](1-specifications.md)
+2. Conception (*ce document*)
+3. [Analyse technique et choix](3-choices-and-analysis.md)
+4. [Règles de sécurité et logique algorithmique du RBAC](4-data-security.md)
+5. [Découpage modulaire du code (django apps et urls)](5-django-app-and-urls.md)
+6. [Database (Schéma et django-models)](6-database-models.md)
+7. [Arborescence des fichiers](7-project-structure.md)
+8. [Gestion de projet, Jira et GitHub Actions](8-dev-plan.md)
 
 ---
 
@@ -16,137 +37,75 @@ Ce fichier documente les assertions et choix architecturaux du projet.
 
 Ce projet est une application de gestion d'inventaire multi-entreprises appartenant à un même propriétaire. Toutes les entreprises créées en base de données sont donc reliées par cette propriété commune.
 
-*Ce que ce n'est pas* :  Ce projet n'est pas une application SaaS multi-tenants où plusieurs organisations indépendantes cohabitent sans se connaître.
+*Ce que ce n'est pas* :  Ce projet n'est pas conçu, dans sa version actuelle, comme une plateforme SaaS multi-clients où plusieurs organisations indépendantes cohabitent dans la même base de données.
+
+### Conséquences :
+
+- un utilisateur propriétaire (`is_owner=True`) a accès à toutes les entreprises présentes en base ;
+- les employés (`is_owner=False`) ont des accès limités par un RBAC personnalisé ;
+- les données restent rattachées à une compagnie afin de permettre le filtrage, les rapports, les permissions et l'intégrité métier ;
+- les vues *company-scoped* (url `/c/company-slug/...`) et les *vues globales owner* (url `/g/...`) sont explicitement séparées ;
+  - un propriétaire consultant une url `/c/company-slug/...` aura aussi une vue limitée à l'entreprise active.
 
 ## Utilisateurs
 
-Les utilisateurs sont le propriétaire et tous ses employés. 
+### Types d'utilisateurs
 
-Les accès des employés sont limités par un RBAC (Role-Based Acces Control) personnalisé.
 
-| Utilisateurs          | Accès                    | User DB Field                                               |
-| --------------------- | ------------------------ | ----------------------------------------------------------- |
-| Propriétaire          | Tous les accès Front-end | `is_owner=True`,`is_superuser=False`,`is_staff=False`,      |
-| Employés              | Accès limité par RBAC    | `is_owner=False`,`is_superuser=False`,`is_staff=False`,     |
-| Administrateur Django | Tous les accès           | `is_owner=PEU IMPORTE`,`is_superuser=True`,`is_staff=True`, |
+| Rôle / Type              | Drapeaux (Flags)                                                           | Périmètre et Accès                                                                                     |
+| :------------------------ | :------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------- |
+| **Propriétaire métier** | `is_owner=True`<br>`is_superuser=False`<br>`is_staff=False`                | Accès métier total à toutes les compagnies, aux vues globales et aux paramètres de l'entreprise.      |
+| **Employé**              | `is_owner=False`<br>`is_superuser=False`<br>`is_staff=False` + RBAC custom | Accès limité par compagnie, emplacement (`location`) et permissions spécifiques du RBAC personnalisé. |
+| **Administrateur Django** | `is_owner=False`<br>`is_superuser=False`<br>`is_staff=True`                | Accès exclusif à l'interface d'administration technique de Django.                                      |
+| **Superuser technique**   | `is_owner=Indifférent`<br>`is_superuser=True`<br>`is_staff=True`          | Accès technique total au système (distinct du propriétaire métier).                                   |
 
-L'application peut avoir plusieurs propriétaires. 
+### Distinction des rôles : Métier vs Technique
 
-* Seul un propriétaire peut promouvoir un utilisateur propriétaire.
+#### Rôle Métier : Le Propriétaire (`is_owner`)
 
-* L'application doit toujours avoir au minimum un propriétaire actif (le dernier propriétaire ne peut pas se révoquer ou se désactiver lui-même)
+* **Définition** : Rôle purement fonctionnel et commercial (ne remplace pas les privilèges techniques Django).
+* **Capacités** :
+  * Voir toutes les compagnies et les données financières globales.
+  * Consulter les rapports consolidés et gérer les paramètres métier.
+  * Effectuer des mouvements inter-company (protégés par des barrières de sécurité logicielles pour éviter les erreurs de croisement de données).
+  * Gérer les employés et leurs rôles.
 
-L'administration Django est réservée exclusivement pour la technique (<mark>TODO: reformuler</mark>)
+#### Rôle Technique : Le Super-utilisateur / Staff (`is_superuser` / `is_staff`)
 
-#### Distinction entre *propriétaire* et *super-utilisateur*
+* **Définition** : Rôle technique réservé à la maintenance et aux opérations système de Django.
+* **Capacités** : Accéder à l'admin Django, réaliser la maintenance, corriger les données et exécuter les migrations.
+* **Avertissement** : Attention à ne pas créer de croisements accidentels de données entre entreprises (ex. lier un produit A à une location B).
 
-* Être propriétaire est un rôle métier. Cette personne peut :
-  
-  * voir toutes les compagnies ;
-  
-  * gérer les employés ;
-  
-  * gérer les rôles ;
-  
-  * consulter les rapports consolidés ;
-  
-  * effectuer des mouvements inter-company si prévu ;
-  
-  * voir les données financières globales ;
-  
-  * gérer les paramètres métier.
+### Règles de gestion et contraintes
 
-* Être un super-utilisateur est un rôle technique Django. Cette personne peut : 
-  
-  * accéder à Django Admin ;
-  
-  * réaliser l'administration technique ;
-  
-  * corriger les données ;
-  
-  * effectuer la maintenance ;
-  
-  * effectuer les migrations.
+#### Gestion des Propriétaires
 
-Le super-utilisateur doit faire particulièrement attention pour ne pas introduire de croisements inter-entreprises (*par exemple: assigner un produit de l'entreprise A à une location de l'entreprise B*). Grâce aux barrières de sécurité (voir plus bas), le propriétaire sera techniquement empêché de faire ce genre de manipulation erronée.
+* L'application peut compter plusieurs propriétaires.
+* Seul un propriétaire peut promouvoir un autre utilisateur au rang de propriétaire.
+* **Sécurité** : L'application doit conserver au minimum un propriétaire actif. Le dernier propriétaire ne peut pas se révoquer ou se désactiver lui-même.
 
-## Accès et permissions
+#### Gestion des Employés
+
+* Les employés sont des utilisateurs globaux restreints par le RBAC personnalisé.
+* Un employé peut intervenir sur une ou plusieurs entreprises avec des rôles distincts.
+* Un employé habilité peut créer d'autres employés et leur assigner des rôles, mais **il ne peut jamais modifier** la propriété `is_owner` ni dépasser son propre périmètre de responsabilités.
+
+---
+
+## Authentification et permissions
 
 Le modèle de sécurité doit isoler les données par entreprise  (`company`) pour qu'un employé n'ait accès qu'aux compagnies et locations autorisées.
 
-### Réflexion sur le système *auth* natif de Django
-
-#### Authentification
+### Authentification
 
 Le projet utilise toute la partie authentification de auth. (login, session, cookie, etc)
 
-#### Accès et permissions
+### Gestion des accès
 
-Le système de permission de django n'est pas adapté aux besoins du projet. Il ne peut pas isoler par compagnie  et ne permet pas d'avoir des permissions fines (*ex: augmenter la quantité d'un produit en inventaire en faisant un achat, déclarer une perte d'inventaire en raison d'un bris*).
+Le système de permission de django n'est pas adapté aux besoins du projet. Il ne peut pas isoler par compagnie et ne permet pas d'avoir des permissions fines (*ex: augmenter la quantité d'un produit en inventaire en faisant un achat, déclarer une perte d'inventaire en raison d'un bris*). Un RBAC personnalisé sera donc mis en place.
 
-##### RBAC
+---
 
-Le propriétaire bypass le RBAC
+## Barrières de sécurité
 
-```python
-if user.is_owner:
-    return True
-```
-
-C'est simple et ça évite d'avoir à assigner tous les rôles au propriétaire. Par contre, il faut auditer les actions *owner*.
-
-## Barrieres de sécurité
-
-La sécurité des données ne peut pas reposer uniquement sur la logique métier. Ainsi, 2 barrières, ayant chacune leur rôle, seront implémentées.
-
-#### CompanyMiddleware
-
-Son rôle est de définir le contexte d'entreprise à partir de l'URL demandée. AInsi, si une page *company score* est demandée (`url: .../c/<company_slug>`), il va :
-
-1. charger la compagnie active ;
-
-2. si user est inactif : refuser l'accès ;
-
-3. si user est owner : autoriser ;
-
-4. sinon vérifier RBAC ;
-
-5. définir request.company
-
-#### CompanyManager
-
-Son rôle est de filtrer les données selon l'entreprise active. <mark>TODO Compléter</mark>
-
-**Attention**: si la page est company-scope (`.../c/company-a/...`), alors on tri selon l'entreprise, même si l'utilisateur est le propriétaire. Ainsi, on limite les erreurs dûes à une requête oubliée.
-
-### Cas des vues globales
-
-#### Vues d'authentification
-
-```
-.../login
-.../register
-.../password-lost
-```
-
-Ces vues doivent évidemment rester accessibles sans contexte.
-
-#### Vues propriétaire
-
-```
-.../g/dashboard/
-.../g/inventory/
-.../g/reports/
-```
-
-Ces vues ne doivent pas utiliser le même contexte par entreprise car elles *doivent* récupérer l'information de plusieurs entreprises. Elles ont besoin d'un contexte explicite (ou un manager non filtré?)
-
-<mark>TODO: url "owner" ou autre terme?</mark>
-
-## Évolutions pssibles
-
-* Vers un SaaS complet
-  
-  * Ajout d'un modèle `Account `et lien vers les modèles `User `et `Company`.
-  
-  * Complexité accrue. Sécurité multi-tenant particulièrement sensible.
+La sécurité des données ne peut pas reposer uniquement sur la logique métier. Ainsi, 2 barrières, ayant chacune leur rôle, seront implémentées: `CompanyMiddleware` et `CompanyScopedManager`.

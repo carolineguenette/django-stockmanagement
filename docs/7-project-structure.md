@@ -1,3 +1,28 @@
+<div align="center">
+
+<img src="../assets/img/logo.svg" alt="Logo Gestion de stocks" width="60" />
+
+# Arborescence des fichiers
+
+Projet Gestion de stocks — document de conception
+
+![Statut](https://img.shields.io/badge/Statut_du_document-En_révision-purple.svg)
+
+<h3>
+
+[Custom RBAC](#rbac) | [CompanyMiddleware](#midleware) | [CompanyScopedManager](#manager) | [Permissions](#permissions) | [Roles](#roles) | [Tests de sécurité](#tests)
+
+</h3>
+
+</div>
+
+Ce document présente l'arborescence projetée des fichiers composant le projet
+
+[← Base de données](6-database-models.md) | [Sommaire](2-conception.md) |  [Plan de développement →](98-dev-plan.md)
+
+---
+
+```text
 django-stock/
 │
 ├── assets/                     # Ressources statiques du projet
@@ -102,3 +127,4 @@ django-stock/
 ├── README.md                   # Fichier de documentation du projet. Fait des liens vers ./docs/
 │
 └── requirements.txt
+```

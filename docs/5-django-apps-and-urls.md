@@ -2,25 +2,33 @@
 
 <img src="../assets/img/logo.svg" alt="Logo Gestion de stocks" width="60" />
 
-# Django Applications
+# Modules et séparation du code - Django Apps et Urls
 
-Projet Gestion de stocks — document de travail
+Projet Gestion de stocks — document de conception
 
 ![Statut](https://img.shields.io/badge/Statut_du_document-En_cours_de_rédaction-purple.svg)  
 
 <h3>
-
+Partie I Apps : 
 <a href="#access">Access</a> | <a href="#scope">Scope</a> | <a href="#core">Core</a> | <a href="#users">Users</a> | <a href="#company">Company</a> | <a href="#catalogue">Catalogue</a> | <a href="#inventory">Inventory</a> | <a href="#reporting">Reporting</a>
+
+</h3>
+
+<h3>
+Partie II Urls : 
+<a href="#urls">Urls</a>
 
 </h3>
 
 </div>
 
-Ce document détaille les rôles et composants de chaque application django.
+Ce document détaille la division du code en applications django ainsi que la structure prévue des urls.
+
+[← Sécurité](4-data-security.md) | [Sommaire](2-conception.md) |  [Base de données →](6-database-models.md)
 
 ---
 
-## <a id="access">![](https://img.shields.io/badge/-App-darkblue.svg) Access
+## ![](https://img.shields.io/badge/-App-darkblue.svg) Access <a id="access"></a>
 
 Application qui gère les accès utilisateurs et permet de définir les rôles. 
 
@@ -54,19 +62,19 @@ Le bypass owner concerne exclusivement les permissions métier, pas les droits t
 
 ---
 
-## <a id="scope">![](https://img.shields.io/badge/-App-darkblue.svg) Scope
+## ![](https://img.shields.io/badge/-App-darkblue.svg) Scope <a id="scope"></a>
 
 Application qui rassemble le contexte d'entreprise courant, middleware et managers filtrants.
 
 ---
 
-## <a id="core">![](https://img.shields.io/badge/-App-darkblue.svg)Core
+## ![](https://img.shields.io/badge/-App-darkblue.svg)Core <a id="core"></a>
 
 Application qui rassemble le core de l'application web et les éléments partagés.
 
 ---
 
-## <a id="users">![](https://img.shields.io/badge/-App-darkblue.svg) Users
+## ![](https://img.shields.io/badge/-App-darkblue.svg) Users <a id="users"></a>
 
 Gère les utilisateurs et leur permission. [Voir le document data-security.md](data-security.md) pour plus de détails sur la mise en oeuvre des accès et les choix techniques réalisés à ce niveau.
 
@@ -94,7 +102,7 @@ Le service peut appeler access.PermissionService pour vérifier certaines permis
 
 ---
 
-## <a id="company">![](https://img.shields.io/badge/-App-darkblue.svg) Company
+## ![](https://img.shields.io/badge/-App-darkblue.svg) Company <a id="company"></a>
 
 Gère les entreprises et leurs emplacements. Il s'agit du pivot central du multi-entreprises permettant de cloisonner le catalogue et l'inventaire de chaque organisation. 
 
@@ -106,7 +114,7 @@ L'application `Company `permet de répondre aux questions suivantes:
 
 ---
 
-## <a id="catalogue">![](https://img.shields.io/badge/-App-darkblue.svg)Catalogue
+## ![](https://img.shields.io/badge/-App-darkblue.svg)Catalogue <a id="catalogue"></a> 
 
 Application gérant le référentiel des produits.
 
@@ -116,12 +124,88 @@ Un produit peut se décliner en plusieurs variantes ayant chacun aucun à plusie
 
 ---
 
-## <a id="inventory">![](https://img.shields.io/badge/-App-darkblue.svg)Inventory
+## ![](https://img.shields.io/badge/-App-darkblue.svg)Inventory <a id="inventory"></a>
 
 Application gérant le suivi des stocks physiques, les unités de mesure et leur conversion ainsi que la traçabilité des flux de marchandises et les raisons des mouvements de stock.
 
 ---
 
-## <a id="reporting">![](https://img.shields.io/badge/-App-darkblue.svg)Reporting
+## ![](https://img.shields.io/badge/-App-darkblue.svg)Reporting <a id="reporting"></a>
 
 TODO
+
+
+
+---
+
+
+
+### URLs company-scoped et vues globales owner <a id="urls"></a>
+
+Les **vues métier liées à une compagnie** utilisent le format suivant :
+
+```text
+/c/<company_slug>/...
+```
+
+Ces vues sont toujours filtrées sur la compagnie courante, y compris lorsque l'utilisateur est le propriétaire.
+
+Les **vues globales** sont séparées et explicitement réservées aux propriétaires :
+
+```text
+/g/...
+```
+
+
+| Contexte         | Comportement                                     |
+|:---------------- |:------------------------------------------------ |
+| /c/company-a/.,, | filtre sur company-a                             |
+| /global/...      | requêtes globales explicites                     |
+| aucun contexte   | Erreur / Refus sur les modèles company-scoped    |
+| Django-admin     | Accès via manager spécial ou all_objects réservé |
+
+
+### Cas des vues globales
+
+#### Vues d'authentification
+
+```
+.../login
+.../register
+.../password-lost
+```
+
+Ces vues doivent évidemment rester accessibles sans contexte.
+
+#### Vues propriétaire
+
+```
+.../g/dashboard/
+.../g/inventory/
+.../g/reports/
+```
+
+Ces vues ne doivent pas utiliser le même contexte par entreprise car elles *doivent* récupérer l'information de plusieurs entreprises. Elles ont besoin d'un contexte explicite (ou un manager non filtré?)
+
+## Évolutions pssibles
+
+* Vers un SaaS complet
+
+  * Ajout d'un modèle `Account `et lien vers les modèles `User `et `Company`.
+  * Complexité accrue. Sécurité multi-tenant particulièrement sensible.
+
+---
+---
+---
+
+  
+Table des matières
+
+1. [RBAC personnalisé](#rbac) 
+2. <a href="#midleware">CompanyMiddleware</a>
+3. <a href="#manager">CompanyScopedManager</a>
+4. <a href="#permissions">Référentiel des permissions</a> 
+5. <a href="#roles">Roles par défaut</a> 
+6. <a href="#tests">Tests de sécurité</a>
+
+---

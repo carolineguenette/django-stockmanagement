@@ -2,9 +2,9 @@
 
 <img src="../assets/img/logo.svg" alt="Logo Gestion de stocks" width="60" />
 
-# Django Models (database only)
+# Base de données - django models
 
-Projet Gestion de stocks — document de travail
+Projet Gestion de stocks — document de conception
 
 ![Statut](https://img.shields.io/badge/Statut_du_document-À_réviser-purple.svg)  [![Schema](https://img.shields.io/badge/Schema_DB-LucidChart-F45D22.svg)](https://lucid.app/lucidchart/786327e6-745d-4881-95e1-39f3fdf33c66/view)
 
@@ -18,7 +18,10 @@ Projet Gestion de stocks — document de travail
 
 Ce document ajoute des commentaires explicatifs sur le schéma de la base de données (choix architecturale, notes de développement, etc.). Les apps django, modèles, table ou noms des champs ne sont pas listés de manière exhaustives dans le présent document (se référer au schéma dans LucidChart).
 
-[![](schema_database.svg)](schema_database.svg
+[← Modules](5-django-apps-and-urls.md) | [Sommaire](2-conception.md) |  [Arborescence des fichiers →](7-project-structure.md)
+
+
+![](schema_database.svg)](schema_database.svg
 [Voir le Schéma de la base de données sur LucidChart](https://lucid.app/lucidchart/786327e6-745d-4881-95e1-39f3fdf33c66/view)
 
 ---

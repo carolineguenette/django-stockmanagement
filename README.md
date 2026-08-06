@@ -20,13 +20,10 @@ App Web Django — par [Caroline Guénette](mailto:cguenette@telus.net)
 </div>
 
 Consulter les documents de conception:
-
 <h4>
-  <a href="./docs/1-specifications.md">Cahier des charges</a> |
-  <a href="./docs/2-conception.md">Plan de conception</a> |
-  <a href="./docs/3-dev-plan.md">Plan de développement</a> |
-  <a href="./docs/5-data-security.md">Sécurité des données</a> | 
-  <a href="./docs/8-django-models.md">Base de données</a>
+  <a href="./docs/1-specifications.md">Cahier des charges</a> —
+  <a href="./docs/2-conception.md">Conception</a> (<a href="./docs/4-data-security.md">Sécurité des données</a> |  
+     <a href="./docs/6-database-models.md">Base de données</a>)
 </h4>
 
 **À noter que Jira est un peu capricieux pour les accès anonymes malgré une configuration en lecture adéquate.*

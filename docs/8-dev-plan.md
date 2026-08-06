@@ -4,9 +4,21 @@
 
 # Plan de développement
 
+Projet Gestion de stocks — document de conception
+
 <img src="https://img.shields.io/badge/Statut_du_document-Document_vivant_(plan_de_route)-purple.svg" alt="Statut" /> [![Schema](https://img.shields.io/badge/Gestion_du_projet-Jira-blue.svg)](https://solution-cg.atlassian.net/jira/software/c/projects/SD/list)
 
+<h3>
+
+[Jalons du projet](#jalons-du-projet) | [Gestion avec JIRA](#gestion-avec-jira) | [Automatisation](#automatisation)
+
+</h3>
+
 </div>
+
+Ce document présente les jalons du projet, les outils utilisés pour sa gestion et fait une excursion sur l'automatisation GitHub.
+
+[← Arborescence des fichiers](7-projet-structure.md) | [Sommaire](2-conception.md)
 
 ---
 
@@ -26,7 +38,7 @@ Pour ce projet portfolio, j'ai mis en place une gestion sous Jira en combinant u
 
 [Accéder au Tableau de bord Jira et backlog en direct](https://solution-cg.atlassian.net/jira/software/c/projects/SD/list) (À noter que Jira est un peu capricieux avec les utilisateurs non connectés, malgré la configuration adéquate des permissions)
 
-### Automatisation GitHub <-> Jira
+### Automatisation GitHub <-> Jira <a id="automatisation"></a>
 
 Jira peut être synchroniser avec GitHub via des *automations*. Ces automations permettent de synchroniser automatiquement des informations entre les deux plateformes, facilitant ainsi le suivi des tâches et la gestion du projet.
 

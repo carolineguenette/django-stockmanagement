@@ -1,6 +1,20 @@
+<div align="center">
+
 # Gestion de stocks — Projet Portfolio
 
 <img src="https://img.shields.io/badge/Statut_du_document-Final-purple.svg" alt="Statut" />
+
+<h3>
+
+[Contexte et vision](#contexte-et-vision) |  [Objectifs pédagogiques](#objectifs-pédagogiques) | [Fonctionnalités attendues](#fonctionnalités-attendues) | [Scénario d'usage principal](#scénario-dusage-principal) | [Spécifications techniques](#spécifications-techniques) | [Livrables attendus](#livrables-attendus) | [Gestion des risques](#gestion-des-risques)
+
+</h3>
+
+</div>
+
+[← README](../README.md) |  [Conception →](2-conception.md)
+
+---
 
 ## Contexte et vision
 
@@ -51,7 +65,7 @@ Dans le cadre de ce projet, vous serez amenés à réaliser une application web 
 ### Architecture
 
 * Application Django classique avec base de données.
-* Langage : Python 3.11 minimum et Django 5.x.
+* Langage : Python 3.11 minimum et Django 5.x minimum.
 * Dépendances tierces conseillées : `pytest-django`, `django-import-export`, `django-cleanup`, `django-crispy-forms`, `django-environ`.
 
 ### Modèles
