@@ -18,11 +18,10 @@ Projet Gestion de stocks — document de conception
 
 Ce document présente l'arborescence projetée des fichiers composant le projet
 
-[← Base de données](6-database-models.md) | [Sommaire](2-conception.md) |  [Plan de développement →](98-dev-plan.md)
+[← Base de données](6-database-models.md) | [Sommaire](2-conception.md) |  [Plan de développement →](8-dev-plan.md)
 
----
 
-```text
+```tree
 django-stock/
 │
 ├── assets/                     # Ressources statiques du projet
@@ -31,17 +30,16 @@ django-stock/
 │   └── js/
 │
 ├── docs/
-│   ├── conceptions.md
-│   ├── data-security.md        # Fichier de conception sur la sécurité des données et le système d'accès
-│   ├── database.md             # Fichier de conception sur la base de données
-│   ├── dev-plan.md             # Explication des jalons de développement du projet et lien vers JIRA
-│   ├── django-applications.md  # Fichier de conception sur les applications
-│   ├── django-models.md        # Fichier de conception sur les modèles
-│   ├── django-urls.md          # Fichier de conception sur les urls 
-│   ├── django_stock.svg        # Image de la Database exportée de LucidChart
-│   ├── project_structure.md    # Fichier de conception sur la structure du projet
-│   ├── specifications.md       # Cahier des charges - 1er doc du projet
-│   └── structure_directory.md  # Fichier de documentation de la structure du projet
+│   ├── 1-specifications.md         # Cahier des charges - 1er doc du projet
+│   ├── 2-conceptions.md            # Sommaire et table des matieres globale
+│   ├── 3-choices-and-analysis.md   # Analyse et justifications techniques des choix réalisés
+│   ├── 4-data-security.md          # Sécurité des données et système de contrôle d'accès RBAC
+│   ├── 5-django-apps_and_urls.md   # Séparation du code et urls
+│   ├── 6-database-models.md        # Base de données
+│   ├── 7-project_structure.md      # Arborescence des fichiers
+│   ├── 8-dev-plan.md               # Explication des jalons de développement du projet, gestion de projet (JIRA), automatisation
+│   ├── schema_database.pdf         # Database exportée de LucidChart
+│   └── schema_database.svg         # Database exportée de LucidChart
 │
 ├── locale/                     # Fichiers de traduction (i18n). fr, en, etc mais besoin aussi locale avec pays pour currency, affichage particulier (ex: ZIP en_US vs Postal Code en_CA), etc.
 │
