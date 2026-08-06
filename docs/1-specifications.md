@@ -6,7 +6,7 @@
 
 <h3>
 
-[Contexte et vision](#contexte-et-vision) |  [Objectifs pédagogiques](#objectifs-pédagogiques) | [Fonctionnalités attendues](#fonctionnalités-attendues) | [Scénario d'usage principal](#scénario-dusage-principal) | [Spécifications techniques](#spécifications-techniques) | [Livrables attendus](#livrables-attendus) | [Gestion des risques](#gestion-des-risques)
+[Contexte et vision](#contexte-et-vision) |  [Objectifs pédagogiques](#objectifs-pedagogiques) | [Fonctionnalités attendues](#fonctionnalites-attendues) | [Scénario d'usage principal](#scenario-dusage-principal) | [Spécifications techniques](#specifications-techniques) | [Livrables attendus](#livrables-attendus) | [Gestion des risques](#gestion-des-risques)
 
 </h3>
 

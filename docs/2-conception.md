@@ -10,7 +10,7 @@ Projet Gestion de stocks — document de travail
 
 <h3>
 
-[Introduction](#introduction) | [Utilisateurs](#utilisateurs) | [Authentification et permissions](#authentification-et-permissions) | [Barrières de sécurité](#barrières-de-sécurité) 
+[Introduction](#introduction) | [Utilisateurs](#users) | [Authentification et permissions](#auth) | [Barrières de sécurité](#barrieres-de-sécurite) 
 
 </h3>
 
@@ -47,7 +47,7 @@ Ce projet est une application de gestion d'inventaire multi-entreprises apparten
 - les vues *company-scoped* (url `/c/company-slug/...`) et les *vues globales owner* (url `/g/...`) sont explicitement séparées ;
   - un propriétaire consultant une url `/c/company-slug/...` aura aussi une vue limitée à l'entreprise active.
 
-## Utilisateurs
+## Utilisateurs <a id="users"></a>
 
 ### Types d'utilisateurs
 
@@ -92,7 +92,7 @@ Ce projet est une application de gestion d'inventaire multi-entreprises apparten
 
 ---
 
-## Authentification et permissions
+## Authentification et permissions <a id="auth"></a>
 
 Le modèle de sécurité doit isoler les données par entreprise  (`company`) pour qu'un employé n'ait accès qu'aux compagnies et locations autorisées.
 

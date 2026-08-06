@@ -10,7 +10,7 @@ Projet Gestion de stocks — document de conception
 
 </div>
 
-Ce document présente l'arborescence projetée des fichiers composant le projet
+Ce document présente l'arborescence projetée des fichiers composant le projet.
 
 [← Base de données](6-database-models.md) | [Sommaire](2-conception.md) |  [Plan de développement →](8-dev-plan.md)
 
