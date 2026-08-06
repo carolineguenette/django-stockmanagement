@@ -8,7 +8,7 @@ App Web Django — par [Caroline Guénette](mailto:cguenette@telus.net)
 
 <img src="https://img.shields.io/badge/Statut_du_projet-Révision_docs_de_conception-purple.svg" alt="Statut" /> ![Version](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/carolineguenette/django-stockmanagement/badges/django-stock-version.json) ![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/carolineguenette/django-stockmanagement/badges/django-stock-coverage.json) <img src="https://img.shields.io/badge/Python-3.11+-green.svg" alt="Python" /> <img src="https://img.shields.io/badge/Django-6.0.7-green.svg" alt="Django" />
 
-[![Schema](https://img.shields.io/badge/Gestion_du_projet-Jira-blue.svg)](https://solution-cg.atlassian.net/jira/software/c/projects/SD/list) (lien vers Jira*) [![Schema](https://img.shields.io/badge/Schema_DB-LucidChart-F45D22.svg)](https://lucid.app/lucidchart/786327e6-745d-4881-95e1-39f3fdf33c66/view)) (lien vers LucidChart)
+[![Schema](https://img.shields.io/badge/Gestion_du_projet-Jira-blue.svg)](https://solution-cg.atlassian.net/jira/software/c/projects/SD/list) (lien vers Jira*) [![Schema](https://img.shields.io/badge/Schema_DB-LucidChart-F45D22.svg)](https://lucid.app/lucidchart/786327e6-745d-4881-95e1-39f3fdf33c66/view) (lien vers LucidChart)
 
 <h3>
   <a href="#projet">Projet</a> |

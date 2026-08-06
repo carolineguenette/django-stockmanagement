@@ -22,7 +22,7 @@ Partie II Urls :
 
 </div>
 
-Ce document détaille la division du code en applications django ainsi que la structure prévue des urls.
+Ce document détaille la division du code en applications django ainsi que le routage des urls.
 
 [← Sécurité](4-data-security.md) | [Sommaire](2-conception.md) |  [Base de données →](6-database-models.md)
 

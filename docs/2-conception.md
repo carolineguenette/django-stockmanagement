@@ -26,7 +26,7 @@ Table des matières globale des documents de conception :
 2. Conception (*ce document*)
 3. [Analyse technique et choix](3-choices-and-analysis.md)
 4. [Règles de sécurité et logique algorithmique du RBAC](4-data-security.md)
-5. [Découpage modulaire du code (django apps et urls)](5-django-app-and-urls.md)
+5. [Découpage modulaire du code (django apps et urls)](5-django-apps-and-urls.md)
 6. [Database (Schéma et django-models)](6-database-models.md)
 7. [Arborescence des fichiers](7-project-structure.md)
 8. [Gestion de projet, Jira et GitHub Actions](8-dev-plan.md)
