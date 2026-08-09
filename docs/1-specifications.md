@@ -106,3 +106,7 @@ Jeu de tests automatisés :
 | **Complexité de la gestion multi-entreprises** | Commencer par un POC simple, valider l'architecture des modèles avec le mentor dès le début. |
 | **Problèmes de performance BDD**               | Optimiser les requêtes, utiliser`select_related`/`prefetch_related`.                         |
 | **Difficultés avec GitHub Actions**            | Partir de templates, commencer avec des tests basiques.                                      |
+
+<div align="right">
+   Source: <a href="https://www.docstring.fr/">https://www.docstring.fr/</a>
+</div>

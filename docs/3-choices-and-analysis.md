@@ -10,7 +10,7 @@ Projet Gestion de stocks — document de conception
 
 <h3>
 
-[Framework](#framework) | [Authentification et identité](#auth) | [Analyse RBAC](#analysis) | [Recherches](#recherches)
+[Framework](#framework) | [Authentification et identité](#auth) | [SGDB](#sgdb) | [Shared DB](#shared-db)  | [Analyse RBAC](#analysis) | [Recherches](#recherches)
 
 </h3>
 
@@ -51,9 +51,45 @@ Les permissions métier ne sont pas gérées par `auth_group` ou `auth_permissio
 
 ---
 
+## Choix du moteur de base de données SGDB <a id="sgdb"></a>
+
+Un premier jet de code a été réalisé rapidement en configurant MySQL, déjà fonctionnel sur un environnement de développement local WSL.
+
+Bien que **PostgreSQL** soit souvent la référence pour des projets SaaS dépassant le simple CRUD en raison de ses fonctions d'isolation (RLS) et sa robustesse, le choix choix de **MySQL** se justifie pleinement par :
+
+1. **L'agrégation multi-entreprises :** Sous MySQL, les données partagées facilitent les agrégations SQL natives pour les tableaux de bord Chart.js.
+2. **L'approche pédagogique :** Coder  la sécurité par ligne (Row-level) via un middleware et un Manager Django compense l'absence de RLS native de MySQL et permet de démontrer une certaine maîtrise technique pour un projet portfolio.
+3. **L'environnement existant :** Le gain de temps immédiat pour le POC.
+
+---
+
+## Analyse des risques de l'architecture "Shared Database" et atténuations <a id="shared-db"></a>
+
+Le choix d'une base de données unique et partagée (Shared Database, Shared Schema) avec isolation logicielle simplifie grandement les agrégations multi-entreprises. Cependant, ce modèle introduit des risques techniques critiques en production. Voici comment le projet y fait face :
+
+### A. Le risque du "Voisin Bruyant" (Noisy Neighbor Effect)
+* **Le problème** : Si une entreprise cliente (ex: un très gros entrepôt) génère des millions de mouvements de stock ou de requêtes, elle peut saturer le CPU et les Entrées/Sorties (I/O) du serveur MySQL. Cela ralentira l'application pour *toutes* les autres entreprises hébergées sur la plateforme.
+* **Stratégie d'atténuation (V1 & Évolution)** :
+  1. **Index composites systématiques** : Toutes les tables clés (produits, stocks, mouvements) possèdent un index composite combinant `company_id` et l'identifiant de la ressource. MySQL effectue ainsi un filtrage immédiat au niveau de l'index sans scanner les lignes des autres entreprises.
+  2. **Limitation de débit (Rate Limiting)** : (Évolution future) Implémentation de restrictions au niveau des middlewares Django pour bloquer les abus d'API par entreprise.
+
+### B. Concurrence et verrous sur les stocks (Race Conditions)
+* **Le problème** : Dans un système de stock partagé, si deux employés d'une même entreprise valident une commande pour le même produit exactement au même millième de seconde, les deux requêtes de mise à jour de quantité (`UPDATE`) vont s'affronter. Cela peut mener à des erreurs de calcul (stock négatif) ou à des blocages de base de données (*Deadlocks*).
+* **Stratégie d'atténuation** :
+  1. **Utilisation de `select_for_update()`** : Les vues et services Django responsables de la modification des stocks utiliseront le verrouillage pessimiste de l'ORM. MySQL verrouillera la ligne de la table `inventory_stock` concernée le temps que la transaction se termine, forçant la deuxième requête à attendre son tour en toute sécurité.
+  2. **Mises à jour atomiques** : Utilisation des expressions `F()` de Django (ex: `stock.quantity = F('quantity') - 1`) pour laisser MySQL gérer l'opération mathématique directement au moment du verrou, évitant de lire une donnée périmée en mémoire Python.
+
+### C. Risque de fuite de données par erreur humaine (Data Leakage)
+* **Le problème** : Le cloisonnement reposant entièrement sur le code applicatif (`CompanyScopedManager`), l'oubli d'un filtre ou l'utilisation d'une requête SQL brute (`raw()`) non sécurisée par un développeur pourrait exposer le stock d'une entreprise A à une entreprise B.
+* **Stratégie d'atténuation** :
+  1. **Tests unitaires automatisés systématiques** : Mise en place d'une suite de tests (pytest) qui simule une requête avec le compte de l'Entreprise A et tente explicitement d'accéder à l'ID d'un produit de l'Entreprise B, validant qu'un code HTTP 404 ou une exception ORM est levée à chaque fois.
+
+
+---
+
 ## Analyse RBAC <a id="analysis"></a>
 
-[Django RBAC Natif](#django-rbac-natif) | [Besoins](#besoins) | [Django-guardien](#django-guardien) | [Django-tenants](#django-tenants) | [MySQL ou...?](#mysql) | [Conclusion](#conclusion)
+[Django RBAC Natif](#django-rbac-natif) | [Besoins](#besoins) | [Django-guardien](#django-guardien) | [Django-tenants](#django-tenants) | [Choix du SGDB](#sgdb) | [Conclusion](#conclusion)
 
 ### Django RBAC Natif
 
@@ -111,16 +147,6 @@ Django-tenants implémente le multi-tenancy en créant des schémas de base de d
 | **Sauvegardes indépendantes** : Il est plus simple d'exporter ou de restaurer les données d'un seul client spécifique.                                                    | **Migrations chronophages** : Chaque migrate doit être exécuté sur chaque schéma client. Avec des dizaines d'entreprises, cela devient un processus très lourd.                                                                                             |
 
 Ces bibliothèques Django visent à résoudre les limites du RBAC natif de dnango, mais elles s'avèrent inadaptées à l'architecture MySQL et les besoins d'agrégation. **Django-Guardian** offre une granularité par objet mais impose une complexité SQL inutile pour des droits fonctionnels. De son côté, **Django-Tenants** assure une isolation forte via des schémas PostgreSQL, mais cette approche est techniquement incompatible avec MySQL et rend les calculs statistiques multi-entreprises (nécessaires au dashboard propriétaire) extrêmement inefficaces.
-
-### Choix du moteur de base de données <a id="mysql"></a>
-
-Un premier jet de code a été réalisé rapidement en configurant MySQL, déjà fonctionnel sur un environnement de développement local WSL.
-
-Bien que **PostgreSQL** soit souvent la référence pour des projets SaaS dépassant le simple CRUD en raison de ses fonctions d'isolation (RLS) et sa robustesse, le choix choix de **MySQL** se justifie pleinement par :
-
-1. **L'environnement existant :** Le gain de temps immédiat pour le POC.
-2. **L'agrégation multi-entreprises :** Sous MySQL, les données partagées facilitent les agrégations SQL natives pour les tableaux de bord Chart.js.
-3. **L'approche pédagogique :** Coder  la sécurité par ligne (Row-level) via un middleware et un Manager Django compense l'absence de RLS native de MySQL et permet de démontrer une certaine maîtrise technique pour un projet portfolio.
 
 ### Conclusion
 
