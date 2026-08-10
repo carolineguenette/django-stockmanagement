@@ -54,16 +54,86 @@ Les permissions métier sont gérées par un système custom. Les modèles sont 
 
 | table                    | Description                                                                                                                                                                                                                                                                                                           |
 |:------------------------ |:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `access_permission`      | Stocke les permissions fonctionnelles de l'application (ex:`codename = "inventory.movement.sale"`). Contrairement au CRUD global de Django, ces permissions décrivent des actions métiers précises.                                                                                                                   |
+| `access_permission`      | Stocke les permissions fonctionnelles de l'application (ex:`codename = "inventory.movement.sale"`). Contrairement au CRUD global de Django, ces permissions décrivent des actions métiers précises. Chaque permission s'applique dans un certain contexte (`access_permission.context`) défini ci-bas.                |
 | `access_role`            | Regroupe un ensemble de permissions sous un identifiant unique<br/><br/>** Clé stratégique** : Le champ `company_id FK (NULLABLE)`. S'il est `NULL`, le rôle est **global** (ex: le rôle *Gestionnaire* existe pour toutes les entreprises). S'il est renseigné, le rôle est spécifique à une seule entreprise.       |
 | `access_rolepermissions` | **Liste des permissions d'un rôle**<br/> Table d'association entre les permissions et les rôles. Permet de définir les permissions associées à chaque rôle.                                                                                                                                                           |
 | `access_log`             | **Audit** <br/>Enregistre de manière immuable chaque action de modification sur le système d'accès (création de rôle, changement de permissions). Elle utilise un champ `JSONField` (`snap_infos`) pour stocker les infos au moment de la transaction et des FK pour permettre la recherche / filtre plus facilement. |
 | `users_userrole`         | **Table d'assignation**<br/> Cœur du système. Elle associe un utilisateur à un rôle, et y ajoute aussi un **scope (périmètre de validité)**.                                                                                                                                                                          |
 | users_userrolelog        | **Audit**<br/>Enregistre de manière immuable chaque action de modification sur les attributions de rôles aux utilisateurs. Elle utilise un champ `JSONField` (`snap_infos`) pour stocker les infos au moment de la transaction et des FK pour permettre la recherche / filtre plus facilement.                        |
 
-#### Matrice de décision RBAC concernant les permissions
+### Contexte des permissions <a id="permissions-context"></a>
 
-##### Partie 1 : Permissions de type "Compagnie & Lieu" (`need_companycontext = True`)<a id="matriceRBAC"></a>
+Une permission s'applique dans un contexte particulier. Cinq (6) contextes sont définis: système (`SYSTEM`), délégation (`DELEGATE`), compagnie (`COMPANY`), multi-compagnies (`MULTI_COMPANIES`), location (`LOCATION`) et multi-location (`MULTI_LOCATIONS`).
+
+#### Système (`access_permission.context = SYSTEM`)
+
+La permission concerne une configuration externe aux compagnies (*ex: création d'utilisateur, téléversement d'images sur le serveur*)
+
+#### Délégation (`access_permission.context = DELEGATE`)
+
+La permission est définit une permission / rôle spécial. Les autres permissions qui l'accompagnent dans le rôle où elle est assignée représentent un sous-ensemble de permissions pouvant être déléguées et non pas des permissions métier accordées à l'utilisateur 
+
+*Exemple: `access.role.manage` est assignée au rôle "Gestionnaire d'accès". Ce rôle inclut aussi les permissions `inventory.stock.increase` et `inventory.stock.decrease`. Cela sgnifie qu'un Gestionnaire d'accès peut créer des rôles avec ces 2 permissions et seulement ces 2 permissions, pas qu'il peut lui-même augmenter ou diminuer l'inventaire en stock.*
+
+#### Compagnie (`access_permission.context = COMPANY`)
+
+La permission s'applique exclusivement dans un contexte d'entreprise active. Il n'y a pas d'information de location nécessaire.
+
+*Exemples:  L'utilisateur authentifié a la permission `catalogue.product.add` valide pour l'Entreprise A seulement.*
+
+- `.../c/entreprise-a/product/add` => Accès granted
+
+- `.../c/entreprise-b/product/add` => Error Permission denied
+
+-  `.../c/notexistslugcompany/product/add` => Error Permission denied
+
+- `.../product/add` => Error Company Context Missing
+
+#### Multi-compagnies (`access_permission.context = MULTI_COMPANIES`)
+
+La permission concerne une demande d'aggrégation (rapport consolidé sur plusieurs compagnies). Il n'y a pas d'information de location nécessaire.
+
+#### Location (`access_permission.context = LOCATION`)
+
+La permission s'applique exclusivement dans un contexte d'entreprise active ET pour une location en particulier.
+
+*Exemple:  L'utilisateur authentifié a la permission `inventory.stock.view` valide pour `entreprise-a` à partir de la location `entrepôt-a` seulement. `etagere-r` est une location enfant de entrepot-a.*
+
+- Voir le stock de `etagere-r` => Accès granted
+
+- Voir le stock de la location `boutique-a` (pas un enfant de entrepôt-x) => Permission denied
+
+#### Multi-locations (`access_permission.context = MULTI_LOCATIONS`)
+
+La permission s'applique dans un contexte d'entreprise active (1 compagnie active) pour les locations listées.
+
+*Exemple:  L'utilisateur authentifié a la permission `inventory.stock.relocate` valide pour `entreprise-a` à partir de la location `entrepôt-x` seulement. `product-1` est un produit du catalogue de `entreprise-a`; `etagere-r` et `zone-emballage` sont des locations enfant de entrepot-x.*
+
+- déplacer `product-1` de `etagere-r` à `zone-emballage` => Accès accordé
+
+- déplacer `product-1` de `etagere-r` à `boutique-a` (pas un enfant de entrepôt-x) => Error Permission denied.
+  
+  - À noter que l'interface ne devrait pas proposer `boutique-a` mais si une manipulation malvellante était réalisée, le système refuserait le transfert.
+
+- déplacer `product-2` situé dans `boutique-a` => Error Permission denied.
+
+### Sensibilité des permissions <a id="permissions-sensibility"></a>
+
+Le concept de sensibilité d'une permission pourrait permettre d'adapter l'UI et d'ajouter des confirmations d'assignation explicites.
+
+| Sensibilité | Description                                                                                        |
+| ----------- | -------------------------------------------------------------------------------------------------- |
+| LOW         | La permissions est générale et a peu d'impact sur le stock ou le system.                           |
+| MEDIUM      | La permission a un impact sur la configuration de l'entreprise et/ou la manière de gérer le stock. |
+| HIGH        | La permission permet de faire des changements majeurs aux stocks                                   |
+
+##### Sensibilité OWNER-ONLY
+
+Il s'agit d'une action qui  n'est pas déléguable. Elle peut être réalisée exclusivement par un utilisateur avec `is_owner=True`.
+
+#### Matrices de décision RBAC concernant les permissions
+
+##### Partie 1 : Permissions de type "Compagnie & Lieu" (`context = COMPANY`)<a id="matriceRBAC"></a>
 
 | `access_role .company_id` | `users_userrole .company_id` | `users_userrole .location_id` | Accès de l'utilisateur                                                                        |
 | ------------------------- | ---------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------- |
@@ -267,21 +337,18 @@ class CompanyRBACBackend:
 
 <mark>TODO</mark>: Modifs à prévoir à l'arbre de décision et à la méthode has_perm ci-haut:
 
-1. Pour les mouvements d'inventaire, on a ajouté les permissions génériques `inventory.stock.decrease` et `inventory.stock.increase`
-* Donc avec cette version de has_perm, il faut faire 2 demandes. Par exemple:  if `user.has_perm("inventory.stock.increase")` or `user.has_perm("inventory.stock.purchase")`
+1. La permission `access.role.manage` a été révisée et est maintenant un **cas particulier** qui affecte la résolution de la question de 2 manières :
+   
+   1. Les rôles qui incluent la permission `access.role.manage` doivent toujours être ignorés dans la résolution: ajouter un filtre pour exclure ces rôles (`access.role.manage` est de context "DELETEGATE").
+      RAISON: les rôles qui accompagnent la permission `access.role.manage` **représentent la liste des permissions manipulables** en lien avec `access.role.manage`. Ce ne sont pas des permissions standards qui donnent accès à l'action métier.
+   
+   2. Si la permission vérifiée *est* `access.role.manage`, alors il faut évidemment  vérifer ce rôle.
+      
+      1. has_perm renvoit toujours FAUX si access.role.manage est associé à un rôle dont company_id est Null. C'est une sécurité supplémentaire au cas où un bug aurait été introduit dans l'UI de la validation système: un rôle avec `access.role.manage` doit TOUJOURS être spécifique à une compagnie.
+   
+   3. L'arbre de décision et la méthode has_perm doivent être mise à jour avec ces éléments nouveaux
 
-* Or, les mouvements d'inventaire sont la base de tout le système et sont donc très fréquents. Il serait vraiment mieux de pouvoir faire 1 seul has_perm en vérifiant les deux permissions OR en même temps.
-
-* Donc arbre de décision: 
-  
-  * [ Trouver la Permission demandée ] devient [ Trouver la ou les Permission(s) demandée(s) ]
-
-* Et has_perm peut être appelée ainsi (*1 seule requête en DB*).
-  
-  * if `user.has_perm("inventory.stock.increase OR inventory.stock.purchase"])`. Donc has_perm doit commencé par nettoyer le paramètre perm s'il contient des espaces et le mot clé OR (en majuscule).
-  
-  * Une ValidationError est lancée si le paramètre est mal paramétré (contient autre chose que "OR")
-2. Les concepts de` access_permission.need_globalcontext ` et `access_permission.need_companycontext ` ont été regroupé sous `context`, un enum pouvant prendre les valeurs de : `SYSTEM`, `COMPANY`, `MULTI_COMPANIES`, `LOCATION `et `MULTI_LOCATIONS`
+2. Les fields `access_permission.need_globalcontext` et `access_permission.need_companycontext` ont été regroupé sous le field `context`, un enum pouvant prendre les valeurs de : `SYSTEM`, `COMPANY`, `MULTI_COMPANIES`, `LOCATION `et `MULTI_LOCATIONS`
 * Implications: une permission GLOBALE est devenue, plus explicitement, une permission `SYSTEM `(pas besoin de company active) ou `MULTI_COMPANIES `(besoin de permissions sur plusieurs compagnies - c'est probablement une vue de rapport d'aggrégation de données.). Il y a aussi l'ajout du niveau de scope `LOCATION `et `MULTI_LOCATIONS`.
   
   * `LOCATION `et `MULTI_LOCATIONS `sont des scopes `COMPANY`spécialisés
@@ -485,7 +552,7 @@ Les permissions sont créées lors de la configuration initiale de l'application
 
 Les permissions suivent le modèle suivant: *[app_name].[model_name].[OPT][perm_type]*.
 
-- *perm_type* reprend les CRUD officiels de django (`view`, `add`, `change`, delete`) `et les étend en les regroupant parfois (ex: `manage`) ou en ciblant un champs spécifique et/ou la valeur permise (ex: `activate `dans `users.user.activate`  permet de mettre le field `is_active `de l'utilisateur à vrai)
+- *perm_type* reprend les CRUD officiels de django (`view`, `add`, `change`, delete`) `et les étend en les regroupant parfois (ex: `manage`) ou en ciblant un champs spécifique et/ou la valeur permise (ex: `setactivate`dans `users.user.setactivate`  permet de modifier le field `is_active `de l'utilisateur)
 - *model_name* est parfois sauté car la permission concerne plusieurs tables (ex: `access.manage` permet de faire des changements dans les tables `access_role `et `access_rolepermissions`)
 - *OPT* est optionnel et est utilisé pour quelques permissions (ex: `company.location.main.add` et `company.location.sub.add` permettent respectivement de créer des emplacements de haut niveau (location racine, sans aucun parent)  et des emplacements de sous-location (location enfant)
 
@@ -496,69 +563,11 @@ Les permissions suivent le modèle suivant: *[app_name].[model_name].[OPT][perm_
 
 #### Contexte
 
-Défini le périmètre de la permission. Les contextes possibles sont`SYSTEM`,`COMPANY`, `MULTI_COMPANIES`, `LOCATION `ou `MULTI_LOCATIONS`. 
-
-##### Scope SYSTEM (`access_permission.context = SYSTEM`)
-
-La permission concerne une configuration externe aux compagnies (*ex: création d'utilisateur, téléversement d'images sur le serveur*) 
-
-##### Scope COMPANY (`access_permission.context = COMPANY`)
-
-La permission s'applique exclusivement dans un contexte d'entreprise active.
-
-*Exemples:  L'utilisateur authentifié a la permission `catalogue.product.add` valide pour l'Entreprise A seulement.*
-
-- `.../c/entreprise-a/product/add` => Accès granted
-
-- `.../c/entreprise-b/product/add` => Error Permission denied
-
--  `.../c/notexistslugcompany/product/add` => Error Permission denied
-
-- `.../product/add` => Error Company Context Missing
-
-##### Scope  MULTI COMPANIES (`access_permission.context = MULTI_COMPANIES`)
-
-La permission concerne une demande d'aggrégation (rapport consolidé sur plusieurs compagnies).
-
-##### Scope LOCATION (`access_permission.context = LOCATION`)
-
-La permission s'applique exclusivement dans un contexte d'entreprise active ET pour une location en particulier. 
-
-*Exemple:  L'utilisateur authentifié a la permission `inventory.stock.view` valide pour `entreprise-a` à partir de la location `entrepôt-a` seulement. `etagere-r` est une location enfant de entrepot-a.*
-
-* Voir le stock de `etagere-r` => Accès granted
-
-* Voir le stock de la location `boutique-a` (pas un enfant de entrepôt-x) => Permission denied
-
-##### Scope MULTI_LOCATIONS (`access_permission.context = MULTI_LOCATIONS`)
-
-###### Pour une seule compagnie:
-
-La permission s'applique dans un contexte d'entreprise active pour les locations listées.
-
-*Exemple:  L'utilisateur authentifié a la permission `inventory.stock.relocate` valide pour `entreprise-a`  à partir de la location `entrepôt-x` seulement. `product-1` est un produit du catalogue de `entreprise-a`; `etagere-r` et `zone-emballage` sont des locations enfant de entrepot-x.*
-
-- déplacer `product-1` de `etagere-r` à `zone-emballage`  => Accès accordé
-
-- déplacer `product-1` de `etagere-r` à `boutique-a` (pas un enfant de entrepôt-x) => Error Permission denied.
-  
-  - À noter que l'interface ne devrait pas proposer `boutique-a` mais si une manipulation malvellante était réalisée, le système refuserait le transfert.
-
-- déplacer `product-2` situé dans `boutique-a` => Error Permission denied.
+Une permission peut être `SYSTEM`, `COMPANY`, `MULTI_COMPANIES`, `LOCATION `ou `MULTI_LOCATIONS`. Voir section [RBAC Custom - Contexte des permissions](#permissions-context)
 
 #### Sensibilité
 
-Le concept de sensibilité d'une permission pourrait permettre d'adapter l'UI  et d'ajouter des confirmations d'assignation explicites.
-
-| Sensibilité | Description                                                                                        |
-|:----------- |:-------------------------------------------------------------------------------------------------- |
-| LOW         | La permissions est générale et a peu d'impact sur le stock ou le system.                           |
-| MEDIUM      | La permission a un impact sur la configuration de l'entreprise et/ou la manière de gérer le stock. |
-| HIGH        | La permission permet de faire des changements majeurs aux stocks                                   |
-
-##### Sensibilité OWNER-ONLY
-
-La permission ne sera pas créée dans la table `access_permission` car elle n'est pas déléguable. Elle peut être réalisée exclusivement par un utilisteur avec `is_owner=True`.
+Voir section [RBAC Custom - Sensibilité des permissions](#permissions-sensibility)
 
 #### Permission barrée
 
@@ -574,18 +583,94 @@ La permission est listée malgré tout dans le référentiel à des fins de docu
 
 Centralise les configurations globales du système.
 
-| Code (`codename`)          | Description (`name` / `help_text`)                                                                                                                                                                                                                                                                | Contexte | Sensibilité                                                                 |
-|:-------------------------- |:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |:--------:|:---------------------------------------------------------------------------:|
-| ~~`core.settings.add`~~    | Ajouter une configuration globale.*La table core.settings ne contient qu'un seul enregistrement.*                                                                                                                                                                                                 | -        | -                                                                           |
-| `core.settings.view`       | Consulter les configurations globales                                                                                                                                                                                                                                                             | SYSTEM   | MEDIUM                                                                      |
-| `core.settings.change`     | Modifier les configurations globales                                                                                                                                                                                                                                                              | SYSTEM   | HIGH                                                                        |
-| ~~`core.settings.delete`~~ | Supprimer les configuration globales.*La table core.settings doit contenir un seul enregistrement.*                                                                                                                                                                                               | -        | -                                                                           |
-| ~~`core.image.view`~~      | Voir une image téléversée sur le serveur. Cette permission n'est pas créée car voir une image est associée au modèle correspondant: si l'utilisateur a le droit de voir le modèle, alors il peut aussi voir les images qui lui sont associées.                                                    | -        | -                                                                           |
-| `core.image.add`           | Téléverser des images sur le serveur. Le contexte dépend à quel modèle l'image sera associée. Avoir cette permission n'est utile qu'en association de la permission pour gérer le modèle correspondant.<br/>Note: La permission concerne tous les types d'images pouvant être téléversées         | SYSTEM   | MEDIUM<br/>Un utilisteur malveillant pourrait en venir à saturer le serveur |
-| `core.image.change`        | Modifier les informations meta d'une image déjà présente sur le serveur. Avoir cette permission n'est utile qu'en association de la permission pour gérer le modèle correspondant.<br/>Note: La permission concerne tous les types d'images pouvant être téléversées                              | SYSTEM   | LOW                                                                         |
-| `core.image.delete`        | Supprimer une image téléversée sur le serveur. Le contexte dépend à quel modèle l'image sera associée. Avoir cette permission n'est utile qu'en association de la permission pour gérer le modèle correspondant.<br/>Note: La permission concerne tous les types d'images pouvant être supprimées | SYSTEM   | LOW                                                                         |
+| Code (`codename`)                            | Description (`name` / `help_text`)                                                                                                                     | Contexte | Sensibilité                                                                  |
+|:-------------------------------------------- |:------------------------------------------------------------------------------------------------------------------------------------------------------ |:--------:|:----------------------------------------------------------------------------:|
+| ~~`core.settings.add`~~                      | Ajouter une configuration globale.*La table core.settings ne contient qu'un seul enregistrement.*                                                      | -        | -                                                                            |
+| ~~`core.settings.view`~~                     | Consulter les configurations globales                                                                                                                  | -        | OWNER-ONLY                                                                   |
+| ~~`core.settings.change`~~                   | Modifier les configurations globales                                                                                                                   | -        | OWNER-ONLY                                                                   |
+| ~~`core.settings.delete`~~                   | Supprimer les configuration globales.*La table core.settings doit contenir un seul enregistrement.*                                                    | -        | -                                                                            |
+| ~~`core.image.[view\|add\|change\|delete]`~~ | Voir ou gérer une image téléversée sur le serveur. Cette permission n'est pas créée car les droits sont associés au modèle à qui l'image est associée. | -        | -                                                                            |
+| `core.image.upload`                          | Téléverser des images sur le serveur. Avoir cette permission n'est utile qu'en association de la permission pour gérer le modèle correspondant.<br/>   | SYSTEM   | MEDIUM<br/>Un utilisateur malveillant pourrait en venir à saturer le serveur |
 
-### 5.2. ![](https://img.shields.io/badge/-App-darkblue.svg) Users (`users.*`)
+### 5.2. ![](https://img.shields.io/badge/-App-darkblue.svg) Access (`access.*`)
+
+Configure les rôles de l'application
+
+| Code (`codename`)                                                                                         | Description (`name` / `help_text`)                                                                                                                                                                 | Contexte | Sensibilité |
+| --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |:--------:|:-----------:|
+| ~~`access.permission.[add\|change\|delete]`~~                                                             | Changer les  informations de la table des permissions.*Impossible car chaque permission est associée à un comportement d'accessibilité codé en dur. Cette table est en lecture seule*              | -        | -           |
+| ~~`access.permission.view`~~                                                                              | Voir les informations de la table des permissions.* Non créé explicitement car pas de besoins. *                                                                                                   | -        | -           |
+| ~~`access.role.[view\|add\|change\|delete]`~~ et ~~`access.rolepermissions.[view\|add\|change\|delete]`~~ | Voir, créer, changer, supprimer des rôles ou les associations des permissions aux rôles. *Permissions regroupées sous `access.role.manage`.*                                                       | -        | -           |
+| `access.role.manage`                                                                                      | *Gérer les rôles et leur association avec des permissions.<br/><br/>Cette permission est strictement encadrée pour empêcher l'escalade de privilèges. Voir la [section dédiée](#rolemanage).*<br/> | DELEGATE | HIGH        |
+
+#### Limites et encadrement de `access.role.manage`<a id="rolemanage"></a>
+
+##### Cas propriétaire
+
+Un propriétaire n'a pas besoin de la permission `access.role.manage`: il a accès sans restriction à la gestion des rôles et de leurs permissions.
+
+* Il peut définir un rôle global (avec `company_id = NULL`) ou un rôle limité à une compagnie (`company_id`est renseigné).
+
+* Il peut assigner n'importe quelle permission à un rôle.
+
+* Il peut assigner des rôles à des employés.
+
+###### Règles entourant la création d'un rôle qui contient `access.role.manage`
+
+Un rôle qui contient la permission `access.role.manage` doit respecter des règles précises: 
+
+1. Le rôle ne peut pas être global. La company doit toujours être renseignée. Le système refusera de créer un rôle global qui contient `access.role.manage`.
+
+2. Les autres permissions  du rôle ne sont pas des permissions normales d'employés: elles **représentent la liste des permissions manipulables** par l'employé qui recevra le rôle. Elles ne donnent pas le droit de réaliser l'action même.
+
+3. La liste des permissions accompagnant `access.role.manage` s'applique exclusivement à la compagnie précisée. 
+
+```text
+Exemple :
+* rôle particulier A, compagnie X : access.role.manage + catalogue.product.view
+* rôle particulier B, compagnie Y : access.role.manage + inventory.stock.adjust
+Alice ne doit pas pouvoir créer dans X un rôle contenant inventory.stock.adjust.
+```
+
+1. La liste des permissions accompagnant `access.role.manage` s'applique exclusivement à la compagnie précisée.###### Règles entourant l'assignation d'un rôle qui contient`access.role.manage`
+
+Le propriétaire peut déléguer la responsabilité de créer des rôles à un employé mais cette assignation doit répondre à deux règles: 
+
+1. `users_userrole.company_id` doit être défini sur la même compagnie que le rôle (`access_role.company_id`). Il s'agit d'une validation supplémentaire de la volonté du propriétaire
+
+2.  `location_id `doit être NULL.
+   
+   1. Un rôle ne peut pas être limité à une location donc la création de nouveaux rôles ne peut pas l'être non plus.
+
+##### Cas employé assigné à la permission `access.role.manage`
+
+Un employé ayant reçu la permission `access.role.manage` est strictement limité dans la vue, la création, la mise à jour et la suppression des rôles qu'il peut gérer. 
+
+1. Il ne voit que les rôles qu'il a lui-même créés (`access_role.created_by_id` le représente). Il ne peut mettre à jour ou supprimer que ces rôles.
+
+2. Les rôles créés ou mis à jour sont toujours limités à une entreprise précise. Ainsi:   `access_role.company_id` du rôle géré = `company_id` du rôle ou des rôles contenant `access.role.manage`.
+
+3. Les permissions qu'il a le droit d'assigner dans ses rôles sont un sous-groupe de la liste complète des permissions. Ce sous-groupe est défini par la liste des permissions du rôle contenant `access.role.manage`. 
+
+4. La permission `access.role.manage` n'est jamais assignable.
+
+##### Résumé
+
+- `access.role.manage` est une capacité de délégation.
+
+- Les autres permissions du même rôle ne sont pas accordées à son détenteur.
+
+- Elles définissent uniquement le sous-ensemble de permissions qu’il peut placer dans les rôles qu’il crée.
+
+- Les rôles contenant `access.role.manage` sont exclus de l’évaluation normale des permissions.
+
+- Le rôle particulier est limité à une compagnie.
+
+- L’assignation est limitée à cette même compagnie et ne peut pas avoir de `location_id`.
+
+---
+
+### 5.3. ![](https://img.shields.io/badge/-App-darkblue.svg) Users (`users.*`)
 
 Gère les profils utilisateurs et leurs accès.
 
@@ -595,14 +680,14 @@ Gère les profils utilisateurs et leurs accès.
 
 | Code (`codename`)                                                                        | Description (`name` / `help_text`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Contexte | Sensibilité |
 |:---------------------------------------------------------------------------------------- |:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |:--------:|:-----------:|
-| `users.user.add`                                                                         | Créer un nouvel utilisateur dans le système.<br/> - Le champs `is_owner `est invisible, bloqué et fixé à False en tout temps pour un utilisateur qui n'est pas `is_owner=True`.<br/>- L'utilisateur créé sera un subordonné de l'utilisateur "créateur"                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | SYSTEM   | LOW         |
+| `users.user.add`                                                                         | Créer un nouvel utilisateur dans le système.<br/> - Le champs `is_owner `est invisible, bloqué et fixé à `False `en tout temps pour un utilisateur qui n'est pas `is_owner=True`.<br/>- L'utilisateur créé sera un subordonné de l'utilisateur "créateur"                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | SYSTEM   | LOW         |
 | `users.user.invite`                                                                      | Inviter un utilisateur à créer son propre compte à partir d'un courriel contenant un lien sécurisé                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | SYSTEM   | LOW         |
 | `users.user.view`                                                                        | Voir la liste des utilisateurs, incluant leur secteur d'activité<br/><br/>*Un utilisateur avec cette permission ne voit que ses subordonnés.*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | SYSTEM   | LOW         |
 | `users.user.change`                                                                      | Modifier les informations ou préférences d'un utilisateur, excluant le drapeau propriétaire (`user.is_owner`) et incluant leur secteur d'activité<br/><br/>*Un utilisateur avec cette permission ne peut modifier que ses subordonnés.*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | SYSTEM   | LOW         |
 | ~~`users.user.setowner`~~                                                                | Modifier la valeur du champ user.is_owner. *Cette action n'est pas déléguable.*<br/><br/>- Un propriétaire ne peut jamais se révoquer (set `is_owner=false`) lui-même.<br/>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | SYSTEM   | OWNER-ONLY  |
 | `users.user.change_own`                                                                  | Modifier les informations et préférences de son propre profil <br/>- Exclut la modification de`user.is_owner`, qui n'est d'ailleurs visible que pour les propriétaires.<br/>- Exclut la modification du superviseur (mais l'info sur le superviseur direct est affiché)                                                                                                                                                                                                                                                                                                                                                                                                                                                              | SYSTEM   | LOW         |
 | `users.user.delete`                                                                      | Supprimer un utilisateur (le système refusera si <br/>- il existe au moins une référence à cet utilisateur<br/>- cet utilisteur est `is_owner=True`)<br/><br/>*Un utilisateur avec cette permission ne peut supprimer le compte que de ses subordonnés.*                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | SYSTEM   | MEDIUM      |
-| `users.user.setactive`                                                                   | Activer ou désactiver le compte d'un utilisateur (set`user.is_active`)<br/>Cette permission sert à permettre l'activation/désactivation d'un compte sans donner le contrôle total `users.user.change`<br/>*Un utilisateur avec cette permission ne peut changer le statut d'activation que de ses subordonnés.*                                                                                                                                                                                                                                                                                                                                                                                                                      | SYSTEM   | LOW         |
+| `users.user.setactivation`                                                               | Activer ou désactiver le compte d'un utilisateur (set`user.is_active`)<br/>Cette permission sert à permettre l'activation/désactivation d'un compte sans donner le contrôle total `users.user.change`<br/>*Un utilisateur avec cette permission ne peut changer le statut d'activation que de ses subordonnés.*                                                                                                                                                                                                                                                                                                                                                                                                                      | SYSTEM   | LOW         |
 | ~~`users.useractivitysector.view`~~                                                      | Voir les secteurs d'activité. <br/>*Cette permission est incluse dans `users.user.view`*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |          |             |
 | ~~`users.useractivitysector.[<br/>add\|change\|delete]`~~                                | Gérer les secteurs d'activités des utilisateurs<br/>*Ces permissions sont incluses dans `users.user.change`*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | -        | -           |
 | ~~`users.userrole.add`~~<br/>~~`users.userrole.change`~~<br/>~~`users.userrole.delete`~~ | Assigner, modifier ou supprimer les rôles d'un utilisateur. Regroupement sous une seule permission`users.userrole.manage`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | -        | -           |
@@ -611,7 +696,7 @@ Gère les profils utilisateurs et leurs accès.
 | users.userrolelog.view                                                                   | Voir l'historique des modifications sur les assignations de rôle.<br/><br/>*Un utilisateur avec cette permission ne peut voir les informations  concernant que ses subordonnés.*                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | SYSTEM   | MEDIUM      |
 | ~~`users.userrolelog.[add\|change\|delete]`~~                                            | `userrolelog `est en lecture seule pour tous (incluant `is_owner=True`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | -        | -           |
 
-### 5.3. ![](https://img.shields.io/badge/-App-darkblue.svg) Company (`company.*`)
+### 5.4. ![](https://img.shields.io/badge/-App-darkblue.svg) Company (`company.*`)
 
 Application permettant de configurer les entreprises, leurs unités de mesure et leurs emplacements [détails ⬀](5-django-apps-and-urls.md#company).
 
@@ -622,7 +707,7 @@ Application permettant de configurer les entreprises, leurs unités de mesure et
 | ~~`company.company.change`~~                           | Modifier les informations de l'entreprise. Cette action n'est pas déléguable.                                                                                                                                                                                                                                                             | COMPANY  | OWNER-ONLY  |
 | ~~`company.company.archive`~~                          | Archiver ou désarchiver l'entreprise<br/>Une entreprise archivée `(is_archive = True`) n'est plus disponible pour aucune action (création de produit, modification d'inventaire, etc) et n'apparaît plus dans le tableau de bord et les rapports consolidés [Est en consultation seulement]. <br/><br/>Cette action n'est pas déléguable. | COMPANY  | OWNER-ONLY  |
 | ~~`company.company.delete`~~                           | Supprimer une entreprise.  Cette action est irréversible et supprime l'entreprise, toutes les références et tout l'historique associé à l'entreprise. Tous les rôles associés à l'entreprises et toutes les assignations de rôle limitées à cette entreprise sont également supprimées.<br/><br/>Cette action n'est pas déléguable.       | COMPANY  | OWNER-ONLY  |
-| ~~`company.locationtype.[view, add, change, delete]`~~ | Voir, ajouter, modifier ou supprimer les types de location.<br/>*Géré  par `company.locationtype.manage`*                                                                                                                                                                                                                                 | -        | -           |
+| ~~`company.locationtype.[view\|add\|change\|delete]`~~ | Voir, ajouter, modifier ou supprimer les types de location.<br/>*Géré  par `company.locationtype.manage`*                                                                                                                                                                                                                                 | -        | -           |
 | `company.locationtype.manage`                          | Gérer les types de location (voir, ajouter, modifier et supprimer)                                                                                                                                                                                                                                                                        | COMPANY  | MEDIUM      |
 | `company.location.view`                                | Consulter les emplacements                                                                                                                                                                                                                                                                                                                | COMPANY  | LOW         |
 | ~~`company.location.main.[add\|change\|delete]`~~      | Créer, modifier ou supprimer un emplacement de haut niveau (emplacement racine) <br/><br/>Cette action n'est pas déléguable.                                                                                                                                                                                                              | COMPANY  | OWNER-ONLY  |
@@ -635,7 +720,7 @@ Application permettant de configurer les entreprises, leurs unités de mesure et
 | ~~company.import~~                                     | Importer massivement les données d'une entreprise, incluant les infos de locations, le catalogue et l'inventaire (CSV).<br/><br/>Le système ajoute les données aux données déjà existantes. Habituellement fait sur une entreprise nouvelle créée.                                                                                        | COMPANY  | OWNER-ONLY  |
 | ~~company.export~~                                     | Exporter les données d'une entreprise, incluant les infos de locations, le catalogue et l'inventaire (CSV).                                                                                                                                                                                                                               | COMPANY  | OWNER-ONLY  |
 
-### 5.4. ![](https://img.shields.io/badge/-App-darkblue.svg) Catalogue (`catalogue.*`)
+### 5.5. ![](https://img.shields.io/badge/-App-darkblue.svg) Catalogue (`catalogue.*`)
 
 Application gérant le référentiel des produits, leurs déclinaisons (variantes), leur classification (catégories), leurs images, leur conditionnement (packaging) et leurs caractéristiques techniques [détails ⬀](5-django-apps-and-urls.md#catalogue).
 
@@ -652,7 +737,7 @@ Application gérant le référentiel des produits, leurs déclinaisons (variante
 | `catalogue.attribute.manage`                                      | Gérer les attributs (clé et valeurs) de variantes de produit dans un module dédié aux attributs, indépendemment des produits et leur assignation aux-dits attributs                                                                                                                                                                           | COMPANY  | HIGH        |
 | ~~view\|add\|create\|delete direct sur les modèles de catalogue~~ | Toutes les autres permissions CRUD directes sur les modèles (`ProducModel`, `ProductConfig`, `ProductPackaging`, `ProductAttribute`, `ProducImage`, `ProductModelImage`) sont gérées avec les permissions sur `Product`: un utilisateur ayant le droit de modifier un produit peut modifier toutes ses caractéristiques.                      | -        | -           |
 
-### 5.5. ![](https://img.shields.io/badge/-App-darkblue.svg) Inventory (`inventory.*`)
+### 5.6. ![](https://img.shields.io/badge/-App-darkblue.svg) Inventory (`inventory.*`)
 
 Application gérant l'état des stocks physiques, la traçabilité des lots et l'historique complet des mouvements de marchandises.
 
@@ -679,7 +764,7 @@ Application gérant l'état des stocks physiques, la traçabilité des lots et l
 | `inventory.stock.intercompany_out`<br/>*Ex: 10 T-Shirt sont retirés de l'emplacement Zone Emballage de l'Entrepôt X pour être envoyés à Entreprise Z. Entrepôt X et Entreprise Z sont deux entreprises indépendantes appartenant au même propriétaire <br/>- Dans stock: qty est diminué de 10.<br/>- Dans movement: nouvelle entrée avec location_source pointant vers la Zone d'emballage de Entrepôt X et location_destination est NULL<br/>- Dans transit: nouvelle entrée avec les infos de source et company_dest pointant vers Entreprise Z. location_dest, uom_dest et quantity_received sont NULL. is_complete est False.*                                                   | Diminuer l'inventaire en raison d'une vente interne vers une entreprise du même propriétaire.                                                                                                                                                   | LOCATION        | MEDIUM      |
 | `inventory.stock.intercompany_in`<br/>*Ex: 10 T-Shirt sont réceptionnés à Entrepôt X à partir du transit barcode (ou en sélectionnant la ligne du produit après avoir ouvert la liste des transit. <br/>Dans transit: qté reçue et uom_dest sont mis à jour et is_completed est passé à True.* <br/>*- Dans stock: qty est augmenté de 10.*<br/>*- Dans movement: nouvelle entrée avec location_source NULL et location_destination pointe vers Entrepôt X (ou un emplacement interne d'Entrepôt X)*                                                                                                                                                                                  | Augmenter l'inventaire en raison de l'achat (la réception) interne de stock d'une entreprise du même propriétaire.                                                                                                                              | LOCATION        | MEDIUM      |
 
-### 5.6. ![](https://img.shields.io/badge/-App-darkblue.svg) Reporting (`reporting.*`)
+### 5.7. ![](https://img.shields.io/badge/-App-darkblue.svg) Reporting (`reporting.*`)
 
 Pilote l'accès aux rapports et graphiques, par entreprise et globaux.
 
@@ -699,22 +784,11 @@ Exemple de rapports qui pourraient être (éventuellement) possible
 | ~~`reporting.[add\|change\|delete]`~~ |                                                                            |                 |             |
 | reporting.multicompany.view           | Lecture des rapports rassemblant les données de plusieurs entreprises      | MULTI_COMPANIES | HIGH        |
 | `reporting.stock_levels.view`         | Lecture des rapports de rotations, ruptures imminentes et seuils d'alerte. | MULTI_COMPANIES | HIGH        |
-| reporting.stock_level.view            |                                                                            |                 |             |
+|                                       |                                                                            |                 |             |
 
-### 5.7. ![](https://img.shields.io/badge/-App-darkblue.svg) Access (`acces.*`)
 
-Configure les rôles de l'application
 
-| Code (`codename`)                                                                                               | Description (`name` / `help_text`)                                                                                                                                                          | Contexte | Sensibilité |
-|:--------------------------------------------------------------------------------------------------------------- |:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |:--------:|:-----------:|
-| ~~`access.permission.[add\|change\|delete]`~~                                                                   | Changer les  informations de la table des permissions.*Impossible car chaque permission est associée à un comportement d'accessibilité codé en dur.*                                        | -        | -           |
-| ~~`access.permission.view`~~                                                                                    | Voir les informations de la table des permissions. Jamais parce que la permission`access.manage` implique nécessairement un accès en lecture et un accès en lecture seul n'a pas d'utilité. | -        | -           |
-| ~~`access.role.[view\|create\|change\|delete]`~~ et ~~`access.rolepermissions.[view\|create\|change\|delete]`~~ |                                                                                                                                                                                             | -        | -           |
-| `accces.manage`                                                                                                 | Gérer les rôles et leur association avec des permissions                                                                                                                                    | SYSTEM   | HIGH        |
-
----
-
-## <a id="roles"></a>Rôles par Défaut
+## Rôles par Défaut <a id="roles"></a>
 
 Lorsqu'une nouvelle entreprise (`Company`) est initialisée dans le système, le système génère des rôles prédéfinis pour cette organisation. Le propriétaire de l'entreprise peut ensuite personnaliser ces rôles et les permissions qui leur sont affectées.
 
@@ -873,7 +947,7 @@ Validation des paramètres de la fonction de service
 
 ### Test natif de Django pour `user.has_perm`
 
-L'intégration native dans `user.has_perm` simplifie l'écriture des tests car il est possible d'utiliser le test natif de Django (`django.test.Client`) ou simuler les requêtes en alimentant manuellement votre conteneur `CompanyContext` lors du `setUp` de vos tests.
+L'intégration native dans `user.has_perm` simplifie l'écriture des tests car il est possible d'utiliser le test natif de Django (`django.test.Client`) ou simuler les requêtes en alimentant manuellement le conteneur `CompanyContext` lors du `setUp` des tests.
 
 Pour tester le cloisonnement, la configuration actuelle est idéale :
 
