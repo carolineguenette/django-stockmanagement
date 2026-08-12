@@ -149,12 +149,6 @@ LANGUAGES_FALLBACKS = {
     'en': 'en-ca',
 }
 
-# TODO A SUPPRIMER + MODIFIER TEMPLATE lang
-VISIBLE_LANGUAGES = [
-    ('fr', 'Français'),
-    ('en', 'English'),
-]
-
 PARLER_LANGUAGES = {
     1: (
         {'code': 'fr'},
