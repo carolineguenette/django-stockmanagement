@@ -1,0 +1,43 @@
+/* ==========================================================================
+   RESET & BASE RENDER
+   ========================================================================== */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+input, button, select, textarea {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    color: inherit;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+button, select, input[type="submit"], input[type="button"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-align: center;
+}
+
+input[type="text"], input[type="password"], input[type="email"] {
+    display: block;
+    width: 100%;
+}
+
+textarea {
+    display: block;
+    width: 100%;
+    resize: vertical;
+}
+
+input:focus, button:focus, select:focus, textarea:focus {
+    outline: none;
+}

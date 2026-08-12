@@ -1,0 +1,99 @@
+/* ==========================================================================
+   PAGE : VUES D'AUTHENTIFICATION (LOGIN / REGISTER)
+   ========================================================================== */
+
+.auth-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-card h2 {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    display: flex; /* On passe en flex vertical pour empiler le rond et le texte */
+    flex-direction: column;
+    align-items: center;
+    position: relative; /* Nécessaire pour le positionnement de l'icône */
+}
+
+/* Pastille ronde */
+.auth-card h2::before {
+    content: "";
+    display: block;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    margin-bottom: 1.25rem; /* Crée l'espace avec le texte du titre */
+    background-color: var(--bg-main-content); /* Ce fond ne subira JAMAIS le filtre */
+}
+
+/* 2. Le pseudo-élément ::after contient l'icône SVG et reçoit le filtre */
+.auth-card h2::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 15px; /* Aligne l'icône verticalement au centre du cercle de 54px */
+    width: 24px;
+    height: 24px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+
+    /* Le filtre s'applique UNIQUEMENT sur ce pseudo-élément (donc uniquement sur le SVG) */
+    filter: var(--filter-auth-icon);
+}
+
+/* 3. Affectation des images spécifiques pour chaque page sur le ::after */
+.card-login h2::after { background-image: url('../../img/login.svg'); }
+.card-register h2::after { background-image: url('../../img/register.svg'); }
+.card-reset h2::after { background-image: url('../../img/password-lost.svg'); }
+
+.auth-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+}
+
+.auth-extra-links {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1.5rem;
+}
+
+.forgot-password-link {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Injection et animation de l'icône password-lost via CSS */
+.forgot-password-link::after {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-image: url('../../img/password-lost.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    filter: var(--filter-auth-icon);
+    transition: transform 0.2s ease;
+}
+
+/* On ajoute l'effet scale(1.3) au survol demandé au message précédent */
+.forgot-password-link:hover::after {
+    transform: scale(1.3);
+}
+
+/* Barre de force de mot de passe (Spécifique à la création de compte) */
+.password-strength-meter {
+    text-align: left;
+    margin-bottom: 1.5rem;
+}

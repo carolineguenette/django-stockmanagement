@@ -1,0 +1,142 @@
+{% extends "core/main.html" %} {% load i18n %}
+
+{% block content %}
+<style>
+    /* Conteneur principal */
+    .debug-card {
+        background: var(--card-bg, #ffffff);
+        color: var(--text-color, #212529);
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        padding: 2rem;
+        border-top: 5px solid #ffc107;
+        margin: 0 auto;
+        align-self: flex-start;
+        max-width: 100%;
+    }
+
+    /* Titre et sous-titre */
+    .debug-title {
+        color: #ffc107;
+        font-size: 1.5rem;
+        margin-top: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .debug-subtitle {
+        color: var(--text-muted, #6c757d);
+        font-size: 0.95rem;
+    }
+
+    /* Tableau de diagnostic */
+    .debug-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1.5rem;
+    }
+    .debug-table thead tr {
+        border-bottom: 2px solid var(--border-color, #dee2e6);
+    }
+    .debug-table th {
+        padding: 0.75rem;
+        text-align: left;
+        color: var(--text-color, #495057);
+        font-weight: 600;
+    }
+    .debug-table tbody tr {
+        border-bottom: 1px solid var(--border-color, #dee2e6);
+    }
+    .debug-table td {
+        padding: 0.75rem;
+    }
+    .debug-prop-name {
+        font-weight: 500;
+    }
+
+    /* Badges et étiquettes techniques */
+    .debug-badge {
+        background: var(--border-color, #e2e3e5);
+        color: var(--text-color, #383d41);
+        padding: 0.15rem 0.4rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-family: monospace;
+    }
+    .debug-route {
+        color: #0d6efd;
+        font-family: monospace;
+    }
+
+    /* Statuts conditionnels */
+    .status-yes {
+        color: #198754;
+        font-weight: 600;
+    }
+    .status-no {
+        color: #dc3545;
+        font-weight: 600;
+    }
+
+    /* Ajustement spécifique pour le mode sombre si nécessaire */
+    @media (prefers-color-scheme: dark) {
+        .debug-route {
+            color: #3ea8ff; /* Bleu plus lisible sur fond sombre */
+        }
+    }
+</style>
+
+<div class="card debug-card">
+    <h1 class="debug-title">Panneau de diagnostic d'infrastructure</h1>
+    <p class="debug-subtitle">
+        Ce panneau valide l'emboîtement des gabarits et l'état des variables de configuration.
+    </p>
+
+    <table class="debug-table">
+        <thead>
+            <tr>
+                <th style="width: 40%;">Propriété Système</th>
+                <th>Valeur Détectée</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="debug-prop-name">Utilisateur connecté</td>
+                <td>
+                    {{ debug_username }}
+                    <span class="debug-badge">ID: {{ debug_user_id }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="debug-prop-name">Est propriétaire (is_owner)</td>
+                <td>
+                    {% if debug_is_owner %}
+                        <span class="status-yes">Oui ✅</span>
+                    {% else %}
+                        <span class="status-no">Non ❌</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td class="debug-prop-name">Langue préférée (Profil BD)</td>
+                <td><span class="debug-badge">{{ debug_db_language }}</span></td>
+            </tr>
+            <tr>
+                <td class="debug-prop-name">Langue active de la requête</td>
+                <td><span class="debug-badge">{{ debug_request_language }}</span></td>
+            </tr>
+            <tr>
+                <td class="debug-prop-name">Page d'accueil (Profil BD)</td>
+                <td>
+                    <span class="debug-badge">{{ debug_db_home_page }}</span>
+                    — <em>{{ debug_status_message }}</em>
+                </td>
+            </tr>
+            <tr>
+                <td class="debug-prop-name">Nom de la route cible</td>
+                <td><strong class="debug-route">{{ debug_target_route }}</strong></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

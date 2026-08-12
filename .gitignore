@@ -219,3 +219,6 @@ __marimo__/
 
 # Fichiers médias locaux (Téléversements utilisateurs)
 medias/
+
+# Fichiers temporaires
+docs/temp*

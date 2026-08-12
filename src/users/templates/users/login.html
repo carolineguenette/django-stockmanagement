@@ -4,6 +4,10 @@
 
 {% block title %}{% translate "Sign In" %} - {{ block.super }}{% endblock %}
 
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/4-pages/_auth.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="auth-wrapper">
     <div class="auth-card card-login">
@@ -39,14 +43,14 @@
                 </div>
             </div>
 
-            <!-- Lien mot de passe oublié discret et aligné à droite -->
+            <!-- Lien mot de passe oublié -->
             <div class="auth-extra-links">
                 <a href="{% url 'users:password_reset' %}" class="forgot-password-link">
-                    {% translate "Forgot password?" %} <img src="{% static 'img/password-lost.svg' %}" alt="" class="btn-icon">
+                    {% translate "Forgot password?" %}
                 </a>
             </div>
 
-            <!-- Bouton de connexion qui utilise la même classe et le même bleu adaptatif -->
+            <!-- Bouton de connexion -->
             <button type="submit" class="btn-primary">{% translate "Login" %}</button>
         </form>
     </div>

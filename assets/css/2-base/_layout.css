@@ -1,0 +1,61 @@
+/* ==========================================================================
+   STRUCTURE GLOBALE (HEADER & FOOTER)
+   ========================================================================== */
+
+.main-header {
+    background-color: var(--bg-header-footer);
+    border-bottom: 1px solid var(--input-border);
+    padding: 1rem 0;
+}
+
+.header-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.main-content {
+    flex: 1 0 auto;
+    display: flex;
+    align-items: center;
+    padding: 2.5rem 0;
+}
+
+.main-footer {
+    flex-shrink: 0;
+    background-color: var(--bg-header-footer);
+    border-top: 1px solid var(--input-border);
+    padding: 1.25rem 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.footer-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.footer-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* ==========================================================================
+   MEDIA QUERIES DE STRUCTURE
+   ========================================================================== */
+@media (min-width: 768px) {
+    .header-grid,
+    .footer-grid {
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 0;
+    }
+
+    .container {
+        max-width: 1200px;
+    }
+}

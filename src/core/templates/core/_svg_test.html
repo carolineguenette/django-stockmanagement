@@ -1,0 +1,168 @@
+{% load static %}
+<!-- ==========================================================================
+     LABORATOIRE : TRANSITION DE LA VARIANTE 4 VERS LE BRUN / ORANGE CHAUD
+     ========================================================================== -->
+<style>
+    .test-lab-container {
+        margin: 40px auto;
+        padding: 30px;
+        max-width: 1400px;
+        font-family: sans-serif;
+        text-align: center;
+        background-color: transparent;
+    }
+
+    .test-lab-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: var(--text-primary, #111827);
+    }
+
+    .test-section-title {
+        text-align: left;
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 35px 0 15px 0;
+        color: var(--text-primary, #111827);
+        border-bottom: 1px solid var(--input-border, #334155);
+        padding-bottom: 8px;
+    }
+
+    .test-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 25px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .test-icon-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        min-width: 165px;
+    }
+
+    .test-icon-label {
+        font-size: 0.7rem;
+        color: var(--text-secondary, #6b7280);
+        font-weight: 700;
+        text-align: center;
+        max-width: 160px;
+    }
+
+    .test-svg-wrapper {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background-color: var(--bg-main-content, #e5e7eb);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .test-img-preview {
+        width: 24px;
+        height: 24px;
+        display: block;
+        object-fit: contain;
+    }
+
+    /* ==========================================================================
+       DÉCLENCHEMENT DES VARIANTES CHAUDES EN MODE SOMBRE (html.dark-theme)
+       ========================================================================== */
+
+    /* Variante 4 d'origine (Votre repère rouge/rose flash) */
+    html.dark-theme .f-flash-v4 {
+        filter: invert(1) hue-rotate(150deg) saturate(3) contrast(1.2) brightness(1.3) !important;
+    }
+
+    /* GLISSEMENT 1 : Orange Cuivré / Terracotta
+       On pousse la rotation à 165 degrés et on calme un peu la luminosité
+       pour faire basculer le rouge vers une teinte argile/brique très élégante. */
+    html.dark-theme .f-warm-terracotta {
+        filter: invert(1) hue-rotate(165deg) saturate(2.5) contrast(1.3) brightness(1.1) !important;
+    }
+
+    /* GLISSEMENT 2 : Ambre Électrique / Or Chaud
+       Une rotation à 175 degrés fait glisser le rouge vers un orange mandarine / ambré
+       très lumineux qui rappelle la couleur d'un métal chauffé à blanc. */
+    html.dark-theme .f-warm-amber {
+        filter: invert(1) hue-rotate(175deg) saturate(3) contrast(1.2) brightness(1.2) !important;
+    }
+
+    /* GLISSEMENT 3 : Brun Fauve Satiné
+       En poussant l'angle à 190 degrés et en réduisant la saturation, on casse l'effet
+       "néon flash" pour obtenir une couleur fauve/bois sombre très proche du marron. */
+    html.dark-theme .f-warm-fawn {
+        filter: invert(1) hue-rotate(190deg) saturate(1.4) contrast(1.4) brightness(1.1) !important;
+    }
+
+    /* GLISSEMENT 4 : Rouge Brique Sombre
+       On garde l'angle de la variante 4, mais on applique un filtre sépia partiel à la fin
+       pour forcer le rouge à se mélanger avec des pigments bruns terreux. */
+    html.dark-theme .f-warm-brick {
+        filter: invert(1) hue-rotate(150deg) sepia(0.4) saturate(2.5) contrast(1.3) brightness(1.0) !important;
+    }
+
+
+    /* Support du mode sombre natif système */
+    @media (prefers-color-scheme: dark) {
+        html:not(.light-theme) .f-flash-v4 { filter: invert(1) hue-rotate(150deg) saturate(3) contrast(1.2) brightness(1.3) !important; }
+        html:not(.light-theme) .f-warm-terracotta { filter: invert(1) hue-rotate(165deg) saturate(2.5) contrast(1.3) brightness(1.1) !important; }
+        html:not(.light-theme) .f-warm-amber { filter: invert(1) hue-rotate(175deg) saturate(3) contrast(1.2) brightness(1.2) !important; }
+        html:not(.light-theme) .f-warm-fawn { filter: invert(1) hue-rotate(190deg) saturate(1.4) contrast(1.4) brightness(1.1) !important; }
+        html:not(.light-theme) .f-warm-brick { filter: invert(1) hue-rotate(150deg) sepia(0.4) saturate(2.5) contrast(1.3) brightness(1.0) !important; }
+    }
+</style>
+
+<div class="test-lab-container">
+    <div class="test-lab-title">🧪 Ajustement de la Variante 4 : Cap sur le Brun / Orange Chaud</div>
+    <div class="test-lab-subtitle">Activez le mode sombre pour observer la transition du rouge vers des teintes boisées et cuivrées</div>
+
+    <div class="test-row">
+        <!-- Votre repère (Ancienne variante 4) -->
+        <div class="test-icon-card">
+            <div class="test-svg-wrapper">
+                <img src="{% static 'img/login.svg' %}" class="test-img-preview f-flash-v4" alt="">
+            </div>
+            <span class="test-icon-label" style="color: #ef4444;">Repère : Variante 4 (Rouge Flash)</span>
+        </div>
+
+        <!-- Glissement 1 : Terracotta -->
+        <div class="test-icon-card">
+            <div class="test-svg-wrapper">
+                <img src="{% static 'img/login.svg' %}" class="test-img-preview f-warm-terracotta" alt="">
+            </div>
+            <span class="test-icon-label" style="color: #10b981;">Glissement 1 : Terracotta / Brique</span>
+        </div>
+
+        <!-- Glissement 2 : Ambre / Or -->
+        <div class="test-icon-card">
+            <div class="test-svg-wrapper">
+                <img src="{% static 'img/login.svg' %}" class="test-img-preview f-warm-amber" alt="">
+            </div>
+            <span class="test-icon-label" style="color: #10b981;">Glissement 2 : Ambre Électrique</span>
+        </div>
+
+        <!-- Glissement 3 : Brun Fauve -->
+        <div class="test-icon-card">
+            <div class="test-svg-wrapper">
+                <img src="{% static 'img/login.svg' %}" class="test-img-preview f-warm-fawn" alt="">
+            </div>
+            <span class="test-icon-label" style="color: #10b981;">Glissement 3 : Brun Fauve / Bois</span>
+        </div>
+
+        <!-- Glissement 4 : Brique Sombre -->
+        <div class="test-icon-card">
+            <div class="test-svg-wrapper">
+                <img src="{% static 'img/login.svg' %}" class="test-img-preview f-warm-brick" alt="">
+            </div>
+            <span class="test-icon-label" style="color: #10b981;">Glissement 4 : Brique Sombre Terreuse</span>
+        </div>
+    </div>
+</div>

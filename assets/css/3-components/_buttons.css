@@ -1,0 +1,24 @@
+/* ==========================================================================
+   COMPOSANT : BOUTONS
+   ========================================================================== */
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    background-color: var(--accent);
+    color: var(--accent-contrast);
+    border: none;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none; /* Évite que le texte soit souligné si c'est une balise <a> */
+    transition: background-color 0.15s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-hover);
+}

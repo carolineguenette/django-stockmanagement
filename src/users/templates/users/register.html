@@ -2,6 +2,10 @@
 {% load i18n %}
 {% load static %}
 
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/4-pages/_auth.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="auth-wrapper">
     <div class="auth-card card-register">

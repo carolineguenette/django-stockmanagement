@@ -1,0 +1,16 @@
+{% load i18n %}
+
+{# Liens Register / Login #}
+{% if not request.user.is_authenticated %}
+    {% if request.resolver_match.url_name == 'login' %}
+        <span>{% translate "Don't have an account?" %}</span>
+        <a href="{% url 'users:register' %}" class="link-bold link-register">
+            {% translate "Sign Up" %}
+        </a>
+    {% elif request.resolver_match.url_name == 'register' or request.resolver_match.url_name == 'password_reset' %}
+        <span>{% translate "Have an account?" %}</span>
+        <a href="{% url 'users:login' %}" class="link-bold link-login">
+            {% translate "Login" %}
+        </a>
+    {% endif %}
+{% endif %}

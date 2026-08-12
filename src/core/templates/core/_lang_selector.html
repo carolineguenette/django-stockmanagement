@@ -5,6 +5,7 @@
 <nav class="lang-selector">
     <details class="lang-dropdown-details">
         {% get_current_language as CURRENT_LANG %}
+        {# On s'assure d'isoler le code de base (ex: 'fr' si jamais le middleware renvoie 'fr-ca') #}
         {% with clean_current_lang=CURRENT_LANG|slice:":2" %}
 
         <summary class="lang-dropdown-summary" title="{% translate 'Change language' %}">
@@ -15,18 +16,24 @@
             </span>
         </summary>
 
+        <!-- Formulaire natif Django pour soumettre le changement de langue par POST -->
+        <form action="{% url 'set_language' %}" method="post" id="lang-form" class="hidden">
+            {% csrf_token %}
+            <input name="next" type="hidden" value="{{ request.get_full_path }}">
+            <input name="language" type="hidden" id="lang-input" value="">
+        </form>
+
         <ul class="lang-dropdown-list">
-            {% get_available_languages as AVAILABLE_LANGS %}
-            {% for lang in AVAILABLE_LANGS %}
-                {% with clean_list_lang=lang.0|slice:":2" %}
+            {# On boucle directement sur LANGUAGES simplifié dans votre settings.py #}
+            {% for lang_code, lang_name in LANGUAGES %}
                 <li>
-                    {# MODIFICATION : translate_url génère le bon chemin relatif pour chaque langue #}
-                    <a href="{% custom_translate_url lang.0 %}" class="lang-dropdown-link {% if clean_list_lang == clean_current_lang %}active{% endif %}">
-                        <span class="lang-code-label">{{ clean_list_lang|upper }}</span>
-                        <span class="lang-name-label">{{ lang.1 }}</span>
-                    </a>
+                    <button type="button"
+                            onclick="submitLanguage('{{ lang_code }}')"
+                            class="lang-dropdown-link w-full text-left {% if lang_code == clean_current_lang %}active{% endif %}">
+                        <span class="lang-code-label">{{ lang_code|upper }}</span>
+                        <span class="lang-name-label">{{ lang_name }}</span>
+                    </button>
                 </li>
-                {% endwith %}
             {% endfor %}
         </ul>
 

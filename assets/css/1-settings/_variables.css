@@ -1,0 +1,69 @@
+/* ==========================================================================
+   CONFIGURATIONS DES THÈMES LIGHT et DARK
+   ========================================================================== */
+
+:root, html.light-theme {
+    color-scheme: light dark;
+
+    /* Couleurs structurelles */
+    --bg-header-footer: #ffffff;
+    --bg-main-content: #e5e7eb;
+    --bg-card: #ffffff;
+
+    /* Typographie et Textes */
+    --text-primary: #111827;
+    --text-secondary: #6b7280;
+    --input-border: #d1d5db;
+    --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-title: 'Sekuya', sans-serif;
+
+    /* Boutons et Accents */
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --accent-contrast: #ffffff;
+    --bg-auth-icon-center: var(--bg-main-content);
+
+    /* Filtres d'icônes par défaut (Clair) */
+    --filter-auth-icon: none;
+    --filter-field-icon: none;
+    --filter-theme-switch: none;
+}
+
+/* Bloc unique pour le Dark Mode (Déclenché par le système OU par la classe .dark-theme) */
+@media (prefers-color-scheme: dark) {
+    :root:not(.light-theme) {
+        --bg-header-footer: #0d0d0d;
+        --bg-main-content: #1f2228;
+        --bg-card: #0d0d0d;
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --input-border: #334155;
+        --accent: #3b82f6;
+        --accent-hover: #60a5fa;
+        --accent-contrast: #ffffff;
+        --bg-auth-icon-center: var(--bg-main-content);
+
+        /* Filtres d'icônes sombres */
+        --filter-auth-icon: invert(1) hue-rotate(190deg) saturate(1.4) contrast(1.4) brightness(1.1);
+        --filter-field-icon: saturate(2) brightness(1.2);
+        --filter-theme-switch: invert(1);
+    }
+}
+
+html.dark-theme {
+    --bg-header-footer: #0d0d0d;
+    --bg-main-content: #1f2228;
+    --bg-card: #0d0d0d;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --input-border: #334155;
+    --accent: #3b82f6;
+    --accent-hover: #60a5fa;
+    --accent-contrast: #ffffff;
+    --bg-auth-icon-center: var(--bg-main-content);
+    --font-title: 'Sekuya', var(--font-stack);
+
+    --filter-auth-icon: invert(1) hue-rotate(190deg) saturate(1.4) contrast(1.4) brightness(1.1);
+    --filter-field-icon: saturate(2) brightness(1.2);
+    --filter-theme-switch: invert(1);
+}

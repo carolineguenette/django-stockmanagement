@@ -2,30 +2,28 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 
+from src.users.choices import PreferredHomePageChoices
+
 
 class HomeView(LoginRequiredMixin, View):
-
-    # TODO Pour une future fonctionnalité où l'utilisateur peut choisir sa page d'accueil préférée.
-    HOMEPAGE_ROUTES = {
-        "inventory": "catalogue:product_list",
-        "scanner": "inventory:barcode_scanner",
-        "dashboard": "reporting:dashboard",
-    }
-
     """
     Routeur central de la page d'accueil.
-    Redirige dynamiquement l'utilisateur selon ses préférences.
+    Redirige dynamiquement l'utilisateur selon sa préférence de page d'accueil.
     """
+
     def get(self, request):
         user = request.user
 
-        # Récupère la préférence de l'utilisateur si le champ existe
-        preferred_page = getattr(user, 'preferred_home_page', None)
+        # Récupère la valeur en base de données
+        db_preferred_home_page = getattr(user, 'preferred_home_page', PreferredHomePageChoices.DASHBOARD)
 
-        # Cherche la route correspondante
-        target_route = self.HOMEPAGE_ROUTES.get(preferred_page)
+        try:
+            # Conversion de la chaîne brute de la BD en notre objet énuméré
+            page_choice = PreferredHomePageChoices(db_preferred_home_page)
+            target_route = page_choice.route_name
+        except ValueError:
+            # Filet de sécurité au cas où la valeur en BD serait corrompue
+            target_route = PreferredHomePageChoices.DASHBOARD.route_name
 
-        if target_route:
-            return redirect(target_route)
-
-        return render(request, "core/main.html")
+        # Redirection vers la route technique
+        return redirect(target_route)

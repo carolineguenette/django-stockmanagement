@@ -1,0 +1,139 @@
+/* Style du Logo / Titre dans le Header */
+.main-header .logo {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 400;
+    font-size: 1.0rem;
+    font-family: var(--font-title), sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.main-header .logo img {
+    width: 32px;
+    height: auto;
+    display: block;
+    flex-shrink: 0; /* Empêche le logo de rétrécir sur petit écran */
+}
+
+/* Zone d'action de connexion/inscription (Texte gris) */
+.main-header .header-auth-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.main-header .welcome-user {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.logout-form {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Style de base du bouton de déconnexion */
+.btn-logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;  /* Zone de clic confortable */
+    height: 32px; /* Zone de clic confortable */
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+/* Centralisation de l'animation sur les icônes de déconnexion et du switcher de thème */
+.btn-logout::after,
+.lightdark-theme img {
+    transition: transform 0.2s ease;
+}
+
+.btn-logout:hover::after,
+.lightdark-theme:hover {
+    transform: scale(1.3);
+}
+
+/* Animation spécifique pour les icônes en arrière-plan des liens Sign Up / Login */
+.link-bold::after {
+    transition: transform 0.2s ease;
+}
+
+.link-bold:hover::after {
+    transform: scale(1.3); /* Seule l'icône s'agrandit, le texte reste fixe ! */
+}
+
+
+/* Injection de l'icône de déconnexion via CSS */
+.btn-logout::after {
+    content: "";
+    display: block;
+    width: 20px;  /* Taille de l'icône originale */
+    height: 20px;
+    background-image: url('../../img/logout.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    filter: var(--filter-auth-icon); /* Filtre adaptatif pour le mode sombre */
+}
+
+/* Classe d'accessibilité pour masquer le texte des lecteurs d'écran */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Le pseudo-élément remplace l'ancienne balise <img class="btn-icon"> */
+.main-header .link-bold::after {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    /* Applique le filtre de manière isolée sur l'image de fond */
+    filter: var(--filter-auth-icon);
+}
+
+/* Assignation des images */
+.main-header .link-register::after { background-image: url('../../img/register.svg'); }
+.main-header .link-login::after { background-image: url('../../img/login.svg'); }
+
+/* Alignement et comportement du switcher lightdark-mode theme */
+.lightdark-theme {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+
+    width: 24px;  /* Taille adaptée pour l'icône */
+    height: 24px;
+    background-image: url('../../img/mode-light-dark.svg');  /* Ajout de l'image par défaut */
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+
+    filter: var(--filter-theme-switch);
+    transition: transform 0.2s ease;
+}
+
+/* Inversion de l'icône en mode sombre (Préférence système par défaut) */
+@media (prefers-color-scheme: dark) {
+    html:not(.light-theme) .lightdark-theme img {
+        filter: invert(1);
+    }
+}

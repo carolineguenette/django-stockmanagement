@@ -27,7 +27,6 @@ class Role(models.Model):
         null=True,
         blank=True,
         related_name="location_roles",
-        verbose_name=_("location_role"),
     )
 
     role = models.ForeignKey(

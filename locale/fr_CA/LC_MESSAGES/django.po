@@ -1,0 +1,32 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Caroline Guénette <cguenette@telus.net>, 2026.
+
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr_CA\n"
+
+#: src/company/models/location.py:43
+msgid "state or province"
+msgstr "province"
+
+#: src/core/templates/core/main.html:9 src/core/templates/core/main.html:27
+#: src/core/templates/core/main.html:61
+msgid "Stock Management"
+msgstr "Gestionnaire d'inventaire"
+
+#: src/core/templates/core/main.html:26
+msgid "Stock Management Logo"
+msgstr "Logo"
+
+#: src/users/templates/users/register.html:27
+msgid "Email"
+msgstr "Courriel"
+
+#: src/core/templates/core/main.html:61
+msgid " (lang)"
+msgstr " (fr_CA)"

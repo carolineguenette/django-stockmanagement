@@ -2,67 +2,35 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # Caroline Guénette <cguenette@telus.net>, 2026.
-#
+
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-27 02:55-0400\n"
-"PO-Revision-Date: 2026-07-21 02:16-0400\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: French (France) <fr_FR@li.org>\n"
-"Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
 
-#: src/catalogue/models/product.py:13
-msgid "SKU"
-msgstr "SKU"
+#: src/catalogue/models/product.py:16 src/catalogue/models/productmodel.py:14
+#: src/company/models/company.py:20 src/company/models/location.py:13
+#: src/inventory/models/movement.py:27 src/inventory/models/stock.py:9
+msgid "company"
+msgstr "entreprise"
 
-#: src/catalogue/models/product.py:14
-msgid "Unique stock keeping unit identifier."
-msgstr "Identifiant unique de l'unité de gestion des stocks."
+#: src/catalogue/models/product.py:22 src/company/models/location.py:17
+msgid "name"
+msgstr "nom"
 
-#: src/catalogue/models/product.py:19
-msgid "Name"
-msgstr "Nom"
+#: src/catalogue/models/product.py:31 src/inventory/models/stock.py:15
+msgid "product"
+msgstr "produit"
 
-#: src/catalogue/models/product.py:24
-msgid "Description"
-msgstr "Description"
+#: src/catalogue/models/product.py:32
+msgid "products"
+msgstr "produits"
 
-#: src/catalogue/models/product.py:31
-msgid "Price"
-msgstr "Prix"
-
-#: src/catalogue/models/product.py:34
-msgid "Alert Threshold"
-msgstr "Seuil d'alerte"
-
-#: src/catalogue/models/product.py:37 src/catalogue/models/product_image.py:42
-msgid "Created at"
-msgstr "Créé le"
-
-#: src/catalogue/models/product.py:43
-msgid "Created by"
-msgstr "Créé par"
-
-#: src/catalogue/models/product.py:45
-msgid "Updated at"
-msgstr "Modifié le"
-
-#: src/catalogue/models/product.py:51
-msgid "Updated by"
-msgstr "Modifié par"
-
-#: src/catalogue/models/product.py:55 src/catalogue/models/product_image.py:26
+#: src/catalogue/models/product_image.py:26
 msgid "Product"
 msgstr "Produit"
-
-#: src/catalogue/models/product.py:56
-msgid "Products"
-msgstr "Produits"
 
 #: src/catalogue/models/product_image.py:31
 msgid "Image"
@@ -76,6 +44,10 @@ msgstr "Texte alternatif"
 msgid "Main image"
 msgstr "Image principale"
 
+#: src/catalogue/models/product_image.py:42
+msgid "Created at"
+msgstr "Créé le"
+
 #: src/catalogue/models/product_image.py:45
 msgid "Product Image"
 msgstr "Image du produit"
@@ -84,55 +56,73 @@ msgstr "Image du produit"
 msgid "Product Images"
 msgstr "Images du produit"
 
-#: src/company/models/company.py:6 src/company/models/location.py:13
-#| msgid "Username"
-msgid "name"
-msgstr "Identifiant"
+#: src/company/models/company.py:9
+msgid "official name"
+msgstr "nom officiel"
 
-#: src/company/models/company.py:7
-#| msgid "Created at"
-msgid "created at"
-msgstr "Créé le"
+#: src/company/models/company.py:15
+msgid "slug"
+msgstr "slug"
 
-#: src/company/models/company.py:11
-msgid "Company"
-msgstr "Entreprise"
+#: src/company/models/company.py:21
+msgid "companies"
+msgstr "entreprises"
 
-#: src/company/models/company.py:12
-msgid "Companies"
-msgstr "Entreprises"
+#: src/company/models/location.py:25
+msgid "address (line 1)"
+msgstr "adresse (ligne 1)"
 
-#: src/company/models/location.py:11 src/users/models/role.py:20
-msgid "company"
-msgstr "entreprise"
+#: src/company/models/location.py:31
+msgid "address (line 2)"
+msgstr "adresse (ligne 2)"
 
-#: src/company/models/location.py:15
-msgid "street address"
-msgstr "rue"
-
-#: src/company/models/location.py:18
+#: src/company/models/location.py:37
 msgid "city"
 msgstr "ville"
 
-#: src/company/models/location.py:21
+#: src/company/models/location.py:43
+msgid "state or province"
+msgstr "état ou province"
+
+#: src/company/models/location.py:49
 msgid "country"
 msgstr "pays"
 
-#: src/company/models/location.py:24
+#: src/company/models/location.py:55
 msgid "postal code"
 msgstr "code postal"
 
-#: src/company/models/location.py:33
+#: src/company/models/location.py:65
 msgid "parent location"
 msgstr "emplacement parent"
 
-#: src/company/models/location.py:38
-msgid "Location"
-msgstr "Emplacement"
+#: src/company/models/location.py:70 src/inventory/models/stock.py:21
+msgid "location"
+msgstr "emplacement"
 
-#: src/company/models/location.py:39
-msgid "Locations"
-msgstr "Emplacements"
+#: src/company/models/location.py:71
+msgid "locations"
+msgstr "emplacements"
+
+#: src/config/urls.py:52
+msgid "Fake company not found (Simulation)"
+msgstr "Entreprise factice non trouvée (Simulation)"
+
+#: src/core/templates/core/404.html:7
+msgid "Page not found"
+msgstr "Page introuvable"
+
+#: src/core/templates/core/404.html:13
+msgid ""
+"The requested resource could not be found, or you do not have permission to "
+"access it."
+msgstr ""
+"La ressource demandée est introuvable, ou vous n'avez pas l'autorisation "
+"d'y accéder."
+
+#: src/core/templates/core/404.html:17
+msgid "Back to home"
+msgstr "Retour à l'accueil"
 
 #: src/core/templates/core/_lang_selector.html:10
 msgid "Change language"
@@ -173,44 +163,56 @@ msgid "Login"
 msgstr "Se connecter"
 
 #: src/core/templates/core/main.html:61
+msgid "version"
+msgstr "version"
+
+#: src/core/templates/core/main.html:61
 msgid "by"
 msgstr "par"
 
-#: src/settings.py:130
-msgid "English"
-msgstr "English"
+#: src/scope/middleware.py:40
+msgid "Company not found."
+msgstr "Entreprise non trouvée."
 
-#: src/settings.py:131
-msgid "French"
-msgstr "Français"
+#: src/users/choices.py:6
+msgid "Dashboard"
+msgstr "Tableau de bord"
 
-#: src/settings.py:132
-msgid "Spanish"
-msgstr "Español"
+#: src/users/choices.py:7
+msgid "Inventory"
+msgstr "Inventaire"
 
-#: src/users/models/role.py:14
+#: src/users/choices.py:8
+msgid "Barcode scanner"
+msgstr "Scanneur de code à barres"
+
+#: src/users/models/role.py:14 src/users/models/user.py:26
 msgid "user"
 msgstr "utilisateur"
 
-#: src/users/models/role.py:26
+#: src/users/models/role.py:21
+msgid "company role"
+msgstr "rôle dans l'entreprise"
+
+#: src/users/models/role.py:37
+msgid "auth group role"
+msgstr ""
+
+#: src/users/models/role.py:42
 msgid "role"
 msgstr "rôle"
 
-#: src/users/models/role.py:34
-msgid "location"
-msgstr "Emplacement"
+#: src/users/models/role.py:43
+msgid "roles"
+msgstr "rôles"
 
-#: src/users/models/role.py:40
-msgid "Role by company"
-msgstr "Rôle par compagnie"
+#: src/users/models/user.py:15
+msgid "preferred language"
+msgstr "language préférée"
 
-#: src/users/models/role.py:41
-msgid "Roles by company"
-msgstr "Rôles par compagnie"
-
-#: src/users/models/user.py:9
-msgid "Preferred language"
-msgstr "Langue préférée"
+#: src/users/models/user.py:27
+msgid "users"
+msgstr "utilisateurs"
 
 #: src/users/templates/users/login.html:5
 #: src/users/templates/users/login.html:11
@@ -239,6 +241,14 @@ msgstr "Mot de passe"
 msgid "Forgot password?"
 msgstr "Mot de passe oublié ?"
 
+#: src/users/templates/users/password_reset.html:5
+msgid "Password reset"
+msgstr "Réinitialisation du mot de passe"
+
+#: src/users/templates/users/password_reset.html:11
+msgid "Password Reset Request"
+msgstr "Demande de réinitialisation du mot de passe"
+
 #: src/users/templates/users/register.html:9
 msgid "Create a new account"
 msgstr "Créer un nouveau compte"
@@ -254,3 +264,7 @@ msgstr "Courriel"
 #: src/users/templates/users/register.html:41
 msgid "Password Strength"
 msgstr "Niveau de sécurité du mot de passe"
+
+#: src/core/templates/core/main.html:61
+msgid " (lang)"
+msgstr " (fr)"

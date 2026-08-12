@@ -1,0 +1,130 @@
+/* ==========================================================================
+   COMPOSANT : CARTES (CARDS) & DROPDOWNS
+   ========================================================================== */
+
+/* Structure de la carte d'authentification */
+.auth-card {
+    background-color: var(--bg-card);
+    width: 100%;
+    max-width: 440px;
+    padding: 2.5rem 1.75rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    text-align: center;
+}
+
+/* --- Sélecteur de Langue (Dropdown Card) --- */
+.lang-selector {
+    position: relative;
+    display: inline-block;
+}
+
+.lang-dropdown-summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 6px 12px;
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    user-select: none;
+}
+
+.lang-dropdown-summary::-webkit-details-marker {
+    display: none;
+}
+
+.global-icon {
+    width: 16px;
+    height: 16px;
+    display: block;
+    filter: var(--filter-field-icon);
+}
+
+.dropdown-arrow {
+    font-size: 0.6rem;
+    color: var(--text-secondary);
+    transition: transform 0.2s ease;
+}
+
+.dropdown-arrow img {
+    width: 10px;
+    height: auto;
+    filter: var(--filter-field-icon);
+}
+
+.lang-dropdown-details[open] .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.lang-dropdown-list {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    right: 0;
+    background-color: var(--bg-card);
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    list-style: none;
+    padding: 6px;
+    min-width: 140px;
+    z-index: 100;
+}
+
+.lang-dropdown-list button.lang-dropdown-link {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: none;
+    padding: 8px 12px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    font-size: 14px;
+    border-radius: 6px;
+    transition: background-color 0.15s ease;
+}
+
+.lang-dropdown-list button.lang-dropdown-link:hover {
+    background-color: rgba(128, 128, 128, 0.12);
+}
+
+.lang-dropdown-list button.lang-dropdown-link.active {
+    background-color: rgba(37, 99, 235, 0.12);
+}
+
+.lang-dropdown-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    border-radius: 4px;
+}
+
+.lang-dropdown-link:hover {
+    background-color: var(--bg-main-content);
+}
+
+.lang-dropdown-link.active {
+    color: var(--accent);
+    background-color: rgba(37, 99, 235, 0.08);
+    font-weight: 600;
+}
+
+.lang-name-label {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+}

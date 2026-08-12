@@ -1,17 +1,8 @@
 """
-Django settings for django-stock project.
-Optimized for scalability and maintenance.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/6.0/topics/settings/
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/6.0/ref/settings/
+Django settings pour le projet.
 """
 
 from pathlib import Path
-from django.utils.translation import gettext_lazy as _
-
 import environ
 
 # --------------------------------------------------------------------------------
@@ -68,9 +59,11 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "src.users.middleware.RegionalLocaleMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_browser_reload.middleware.BrowserReloadMiddleware",
+    "src.scope.middleware.CompanyContextMiddleware",
 ]
 
 ROOT_URLCONF = "src.config.urls"
@@ -81,7 +74,7 @@ ROOT_URLCONF = "src.config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [str(BASE_DIR / "src" / "core" / "templates")],
+        "DIRS": [BASE_DIR / "src" / "core" / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -129,9 +122,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = "users.User"
 
-LOGIN_URL           = ( "users:login" )   # L'URL vers laquelle Django redirigera les utilisateurs non connectés
-LOGIN_REDIRECT_URL  = ( "home" )          # L'URL où l'utilisateur est envoyé après s'être connecté avec succès
-LOGOUT_REDIRECT_URL = ( "users:login" )   # L'URL où l'utilisateur est envoyé après s'être déconnecté
+LOGIN_URL           = "users:login"  # L'URL vers laquelle Django redirigera les utilisateurs non connectés
+LOGIN_REDIRECT_URL  = "home"  # L'URL où l'utilisateur est envoyé après s'être connecté avec succès
+LOGOUT_REDIRECT_URL = "users:login"  # L'URL où l'utilisateur est envoyé après s'être déconnecté
 
 # --------------------------------------------------------------------------------
 # INTERNATIONALISATION & CODES RÉGIONAUX (i18n / l10n)
@@ -144,13 +137,19 @@ TIME_ZONE = env("TIME_ZONE") # Format dans lequel les dates sont stockées brute
 
 LANGUAGES = [
     ('fr', 'Français'),
-    ('fr-ca', 'Français (Canada)'),
-    ('fr-fr', 'Français (France)'),
     ('en', 'English'),
-    ('en-ca', 'English (Canada)'),
-    ('en-us', 'English (United States)'),
 ]
 
+# Variantes régionales supportées par des fichiers .po/.mo
+LANGUAGES_REGIONAL = ['fr-ca', 'fr-fr', 'en-ca', 'en-us']
+
+# Variantes activées si on a une variante régionale
+LANGUAGES_FALLBACKS = {
+    'fr': 'fr-ca',
+    'en': 'en-ca',
+}
+
+# TODO A SUPPRIMER + MODIFIER TEMPLATE lang
 VISIBLE_LANGUAGES = [
     ('fr', 'Français'),
     ('en', 'English'),
@@ -161,13 +160,15 @@ PARLER_LANGUAGES = {
         {'code': 'fr'},
         {'code': 'fr-ca', 'fallback': 'fr'},
         {'code': 'fr-fr', 'fallback': 'fr'},
+    ),
+    2: (
         {'code': 'en'},
         {'code': 'en-ca', 'fallback': 'en'},
         {'code': 'en-us', 'fallback': 'en'},
     ),
     'default': {
         'fallbacks': ['fr', 'en'], # Si même le 'fr' est vide, prend le français global ou l'anglais
-        'hide_untranslated': False, # Évite de retourner une erreur si non traduit
+        'hide_untranslated': False, # Évite de retourner une erreur si msg non traduit
     }
 }
 
@@ -178,7 +179,6 @@ LOCALE_PATHS = [
 
 # --------------------------------------------------------------------------------
 # FICHIERS STATIQUES ET MÉDIAS
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
 # --------------------------------------------------------------------------------
 STATIC_URL = "assets/"
 
@@ -194,3 +194,4 @@ MEDIA_ROOT = BASE_DIR / "medias"
 # CONSTANTES DU PROJET
 # --------------------------------------------------------------------------------
 PROJECT_AUTHOR = "Caroline Guénette"
+PROJECT_VERSION = "0.0.1"

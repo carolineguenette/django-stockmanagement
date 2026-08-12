@@ -1,0 +1,20 @@
+{% extends "core/main.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="error-container" style="text-align: center; padding: 4rem 2rem;">
+    <h1 style="font-size: 6rem; margin-bottom: 1rem; color: #dc3545;">404</h1>
+    <h2>{% translate "Page not found" %}</h2>
+    <p style="margin-top: 1rem; color: #6c757d;">
+        {# Si Django passe le message de l'exception à la vue d'erreur, il s'affichera ici #}
+        {% if exception %}
+            {{ exception }}
+        {% else %}
+            {% translate "The requested resource could not be found, or you do not have permission to access it." %}
+        {% endif %}
+    </p>
+    <a href="/" class="btn btn-primary" style="margin-top: 2rem; display: inline-block;">
+        {% translate "Back to home" %}
+    </a>
+</div>
+{% endblock %}

@@ -3,13 +3,14 @@ URL configuration for django-stock project.
 Centralized router linking language prefixes and local applications.
 """
 
+from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
-from django.conf.urls.i18n import i18n_patterns
-from src.core.views import HomeView  # Import propre depuis le package de vues de core
+from django.views.defaults import page_not_found
+from src.core.views import HomeView
 
 # -----------------------------------------------------------
-# URLs globales et techniques (Sans préfixe de langue)
+# URLs globales et techniques (Sans aucun préfixe de langue)
 # -----------------------------------------------------------
 urlpatterns = [
     path("i18n/", include("django.conf.urls.i18n")),
@@ -17,14 +18,32 @@ urlpatterns = [
 ]
 
 # -----------------------------------------------------------
-# URLs de l'interface utilisateur (Traduites et préfixées par la langue - ex: /fr/admin/, /en/catalogue/)
+# Groupe d'URLs cloisonnées (Espace Entreprise)
+# - Toutes ces routes hériteront du préfixe /c/<company_slug>/
 # -----------------------------------------------------------
-urlpatterns += i18n_patterns(
-    path("", HomeView.as_view(), name="home"),
-
-    path("", include("src.users.urls")),
+company_patterns = [
     path("catalogue/", include("src.catalogue.urls")),
+    # Futures applications ayant besoin d'une compagnie active (ex: path("inventory/", include("src.inventory.urls")),)
+]
+
+# -----------------------------------------------------------
+# Routage principal (Traduites et préfixées par la langue)
+# -----------------------------------------------------------
+urlpatterns += [
+    # Routes globales
+    path("", HomeView.as_view(), name="home"),
+    path("", include("src.users.urls")),  # users:login, users:register, etc.
+    path("core/", include("src.core.urls")),
     path("admin/", admin.site.urls),
 
-    prefix_default_language=False,
-)
+    # Point d'entrée unique pour l'espace entreprise
+    path("c/<slug:company_slug>/", include(company_patterns)),
+]
+
+# -----------------------------------------------------------
+#  Route de test pour le gabarit 404 (Mode DEBUG uniquement)
+# -----------------------------------------------------------
+if settings.DEBUG:
+    urlpatterns += [
+        path("test-404/", page_not_found, {"exception": Exception("Fake company not found (Simulation)")}),
+    ]

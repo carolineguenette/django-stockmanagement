@@ -1,0 +1,8 @@
+/* Déclaration du style Régulier (Normal) */
+@font-face {
+    font-family: 'Sekuya';
+    src: url('../../fonts/Sekuya-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap; /* Permet d'afficher un texte de secours le temps du chargement */
+}

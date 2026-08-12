@@ -9,14 +9,6 @@
         .lines { stroke: #191919; }
         .door-stroke { stroke: #191919; }
         .handle { stroke: #191919; fill: #808080; }
-
-        /* Couleurs pour le Mode Sombre */
-        @media (prefers-color-scheme: dark) {
-            .bg-wall { fill: #333333; stroke: #808080; }
-            .lines { stroke: #ffffff; }
-            .door-stroke { stroke: #ffffff; }
-            .handle { stroke: #ffffff; }
-        }
     </style>
 
     <!-- Zone derrière la porte (mur intérieur) -->

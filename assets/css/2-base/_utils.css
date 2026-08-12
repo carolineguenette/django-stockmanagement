@@ -1,0 +1,16 @@
+/* Lien mis en évidence (Gras et couleur principale) */
+.link-bold {
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Espace pour l'ajout d'une petite icône après le texte */
+X .btn-icon {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
