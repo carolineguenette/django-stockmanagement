@@ -4,6 +4,7 @@ Django settings pour le projet.
 
 from pathlib import Path
 import environ
+from config import __version__
 
 # --------------------------------------------------------------------------------
 # CHEMINS DE BASE (Calculé par rapport à la racine où se trouve manage.py)
@@ -188,4 +189,4 @@ MEDIA_ROOT = BASE_DIR / "medias"
 # CONSTANTES DU PROJET
 # --------------------------------------------------------------------------------
 PROJECT_AUTHOR = "Caroline Guénette"
-PROJECT_VERSION = "0.0.1"
+PROJECT_VERSION = __version__
