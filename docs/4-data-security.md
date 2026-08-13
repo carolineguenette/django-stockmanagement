@@ -73,7 +73,9 @@ La permission concerne une configuration externe aux compagnies (*ex: création 
 
 La permission est définit une permission / rôle spécial. Les autres permissions qui l'accompagnent dans le rôle où elle est assignée représentent un sous-ensemble de permissions pouvant être déléguées et non pas des permissions métier accordées à l'utilisateur 
 
-*Exemple: `access.role.manage` est assignée au rôle "Gestionnaire d'accès". Ce rôle inclut aussi les permissions `inventory.stock.increase` et `inventory.stock.decrease`. Cela sgnifie qu'un Gestionnaire d'accès peut créer des rôles avec ces 2 permissions et seulement ces 2 permissions, pas qu'il peut lui-même augmenter ou diminuer l'inventaire en stock.*
+*Exemple: `access.role.manage` est assignée au rôle "Gestionnaire d'accès". Ce rôle inclut aussi les permissions `inventory.stock.increase` et `inventory.stock.decrease`. Cela sgnifie qu'un Gestionnaire d'accès peut créer des rôles avec ces 2 permissions et seulement ces 2 permissions. Il ne peut, pas augmenter ou diminuer l'inventaire en stock avec cette permission.*
+
+La permission s'applique exclusivement dans un contexte d'entreprise, sans info sur les locations.
 
 #### Compagnie (`access_permission.context = COMPANY`)
 
@@ -129,7 +131,7 @@ Le concept de sensibilité d'une permission pourrait permettre d'adapter l'UI et
 
 ##### Sensibilité OWNER-ONLY
 
-Il s'agit d'une action qui  n'est pas déléguable. Elle peut être réalisée exclusivement par un utilisateur avec `is_owner=True`.
+Il s'agit d'une action qui n'est pas déléguable. Elle peut être réalisée exclusivement par un utilisateur avec `is_owner=True`.
 
 #### Matrices de décision RBAC concernant les permissions
 
@@ -165,7 +167,7 @@ Il s'agit d'une action qui  n'est pas déléguable. Elle peut être réalisée e
 
 ### Vérification des permissions
 
-Le système de permissions natif de Django est conçu pour être étendu et remplacé grâce à un mécanisme appelé **Authentications Backends***. Ainsi, la question des permissions du Custom RBAC peut être répondu avec `user.has_perm()` avec, en coulisse, un arbre de décision custom. 
+Le système de permissions natif de Django est conçu pour être étendu et remplacé grâce à un mécanisme appelé **Authentications Backends**. Ainsi, la question des permissions du Custom RBAC peut être répondu avec `user.has_perm() avec, en coulisse, une résolution qui va vérifier les tables du Custom RBAC. 
 
 La question:
 
@@ -182,38 +184,108 @@ Cet utilisateur peut-il effectuer cette action dans ce contexte et ce périmètr
                                 │
                                 └──[Non]
                                      ▼
+                     [ Validation du paramètre `obj` (Contexte) ]
+                 Vérification des structures requises selon le type de permission
+          (Déclenche un Warning ou lève une Exception / Invalidation immédiate)
+                                     │
+                                     ▼
                       [ Trouver la Permission demandée ]
                                      │
-                                     ├── Introuvable OU `is_active == False` ──> RETOURNER FAUX
                                      ▼
-                        [ Boucle sur chaque UserRole ]
+          [ Filtrage & Boucle sur les Permissions assignées à l'utilisateur via UserRoles ]
                                      │
-                         `is_active == False` OU rôle associé inactif ──> Passer au suivant
+          1. EXCLURE d'emblée les UserRoles inactifs, les Permissions inactives ou rattachées à un Rôle inactif.
+          2. EXCLURE tous les rôles qui possèdent une permission de type DELEGATE dans leur liste.
+          3. INCLURE les permissions de type DELEGATE assignées à l'utilisateur
                                      │
+                                     ├── Aucune permission trouvée ──> RETOURNER FAUX
                                      ▼
-                  Quels sont les besoins de la Permission ?
-                    ├── Global  ──> L'assignation doit être 100% vide (Compagnie = NULL, Lieu = NULL)
-                    └── Company ──> La Compagnie matche-t-elle le contexte ?
-                                       │
-                                       └── [Oui] ──> La location matche-t-elle (ou est-elle un enfant) ?
-                                       │                │
-                                       │                └── [Oui] ──> RETOURNER VRAI                 
-                                       │
-                                       └── [Non] ──> RETOURNER FAUX
+          [ Boucle sur chaque Permission valide assignée à l'utilisateur ]
+                                     │
+                     Est-ce la permission recherchée ?
+                                     │
+                                     ├── [Non] ──> Passer à la suivante
+                                     └── [Oui] ──> Comparaison du contexte requis par la permission avec le contexte (Obj) fourni
+                                                       │
+         ┌─────────────────────────────────────────────┼──────────────────────────────────────────────┐
+         ▼                                             ▼                                              ▼
+   [ Permission SYSTEM ]                [ Permission COMPANY / DELEGATE ]                [ Permission LOCATION / MULTI_LOCATIONS ]
+   │  (si Obj est fourni, un                Obj matche-t-il ?                               La location (ou liste) matche-t-elle
+   │   warning a déjà été préparé)               ├── Non ──> Passer au suivant                  l'assignation ou ses enfants ?
+   └───> RETOURNER VRAI                          └── Oui ──> RETOURNER VRAI                     ├── Oui ──> RETOURNER VRAI
+                                                                                                └── Non ──> Passer au suivant
+                                                                                                                
+         └────────────────────────────────────────────┬───────────────────────────────────────────────┘ 
+                                                      ▼
+                                            [ FIN DE LA BOUCLE  ]     
+                                                      └───> RETOURNER FAUX                             
+
+```
+Validation du paramètre `obj` (Contexte)
+```text
+[ Paramètre `obj` reçu ] ──> Est-ce un Dictionnaire ?
+                               │
+                               ├── [Non] ──> Si la Perm nécessite un Contexte ──> LEVER EXCEPTION (Invalid Context)
+                               └── [Oui]
+                                    ▼
+                     [ ÉVALUATION DU TYPE DE CONTEXTE ]
+                                    │
+    ┌───────────────────────────────┘                            
+    ├── SYSTEM ─────────────────────> `company_id` OU `location_id` est fourni ?
+    │                                    ├── [Oui] ──> ÉMETTRE WARNING : "SYSTEM permission ignores context"
+    │                                    └─> CONTEXTE VALIDE
+    │
+    ├── DELEGATE ───────────────────> `company_id` est-il absent ? ──[Oui]──> LEVER EXCEPTION (Missing Company)
+    │                                    │
+    │                                    └──[Non] ──> Est-ce une liste/un array ? ──[Oui]──> LEVER EXCEPTION (Too Many Companies)
+    │                                                   │
+    │                                                   └──[Non] ──> `location_id` est-il fourni ?
+    │                                                                   ├── [Oui] ──> ÉMETTRE WARNING : "Location ignored for COMPANY context"
+    │                                                                   └─> CONTEXTE VALIDE
+    │
+    ├── COMPANY ────────────────────> `company_id` est-il absent ? ──[Oui]──> LEVER EXCEPTION (Missing Company)
+    │                                    │
+    │                                    └──[Non] ──> Est-ce une liste/un array ? ──[Oui]──> LEVER EXCEPTION (Too Many Companies)
+    │                                                   │
+    │                                                   └──[Non] ──> `location_id` est-il fourni ?
+    │                                                                   ├── [Oui] ──> ÉMETTRE WARNING : "Location ignored for COMPANY context"
+    │                                                                   └──> CONTEXTE VALIDE
+    │
+    ├── MULTI_COMPANIES ────────────> `company_id` est-il absent ? ──[Oui]──> LEVER EXCEPTION (Missing Company)
+    │                                    │
+    │                                    └──[Non] ──> `location_id` est-il fourni ?
+    │                                                    ├── [Oui] ──> ÉMETTRE WARNING : "Location ignored for MULTI_COMPANIES context"
+    │                                                    └─> CONTEXTE VALIDE
+    │
+    ├── LOCATION ───────────────────> `company_id` absent OU est une liste ? ──[Oui]──> LEVER EXCEPTION (Single Company Required)
+    │                                    │
+    │                                    └──[Non] ──> `location_id` absent OU est une liste ? 
+    │                                                   ├── [Oui] ──> LEVER EXCEPTION (Single Location Required)
+    │                                                   └── [Non] ──> CONTEXTE VALIDE
+    │
+    └── MULTI_LOCATIONS ────────────> `company_id` absent OU est une liste ? ──[Oui]──> LEVER EXCEPTION (Single Company Required)
+                                         │
+                                         └──[Non] ──> `location_id` absent OU n'est pas une liste ? ──[Oui]──> LEVER EXCEPTION (Array Required)
+                                                        │
+                                                        └──[Oui, liste] ──> Nombre d'éléments < 2 ? 
+                                                                               ├──[Oui] ──> LEVER EXCEPTION (At least 2 Locations required)
+                                                                               └──[Non] ──> CONTEXTE VALIDE
+
 ```
 
 #### Backend d'Authentification personnalisé <a id="auth-backend"></a>
 
 ```python
-# django-stock/src/access/backends.py
+# django-stock/src/access/auth_backends.py
 
 from django.db.models import Prefetch
 from django.core.exceptions import ObjectDoesNotExist
-# Importez les modèles ici (UserRole, AccessPermission, CompanyLocation, etc.)
+# Importez les modèles (UserRole, AccessPermission, AccessRole, AccessRolePermission, Company, Location.)
 
 class CompanyRBACBackend:
     """
     Backend de permission personnalisé pour gérer le RBAC par Compagnie et Lieu.
+    Est optimisé pour minimiser les requêtes à la base de données.
     """
 
     def authenticate(self, request, username=None, password=None, **kwargs):
@@ -226,144 +298,15 @@ class CompanyRBACBackend:
         Surcharge la vérification des permissions.
         :param user_obj: L'instance de l'utilisateur connecté.
         :param perm: Le codename string de la permission (ex: 'catalogue.product.delete').
-        :param obj: Un dictionnaire optionnel contenant le contexte : 
-                    {"company_id": X, "location_id": Y}
+        :param obj: Un dictionnaire optionnel contenant le contexte à vérifier 
+           SYSTEM          - None
+           COMPANY         - { "company_id": A }
+           LOCATION        - { "company_id": A, "location_id": Y }
+           MULTI_LOCATIONS - { "company_id": A, "location_id": [Y, X] }
+           MULTI_COMPANIES - { "company_id": [A, B] }
         """
-        # 1. Protection & Fast-Bypass
-        if not user_obj or not user_obj.is_active:
-            return False
-
-        if getattr(user_obj, 'is_owner', False):
-            return True
-
-        # 2. Détermination automatique du contexte de compagnie
-        context_company_id = None
-        context_location_id = None
-
-        if isinstance(obj, dict):
-            context_company_id = obj.get('company_id')
-            context_location_id = obj.get('location_id')
-        else:
-            # Récupération automatique depuis le CompanyContext (Thread-Safe)
-            current_company = CompanyContext.get()
-            if current_company:
-                context_company_id = current_company.id
-
-            # Si obj est directement une instance de modèle "Location", on extrait son ID
-            if hasattr(obj, 'location_id'): # Si c'est un objet possédant un lieu (ex: Stock)
-                context_location_id = obj.location_id
-            elif hasattr(obj, 'path'): # Si obj est directement l'instance de CompanyLocation
-                context_location_id = obj.id
-
-        # 3. Récupération TOUT-EN-UN (Filtres is_active inclus)
-        user_roles = UserRole.objects.filter(
-            user_id=user_obj.id,
-            is_active=True,         # Validation de l'assignation active
-            role__is_active=True    # Validation du rôle actif
-        ).select_related(
-            'role', 
-            'location'
-        ).prefetch_related(
-            Prefetch(
-                'role__permissions',
-                queryset=AccessPermission.objects.filter(codename=perm, is_active=True), # Permission active
-                to_attr='matching_permissions'
-            )
-        )
-
-        if not user_roles:
-            return False
-
-        context_location_path = None
-
-        # 4. Évaluation en mémoire Python
-        for user_role in user_roles:
-            role = user_role.role
-
-            if not role.matching_permissions:
-                continue
-
-            permission = role.matching_permissions[0] # Récupère la perm de la liste to_attr
-
-            # --- CAS CONTEXTE GLOBAL ---
-            if permission.need_globalcontext and not permission.need_companycontext:
-                if user_role.company_id is None and user_role.location_id is None:
-                    return True
-                continue
-
-            # --- CAS CONTEXTE COMPAGNIE ---
-            elif permission.need_companycontext:
-                if context_company_id is None:
-                    continue
-
-                company_access_granted = False
-
-                if role.company_id is None and user_role.company_id is None:
-                    company_access_granted = True
-
-                elif role.company_id is not None:
-                    if role.company_id == context_company_id:
-                        if user_role.company_id is None or user_role.company_id == context_company_id:
-                            company_access_granted = True
-
-                elif role.company_id is None and user_role.company_id is not None:
-                    if user_role.company_id == context_company_id:
-                        company_access_granted = True
-
-                if not company_access_granted:
-                    continue
-
-                # --- ÉTAPE B : VALIDATION DU PÉRIMÈTRE LOCATION ---
-                if user_role.location_id is None:
-                    return True 
-
-                if context_location_id is not None:
-                    if user_role.location_id == context_location_id:
-                        return True
-
-                    if user_role.location and user_role.location.path:
-                        if context_location_path is None:
-                            try:
-                                context_location_path = CompanyLocation.objects.values_list('path', flat=True).get(id=context_location_id)
-                            except CompanyLocation.DoesNotExist:
-                                context_location_path = ""
-
-                        parent_path = user_role.location.path
-                        if context_location_path.startswith(parent_path) and len(context_location_path) > len(parent_path):
-                            return True
-
-        return False
+        ...                   
 ```
-
-<mark>TODO</mark>: Modifs à prévoir à l'arbre de décision et à la méthode has_perm ci-haut:
-
-1. La permission `access.role.manage` a été révisée et est maintenant un **cas particulier** qui affecte la résolution de la question de 2 manières :
-   
-   1. Les rôles qui incluent la permission `access.role.manage` doivent toujours être ignorés dans la résolution: ajouter un filtre pour exclure ces rôles (`access.role.manage` est de context "DELETEGATE").
-      RAISON: les rôles qui accompagnent la permission `access.role.manage` **représentent la liste des permissions manipulables** en lien avec `access.role.manage`. Ce ne sont pas des permissions standards qui donnent accès à l'action métier.
-   
-   2. Si la permission vérifiée *est* `access.role.manage`, alors il faut évidemment  vérifer ce rôle.
-      
-      1. has_perm renvoit toujours FAUX si access.role.manage est associé à un rôle dont company_id est Null. C'est une sécurité supplémentaire au cas où un bug aurait été introduit dans l'UI de la validation système: un rôle avec `access.role.manage` doit TOUJOURS être spécifique à une compagnie.
-   
-   3. L'arbre de décision et la méthode has_perm doivent être mise à jour avec ces éléments nouveaux
-
-2. Les fields `access_permission.need_globalcontext` et `access_permission.need_companycontext` ont été regroupé sous le field `context`, un enum pouvant prendre les valeurs de : `SYSTEM`, `COMPANY`, `MULTI_COMPANIES`, `LOCATION `et `MULTI_LOCATIONS`
-* Implications: une permission GLOBALE est devenue, plus explicitement, une permission `SYSTEM `(pas besoin de company active) ou `MULTI_COMPANIES `(besoin de permissions sur plusieurs compagnies - c'est probablement une vue de rapport d'aggrégation de données.). Il y a aussi l'ajout du niveau de scope `LOCATION `et `MULTI_LOCATIONS`.
-  
-  * `LOCATION `et `MULTI_LOCATIONS `sont des scopes `COMPANY`spécialisés
-
-* Ainsi: on doit maintenant pouvoir appeler user.has_perm avec le param obj (dictionnaire de contexte) où obj est: 
-  
-  * {"company_id": X} => Pour vérifier une perm de context COMPANY
-  
-  * {"company_id": X, "location_id": A} => Pour vérifier une perm de context LOCATION
-  
-  * {"company_id": X, "location_id": [A, B]} => Pour vérifier une perm de context MULTI_LOCATIONS
-  
-  * {"company_id": [X, Y]} => Pour vérifier une perm de context MULTI_COMPANIES
-  
-  * {"company_id": [X, Y], "location_id": ...} => INVALIDE. une perm de context MULTI-COMPANIES ne descend pas jusqu'à préciser des locations.
 
 ##### Enregistrer le Backend dans `settings.py`
 
@@ -401,7 +344,7 @@ contexte = {
 }
 
 if user.has_perm('catalogue.product.delete', obj=contexte):
-    print("L'utilisateur a le droit de supprimer ce produit dans cette filiale.")
+    print("L'utilisateur a le droit de supprimer le produit appartenant à cette compagnie.")
 else:
     raise PermissionDenied()
 ```
@@ -638,7 +581,7 @@ Le propriétaire peut déléguer la responsabilité de créer des rôles à un e
 
 1. `users_userrole.company_id` doit être défini sur la même compagnie que le rôle (`access_role.company_id`). Il s'agit d'une validation supplémentaire de la volonté du propriétaire
 
-2.  `location_id `doit être NULL.
+2. `location_id `doit être NULL.
    
    1. Un rôle ne peut pas être limité à une location donc la création de nouveaux rôles ne peut pas l'être non plus.
 
@@ -785,8 +728,6 @@ Exemple de rapports qui pourraient être (éventuellement) possible
 | reporting.multicompany.view           | Lecture des rapports rassemblant les données de plusieurs entreprises      | MULTI_COMPANIES | HIGH        |
 | `reporting.stock_levels.view`         | Lecture des rapports de rotations, ruptures imminentes et seuils d'alerte. | MULTI_COMPANIES | HIGH        |
 |                                       |                                                                            |                 |             |
-
-
 
 ## Rôles par Défaut <a id="roles"></a>
 
