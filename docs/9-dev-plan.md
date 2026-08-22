@@ -18,7 +18,7 @@ Projet Gestion de stocks — document de conception
 
 Ce document présente les jalons du projet, les outils utilisés pour sa gestion et fait une excursion sur l'automatisation GitHub.
 
-[← Arborescence des fichiers](7-projet-structure.md) | [Sommaire](2-conception.md)
+[← Arborescence des fichiers](8-project-structure.md) | [Sommaire](2-conception.md)
 
 ---
 
@@ -31,6 +31,8 @@ Ce document présente les jalons du projet, les outils utilisés pour sa gestion
 | 0.3 Next    | Déclinaision de versions 0.3 à 0.9 qui ajoute des couches de fonctionnalités de manière incrémentielle, jusqu'à arriver à la version V1. Un tag (remplaçant "NEXT") sera donné pour décrire la fonctionnalité majeure implémentée. |
 | 1.0 V1      | Première version incluant tous les éléments du cahier des charges                                                                                                                                                                  |
 | Future (VX) | Version future (fonctionnalités non prévues dans le développement pour le moment)                                                                                                                                                  |
+
+À noter que chaque version est construit sur la version précédente. Même le POC n'est pas considéré comme un "code jetable".
 
 ## Gestion avec JIRA
 

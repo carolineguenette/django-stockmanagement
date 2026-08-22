@@ -1,30 +1,23 @@
 # src/catalogue/models/product.py
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.conf import settings
 
-from src.company.models.company import Company
-from src.scope.managers import CompanyScopedManager
+from src.scope.models.abstract_companyowned import CompanyOwned
+from src.core.models.abstract_audit import AbstractAudit
 
 
-class Product(models.Model):
-
-    company = models.ForeignKey(
-        Company,
-        on_delete=models.CASCADE,
-        related_name='products',
-        verbose_name=_('company')
-    )
+class Product(CompanyOwned, AbstractAudit):
+    """
+    Modèle de produit isolé par entreprise et audité.
+    Hérite des champs d'audit et des 3 managers de scope.
+    """
 
     # TEMPORAIRE : en attendant d'avoir model ProductModel
-    name = models.CharField(
+    official_name = models.CharField(
         max_length=255,
         verbose_name=_("name")
     )
 
-    # Modèles personnalisés
-    objects = CompanyScopedManager()
-    # mc_objects = MultiCompanyScopedManager()
 
     class Meta:
         db_table = "catalogue_product"
@@ -32,4 +25,4 @@ class Product(models.Model):
         verbose_name_plural = _("products")
 
     def __str__(self):
-        return f"{self.company.official_name} : {self.name}"
+        return f"{self.company.official_name}"

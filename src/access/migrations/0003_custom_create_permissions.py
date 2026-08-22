@@ -1,0 +1,403 @@
+from django.db import migrations
+
+
+PERMISSIONS = [
+    # === ACCESS ===
+    {
+        "codename": "access.role.manage",
+        "name": "Gérer les rôles",
+        "help_text": "Gérer les rôles et leur association avec des permissions. Cette permission est strictement encadrée pour empêcher l'escalade de privilèges.",
+        "context": "DELEGATE",
+        "sensibility": "HIGH",
+        "display_order": 1,
+    },
+    # === USERS ===
+    {
+        "codename": "users.user.add",
+        "name": "Créer un utilisateur",
+        "help_text": "Créer un nouvel utilisateur dans le système. L'utilisateur créé sera un subordonné de utilisateur créateur.",
+        "context": "SYSTEM",
+        "sensibility": "LOW",
+        "display_order": 10,
+    },
+    {
+        "codename": "users.user.invite",
+        "name": "Inviter un utilisateur",
+        "help_text": "Inviter un utilisateur à créer son propre compte à partir d'un courriel contenant un lien sécurisé.",
+        "context": "SYSTEM",
+        "sensibility": "LOW",
+        "display_order": 11,
+    },
+    {
+        "codename": "users.user.view",
+        "name": "Voir les utilisateurs",
+        "help_text": "Voir la liste des utilisateurs, incluant leur secteur d'activité. Un utilisateur avec cette permission ne voit que ses subordonnés.",
+        "context": "SYSTEM",
+        "sensibility": "LOW",
+        "display_order": 12,
+    },
+    {
+        "codename": "users.user.change",
+        "name": "Modifier un utilisateur",
+        "help_text": "Modifier les informations ou préférences d'un utilisateur, excluant le drapeau propriétaire. Un utilisateur avec cette permission ne peut modifier que ses subordonnés.",
+        "context": "SYSTEM",
+        "sensibility": "LOW",
+        "display_order": 13,
+    },
+    {
+        "codename": "users.user.change_own",
+        "name": "Modifier son propre profil",
+        "help_text": "Modifier les informations et préférences de son propre profil. Exclut la modification du statut propriétaire et du superviseur.",
+        "context": "SYSTEM",
+        "sensibility": "LOW",
+        "display_order": 14,
+    },
+    {
+        "codename": "users.user.delete",
+        "name": "Supprimer un utilisateur",
+        "help_text": "Supprimer un utilisateur. Le système refusera s'il existe des références à cet utilisateur ou s'il est propriétaire.",
+        "context": "SYSTEM",
+        "sensibility": "MEDIUM",
+        "display_order": 15,
+    },
+    {
+        "codename": "users.user.setactivation",
+        "name": "Activer/désactiver un compte",
+        "help_text": "Activer ou désactiver le compte d'un utilisateur. Un utilisateur avec cette permission ne peut changer le statut que de ses subordonnés.",
+        "context": "SYSTEM",
+        "sensibility": "LOW",
+        "display_order": 16,
+    },
+    {
+        "codename": "users.userrole.view",
+        "name": "Voir les rôles assignés",
+        "help_text": "Consulter les rôles assignés à une liste d'utilisateurs. Un utilisateur avec cette permission ne peut voir les permissions que de ses subordonnés.",
+        "context": "SYSTEM",
+        "sensibility": "MEDIUM",
+        "display_order": 17,
+    },
+    {
+        "codename": "users.userrole.manage",
+        "name": "Gérer les rôles assignés",
+        "help_text": "Assigner, modifier ou supprimer les rôles assignés à un utilisateur. Strictement limité aux subordonnés et aux permissions détenues.",
+        "context": "SYSTEM",
+        "sensibility": "HIGH",
+        "display_order": 18,
+    },
+    {
+        "codename": "users.userrolelog.view",
+        "name": "Voir l'historique des rôles",
+        "help_text": "Voir l'historique des modifications sur les assignations de rôle. Un utilisateur avec cette permission ne voit les informations que de ses subordonnés.",
+        "context": "SYSTEM",
+        "sensibility": "MEDIUM",
+        "display_order": 19,
+    },
+    # === COMPANY ===
+    {
+        "codename": "company.company.view",
+        "name": "Voir les informations de l'entreprise",
+        "help_text": "Voir les informations de configuration de l'entreprise.",
+        "context": "COMPANY",
+        "sensibility": "MEDIUM",
+        "display_order": 20,
+    },
+    {
+        "codename": "company.locationtype.manage",
+        "name": "Gérer les types de location",
+        "help_text": "Gérer les types de location (voir, ajouter, modifier et supprimer).",
+        "context": "COMPANY",
+        "sensibility": "MEDIUM",
+        "display_order": 21,
+    },
+    {
+        "codename": "company.location.view",
+        "name": "Consulter les emplacements",
+        "help_text": "Consulter les emplacements de l'entreprise.",
+        "context": "COMPANY",
+        "sensibility": "LOW",
+        "display_order": 22,
+    },
+    {
+        "codename": "company.location.sub.manage",
+        "name": "Gérer les sous-locations",
+        "help_text": "Gérer les sous-locations (emplacements enfants). Le système vérifie que le parent appartient à la même entreprise.",
+        "context": "COMPANY",
+        "sensibility": "MEDIUM",
+        "display_order": 23,
+    },
+    {
+        "codename": "company.uom.view",
+        "name": "Consulter les unités de mesure",
+        "help_text": "Consulter toutes les unités de mesure définies dans l'entreprise.",
+        "context": "COMPANY",
+        "sensibility": "LOW",
+        "display_order": 24,
+    },
+    {
+        "codename": "company.uom.manage",
+        "name": "Gérer les unités de mesure",
+        "help_text": "Gérer toutes les unités de mesure utilisées dans l'entreprise.",
+        "context": "COMPANY",
+        "sensibility": "HIGH",
+        "display_order": 25,
+    },
+    # === CATALOGUE ===
+    {
+        "codename": "catalogue.product.view",
+        "name": "Consulter le catalogue",
+        "help_text": "Consulter le catalogue des produits (inclut les modèles, variantes, catégories, images et conditionnement).",
+        "context": "COMPANY",
+        "sensibility": "LOW",
+        "display_order": 30,
+    },
+    {
+        "codename": "catalogue.product.add",
+        "name": "Créer un produit",
+        "help_text": "Créer un nouveau produit (inclut les modèles, variantes, catégories, images et conditionnement).",
+        "context": "COMPANY",
+        "sensibility": "MEDIUM",
+        "display_order": 31,
+    },
+    {
+        "codename": "catalogue.product.change",
+        "name": "Modifier un produit",
+        "help_text": "Modifier les caractéristiques d'une fiche produit (inclut les modèles, variantes, catégories, images et conditionnement).",
+        "context": "COMPANY",
+        "sensibility": "MEDIUM",
+        "display_order": 32,
+    },
+    {
+        "codename": "catalogue.product.imagesupload",
+        "name": "Téléverser des images de produit",
+        "help_text": "Téléverser des images sur le serveur en lien avec le produit. Nécessite la permission de modifier un produit.",
+        "context": "COMPANY",
+        "sensibility": "MEDIUM",
+        "display_order": 33,
+    },
+    {
+        "codename": "catalogue.product.archive",
+        "name": "Archiver un produit",
+        "help_text": "Archiver ou désarchiver un produit. Un produit archivé n'apparaît plus dans les listes ni les recherches.",
+        "context": "COMPANY",
+        "sensibility": "HIGH",
+        "display_order": 34,
+    },
+    {
+        "codename": "catalogue.product.delete",
+        "name": "Supprimer un produit",
+        "help_text": "Supprimer définitivement un produit du catalogue. Le système bloquera la suppression si des références existent.",
+        "context": "COMPANY",
+        "sensibility": "HIGH",
+        "display_order": 35,
+    },
+    {
+        "codename": "catalogue.category.view",
+        "name": "Consulter les catégories",
+        "help_text": "Consulter l'arborescence complète des catégories.",
+        "context": "COMPANY",
+        "sensibility": "LOW",
+        "display_order": 36,
+    },
+    {
+        "codename": "catalogue.category.manage",
+        "name": "Gérer les catégories",
+        "help_text": "Gérer les catégories. Le système bloquera la suppression d'une catégorie référencée.",
+        "context": "COMPANY",
+        "sensibility": "MEDIUM",
+        "display_order": 37,
+    },
+    {
+        "codename": "catalogue.attribute.manage",
+        "name": "Gérer les attributs de variantes",
+        "help_text": "Gérer les attributs (clé et valeurs) de variantes de produit dans un module dédié.",
+        "context": "COMPANY",
+        "sensibility": "HIGH",
+        "display_order": 38,
+    },
+    # === INVENTORY ===
+    {
+        "codename": "inventory.stock.view",
+        "name": "Consulter les stocks",
+        "help_text": "Consulter les quantités de stock disponibles.",
+        "context": "LOCATION",
+        "sensibility": "MEDIUM",
+        "display_order": 40,
+    },
+    {
+        "codename": "inventory.movement.view",
+        "name": "Consulter les mouvements de stock",
+        "help_text": "Consulter le journal historique des mouvements de stock. Permet de rechercher et filtrer.",
+        "context": "COMPANY",
+        "sensibility": "LOW",
+        "display_order": 41,
+    },
+    {
+        "codename": "inventory.movementreason.manage",
+        "name": "Gérer les raisons de mouvement",
+        "help_text": "Gérer les raisons pour modifier les quantités en inventaire. Permet d'associer la permission requise à la raison.",
+        "context": "COMPANY",
+        "sensibility": "HIGH",
+        "display_order": 42,
+    },
+    {
+        "codename": "inventory.stock.increase",
+        "name": "Augmenter l'inventaire",
+        "help_text": "Augmenter l'inventaire (permission générique).",
+        "context": "LOCATION",
+        "sensibility": "HIGH",
+        "display_order": 43,
+    },
+    {
+        "codename": "inventory.stock.decrease",
+        "name": "Diminuer l'inventaire",
+        "help_text": "Diminuer l'inventaire (permission générique).",
+        "context": "LOCATION",
+        "sensibility": "HIGH",
+        "display_order": 44,
+    },
+    {
+        "codename": "inventory.stock.purchase",
+        "name": "Réception achat fournisseur",
+        "help_text": "Augmenter l'inventaire en raison d'une commande d'achat à un fournisseur.",
+        "context": "LOCATION",
+        "sensibility": "MEDIUM",
+        "display_order": 45,
+    },
+    {
+        "codename": "inventory.stock.manufacture",
+        "name": "Réception production interne",
+        "help_text": "Augmenter l'inventaire en raison de l'arrivée de produits issus d'une chaîne de production interne.",
+        "context": "LOCATION",
+        "sensibility": "MEDIUM",
+        "display_order": 46,
+    },
+    {
+        "codename": "inventory.stock.sale",
+        "name": "Vente",
+        "help_text": "Diminuer l'inventaire en raison d'une vente.",
+        "context": "LOCATION",
+        "sensibility": "MEDIUM",
+        "display_order": 47,
+    },
+    {
+        "codename": "inventory.stock.count_more",
+        "name": "Ajustement inventaire (plus)",
+        "help_text": "Augmenter l'inventaire en raison d'un ajustement de décompte d'inventaire.",
+        "context": "LOCATION",
+        "sensibility": "MEDIUM",
+        "display_order": 48,
+    },
+    {
+        "codename": "inventory.stock.count_less",
+        "name": "Ajustement inventaire (moins)",
+        "help_text": "Diminuer l'inventaire en raison d'un ajustement de décompte d'inventaire.",
+        "context": "LOCATION",
+        "sensibility": "MEDIUM",
+        "display_order": 49,
+    },
+    {
+        "codename": "inventory.stock.loss",
+        "name": "Perte de marchandise",
+        "help_text": "Diminuer l'inventaire en raison de marchandises perdues (bris, vol, date de péremption dépassé, etc).",
+        "context": "LOCATION",
+        "sensibility": "MEDIUM",
+        "display_order": 50,
+    },
+    {
+        "codename": "inventory.stock.uom_pack",
+        "name": "Changement d'UM (pack)",
+        "help_text": "Diminuer l'inventaire en raison d'un changement d'unité de mesure (unité vers pack).",
+        "context": "LOCATION",
+        "sensibility": "MEDIUM",
+        "display_order": 51,
+    },
+    {
+        "codename": "inventory.stock.uom_unpack",
+        "name": "Changement d'UM (unpack)",
+        "help_text": "Augmenter l'inventaire en raison d'un changement d'unité de mesure (pack vers unité).",
+        "context": "LOCATION",
+        "sensibility": "MEDIUM",
+        "display_order": 52,
+    },
+    {
+        "codename": "inventory.stock.relocate",
+        "name": "Relocaliser dans même emplacement",
+        "help_text": "Relocaliser le stock dans un emplacement ayant le même parent principal.",
+        "context": "MULTI_LOCATIONS",
+        "sensibility": "MEDIUM",
+        "display_order": 53,
+    },
+    {
+        "codename": "inventory.stock.transfer_out",
+        "name": "Transfert sortant",
+        "help_text": "Diminuer l'inventaire pour l'envoyer dans un emplacement ayant un parent principal différent.",
+        "context": "LOCATION",
+        "sensibility": "MEDIUM",
+        "display_order": 54,
+    },
+    {
+        "codename": "inventory.stock.transfer_in",
+        "name": "Transfert entrant",
+        "help_text": "Augmenter l'inventaire en réceptionnant un transfert entrant.",
+        "context": "LOCATION",
+        "sensibility": "MEDIUM",
+        "display_order": 55,
+    },
+    {
+        "codename": "inventory.stock.intercompany_out",
+        "name": "Transfert inter-compagnie sortant",
+        "help_text": "Diminuer l'inventaire en raison d'une vente interne vers une entreprise du même propriétaire.",
+        "context": "LOCATION",
+        "sensibility": "MEDIUM",
+        "display_order": 56,
+    },
+    {
+        "codename": "inventory.stock.intercompany_in",
+        "name": "Transfert inter-compagnie entrant",
+        "help_text": "Augmenter l'inventaire en raison de la réception interne de stock d'une entreprise du même propriétaire.",
+        "context": "LOCATION",
+        "sensibility": "MEDIUM",
+        "display_order": 57,
+    },
+    # === REPORTING ===
+    {
+        "codename": "reporting.view",
+        "name": "Voir les rapports consolidés",
+        "help_text": "Lecture des rapports rassemblant les données de plusieurs entreprises.",
+        "context": "MULTI_COMPANIES",
+        "sensibility": "HIGH",
+        "display_order": 60,
+    },
+    {
+        "codename": "reporting.stock_levels.view",
+        "name": "Voir les rapports de stock",
+        "help_text": "Lecture des rapports de rotations, ruptures imminentes et seuils d'alerte.",
+        "context": "MULTI_COMPANIES",
+        "sensibility": "HIGH",
+        "display_order": 61,
+    },
+]
+
+
+def create_permissions(apps, schema_editor):
+    """
+    Crée les permissions du système à partir des données figées dans la migration.
+    Utilise get_or_create pour être idempotent (ne crée pas les doublons).
+    """
+    Permission = apps.get_model("access", "Permission")
+
+    for perm_data in PERMISSIONS:
+        # On utilise le codename comme clé unique
+        Permission.objects.get_or_create(
+            codename=perm_data["codename"], defaults=perm_data
+        )
+
+
+class Migration(migrations.Migration):
+    dependencies = [
+        ("access", "0002_initial"),
+    ]
+
+    operations = [
+        migrations.RunPython(create_permissions),
+    ]

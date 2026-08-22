@@ -1,6 +1,5 @@
 import re
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from src.company.models.company import Company

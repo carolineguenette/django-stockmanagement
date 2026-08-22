@@ -2,8 +2,9 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from pathlib import Path
-from .product import Product  # <-- Importation relative du modèle principal
 import uuid
+
+from src.catalogue.models.product import Product
 
 
 # Renomme les fichiers image téléchargés selon le SKU et un uuid

@@ -28,8 +28,9 @@ Table des matières globale des documents de conception :
 4. [Règles de sécurité et logique algorithmique du RBAC](4-data-security.md)
 5. [Découpage modulaire du code (django apps et urls)](5-django-apps-and-urls.md)
 6. [Database (Schéma et django-models)](6-database-models.md)
-7. [Arborescence des fichiers](7-project-structure.md)
-8. [Gestion de projet, Jira et GitHub Actions](8-dev-plan.md)
+7. [Système d’inventaire](7-inventory-system.md)
+8. [Arborescence des fichiers](8-project-structure.md)
+9. [Gestion de projet, Jira et GitHub Actions](9-dev-plan.md)
 
 ---
 
@@ -53,13 +54,12 @@ Ce projet est une application de gestion d'inventaire multi-entreprises apparten
 
 ### Types d'utilisateurs
 
-
-| Rôle / Type              | Drapeaux (Flags)                                                           | Périmètre et Accès                                                                                     |
-| :------------------------ | :------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------- |
-| **Propriétaire métier** | `is_owner=True`<br>`is_superuser=False`<br>`is_staff=False`                | Accès métier total à toutes les compagnies, aux vues globales et aux paramètres de l'entreprise.      |
-| **Employé**              | `is_owner=False`<br>`is_superuser=False`<br>`is_staff=False` + RBAC custom | Accès limité par compagnie, emplacement (`location`) et permissions spécifiques du RBAC personnalisé. |
-| **Administrateur Django** | `is_owner=False`<br>`is_superuser=False`<br>`is_staff=True`                | Accès à l'interface d'administration technique de Django.                                               |
-| **Superuser technique**   | `is_owner=Indifférent`<br>`is_superuser=True`<br>`is_staff=True`          | Accès technique total au système.                                                                       |
+| Rôle / Type               | Drapeaux (Flags)                                                           | Périmètre et Accès                                                                                    |
+|:------------------------- |:-------------------------------------------------------------------------- |:----------------------------------------------------------------------------------------------------- |
+| **Propriétaire métier**   | `is_owner=True`<br>`is_superuser=False`<br>`is_staff=False`                | Accès métier total à toutes les compagnies, aux vues globales et aux paramètres de l'entreprise.      |
+| **Employé**               | `is_owner=False`<br>`is_superuser=False`<br>`is_staff=False` + RBAC custom | Accès limité par compagnie, emplacement (`location`) et permissions spécifiques du RBAC personnalisé. |
+| **Administrateur Django** | `is_owner=False`<br>`is_superuser=False`<br>`is_staff=True`                | Accès à l'interface d'administration technique de Django.                                             |
+| **Superuser technique**   | `is_owner=Indifférent`<br>`is_superuser=True`<br>`is_staff=True`           | Accès technique total au système.                                                                     |
 
 ### Distinction des rôles : Métier vs Technique
 
@@ -111,20 +111,32 @@ Le modèle **UserRole** (`users_userrole`) sert de pivot entre les rôle et les 
 
 *Exemple: Jean est gestionnaire à l'entrepôt X et a un accès en lecture seule à la boutique ABC, deux installations de l'entreprise ABC inc. Le propriétaire de Entreprise ABC inc. gère aussi Les installations Y inc. Jean n'a aucune permission concernant cette dernière entreprise et ne peut accéder à aucune de ses données.*
 
+Plusieurs services sont définis pour encapsuler les besoins en permissions des différentes vues.
+
 ---
 
-## Barrières de sécurité et architecture technique
+## Architecture technique et barrières de sécurité
 
-La sécurité et le cloisonnement des données ne reposent pas uniquement sur la vigilance du développeur dans les vues. L'application implémente deux barrières complémentaires :
+La sécurité et le cloisonnement des données ne reposent pas uniquement sur la vigilance du développeur dans les vues. L'application implémente plusieurs barrières complémentaires, à commencer par une architecture en 4 couches de responsabilités soit **contexte**, **cloisonnement**, **autorisation** et **règles métier**.
 
-* **CompanyMiddleware** : Détecte le contexte d'entreprise dans l'URL (`/c/<company_slug>/`), vérifie les habilitations de l'utilisateur et attache la compagnie courante à l'objet `request`.
-* **CompanyScopedManager** : Manager Django personnalisé qui intercepte nativement toutes les requêtes ORM (ex: `Product.objects.all()`) pour appliquer un filtre basé sur l'entreprise active, diminuant ainsi drastiquement les risques de fuite de données inter-entreprises.
+L'application `scope `est dédiée est contexte et au cloisonnement. Le cloisonnement est réalisé par un middleware et 3 contextes personnalisés.
+
+* **CompanyMiddleware** : Détecte le contexte d'entreprise dans l'URL (`/c/<company_slug>/`) et attache la compagnie courante à l'objet `request`.
+* Custom **Managers** : pour les données appartenant à une compagnie, 
+  * `CompanyScopedManager` est assigné à `objects`. Ce manager ajoute un filtre sur le champs `company`, diminuant ainsi les risques de fuite de données inter-entreprises; 
+  * `CompaniesScopedManager` est assigné à `companies`. Avec la méthode `for_companies([ids])`, ce manager récupère les données pour les rapports d'aggrégation, concernant plusieurs compagnies;
+  * `UnscopedManager` est assigné à `unscoped` et est utilie pour les requêtes légitimes qui exigent une absence de filtre. 
+
+L'application `access` gère le système d'autorisation RBAC personnalisé. Ce RBAC permet des règles métiers plus précises et, surtout, de définir un périmètre par compagnie. Le périmètre peut aussi être encore plus restreint en définissant aussi la location.
+
+Finalement, chaque application définie des services métier pour les invariants.
 
 ---
 
 ## Choix du SGDB et agrégation <a id="sgdb"></a>
 
 Contrairement aux architectures SaaS isolées par schémas (type PostgreSQL RLS ou `django-tenants`), le projet utilise une base de données **MySQL partagée**. Ce choix stratégique permet :
+
 1. Une performance accrue lors des requêtes d'agrégation nécessaires au Dashboard consolidé du propriétaire (via `Chart.js`).
 2. Une opportunité pédagogique de démontrer la maîtrise de la sécurité au niveau applicatif (Middleware + Manager ORM).
 
@@ -143,9 +155,8 @@ La librairie *django-parler* sera intégrée dès le début du projet dans le bu
 ## Audit et traçabilité  <a id="audit"></a>
 
 La traçabilité est critique dans une application de stock multi-entreprises. Le système intègre des mécanismes de journalisation par snapshots (`JSONField`) et des clés étrangères sont stratégiquement utilisées pour faciliter les recherches sans avoir à fouiller tous les champs JSON. :
+
 * **Mouvements de stock** : Tout changement de quantité dans `inventory_stock` génère un historique immuable dans `inventory_movement`.
 * **Modifications d'accès** : Les tables `access_log` et `userrolelog` tracent l'intégralité des créations de rôles et des assignations d'employés avec l'état avant/après.
 
 De plus, un audit de base (créateur, date de création, dernière date de modification et mise à jour par quel utilisateur) aux données qui changent moins fréquemment. 
-
-

@@ -1,6 +1,6 @@
 # src/core/urls.py
 from django.urls import path
-from .views.debug_views import HomeDebugView
+from src.core.views.debug_views import HomeDebugView
 
 app_name = "core"  # Définit l'espace de noms 'core:'
 

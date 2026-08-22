@@ -1,23 +1,31 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from src.company.models.company import Company
+from parler.models import TranslatableModel, TranslatedFields
+from treebeard.mp_tree import MP_Node
 
-class Location(models.Model):
+from src.core.models.abstract_audit import AbstractAudit
+from src.scope.models.abstract_companyowned import CompanyOwned
 
-    # --- PHASE: POC ---
+class Location(TranslatableModel, CompanyOwned, MP_Node, AbstractAudit):
 
-    company = models.ForeignKey(
-        Company,
-        on_delete=models.CASCADE,
-        related_name='locations',
-        verbose_name=_('company')
+    slug = models.SlugField(
+        max_length=255,
+        verbose_name=_('Slug')
     )
+
+    # Déclaration des champs traduisibles pour django-parler
+    translations = TranslatedFields(
+        name = models.CharField(
+            max_length=150,
+            verbose_name=_('Name')
+        ),
+    )
+
     name = models.CharField(
         max_length=255,
         verbose_name=_('name')
     )
 
-    # --- PHASE: MVP ---
     address_line1 = models.CharField(
         max_length=255,
         null=True,
@@ -55,22 +63,10 @@ class Location(models.Model):
         verbose_name=_('postal code')
     )
 
-    # --- PHASE: VX ---
-    parent_location = models.ForeignKey(
-        'self',
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='sub_locations',
-        verbose_name=_('parent location')
-    )
-
     class Meta:
         db_table = 'company_location'
         verbose_name = _('location')
         verbose_name_plural = _('locations')
 
-    def __str__(self):
-        if self.parent_location:
-            return f"{self.parent_location} > {self.name}"
-        return f"{self.company.name} - {self.name}"
+    def __str__(self): 
+        return f"{self.company.official_name} - {self.name}"

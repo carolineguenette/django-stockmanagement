@@ -4,7 +4,7 @@ Django settings pour le projet.
 
 from pathlib import Path
 import environ
-from config import __version__
+from src.config import __version__
 
 # --------------------------------------------------------------------------------
 # CHEMINS DE BASE (Calculé par rapport à la racine où se trouve manage.py)
@@ -25,7 +25,7 @@ DEBUG = env("DEBUG")
 ALLOWED_HOSTS = ["stock", "127.0.0.1", "localhost", "0.0.0.0"]
 
 # --------------------------------------------------------------------------------
-# APPLICATIONS INSTALL?ES
+# APPLICATIONS INSTALLÉES
 # --------------------------------------------------------------------------------
 DJANGO_APPS = [
     "django.contrib.admin",
@@ -38,10 +38,14 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     "django_browser_reload",
+    "treebeard",  # Pour la gestion d'arbres hiérarchiques (django-treebeard)
+    "parler",     # Pour la gestion des traductions (django-parler)
 ]
 
 LOCAL_APPS = [
     "src.core.apps.CoreConfig",
+    "src.access.apps.AccessConfig",
+    "src.scope.apps.ScopeConfig",
     "src.users.apps.UsersConfig",
     "src.company.apps.CompanyConfig",
     "src.catalogue.apps.CatalogueConfig",
@@ -60,7 +64,8 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "src.users.middleware.RegionalLocaleMiddleware",
+    "src.core.middleware.RegionalLocaleMiddleware",
+    'src.core.middleware.AuditUserMiddleware',
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_browser_reload.middleware.BrowserReloadMiddleware",
@@ -142,7 +147,13 @@ LANGUAGES = [
 ]
 
 # Variantes régionales supportées par des fichiers .po/.mo
-LANGUAGES_REGIONAL = ['fr-ca', 'fr-fr', 'en-ca', 'en-us']
+# Lors d'ajout: mettre aussi à jour src/users/choices.py -> PreferredLanguageChoices
+LANGUAGES_REGIONAL = [
+    'fr-ca',
+    'fr-fr',
+    'en-ca',
+    'en-us'
+]
 
 # Variantes activées si on a une variante régionale
 LANGUAGES_FALLBACKS = {
@@ -150,22 +161,39 @@ LANGUAGES_FALLBACKS = {
     'en': 'en-ca',
 }
 
+# PARLER_LANGUAGES = {
+#     1: (
+#         {'code': 'fr'},
+#         {'code': 'en'},
+#         {'code': 'fr-ca'},
+#         {'code': 'fr-fr'},
+#         {'code': 'en-ca'},
+#         {'code': 'en-us'},
+#     ),
+#     'default': {
+#         # Système de repli en cascade
+#         'fallbacks': {
+#             'fr-ca': ['fr'],
+#             'fr-fr': ['fr'],
+#             'en-ca': ['en'],
+#             'en-us': ['en'],
+#             'default': ['fr'], # Repli ultime si rien n'est trouvé
+#         },
+#         'hide_untranslated': False, # Évite de retourner une erreur si msg non traduit
+#     }
+# }
+
+# Une seule langue est active pour les données pour le moment
 PARLER_LANGUAGES = {
     1: (
         {'code': 'fr'},
-        {'code': 'fr-ca', 'fallback': 'fr'},
-        {'code': 'fr-fr', 'fallback': 'fr'},
-    ),
-    2: (
-        {'code': 'en'},
-        {'code': 'en-ca', 'fallback': 'en'},
-        {'code': 'en-us', 'fallback': 'en'},
     ),
     'default': {
-        'fallbacks': ['fr', 'en'], # Si même le 'fr' est vide, prend le français global ou l'anglais
-        'hide_untranslated': False, # Évite de retourner une erreur si msg non traduit
+        'fallbacks': ['fr'],
+        'hide_untranslated': False,
     }
 }
+
 
 # Dossier où seront stockés les fichiers de traduction (.po/.mo)
 LOCALE_PATHS = [

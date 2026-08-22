@@ -4,7 +4,7 @@
 
 # Applications django et Urls
 
-Projet Gestion de stocks — docume nt de conception
+Projet Gestion de stocks — document de conception
 
 ![Statut](https://img.shields.io/badge/Statut_du_document-En_cours_de_rédaction-purple.svg)
 
@@ -56,9 +56,9 @@ Les responsabilités de l'application `Access `sont:
 
 La méthode native de Django `has_perm()` est étandue par un `Backend d'authentification personnalisé`. Consulter le document sur la sécurité des données pour plus [détails ⬀](4-data-security.md#auth-backend). Dans le code, ça se traduit par l'utilisation de `has_perm()` pour vérifier les accès custom.
 
-#### CompanyAccessService
+#### CompaniesAccessService
 
-<mark>TODO</mark> Déterminer si toujours nécessaire vs Backend d'auth perso
+Calcule les compagnies accessibles pour une demande concernant plusieurs compagnies
 
 ---
 
@@ -66,7 +66,13 @@ La méthode native de Django `has_perm()` est étandue par un `Backend d'authent
 
 Application qui rassemble le contexte d'entreprise courant, le middleware et les managers filtrants.
 
-<mark>TODO</mark> Ajout infos et liens
+- Classe `RequestScope` et `ScopeMode` enum
+
+- `ContextVar` pour le stockage thread-safe
+
+- 3 managers : `CompanyScopedManager`, `CompaniesScopedManager`, `UnscopedManager`
+
+- Exceptions : `MissingCompanyScope`, `MissingCompaniesScope`
 
 ---
 
@@ -81,7 +87,7 @@ Elle s'appuie sur Django Auth pour :
 - les mots de passe ;
 - les champs standards comme `is_active`, `is_staff` et `is_superuser`.
 
-Les permissions métier ne sont pas gérées par les tables natives `auth_group` ou `auth_permission`. Elles sont gérées dans l'application `access`. Voir les documents [data-security.md](data-security.md) pour plus de détails la mise en oeuvre des accès et [choices-and-analysis.md](3-choices-and-analysis.md) pour l'analyse et la présentation des options et des choix techniques réalisés.
+Les permissions métier ne sont pas gérées par les tables natives `auth_group` ou `auth_permission`. Elles sont gérées dans l'application `access`. Voir les documents [data-security.md](4-data-security.md) pour plus de détails la mise en oeuvre des accès et [choices-and-analysis.md](3-choices-and-analysis.md) pour l'analyse et la présentation des options et des choix techniques réalisés.
 
 <mark>TODO Suite à réviser et compléter</mark>
 
@@ -135,13 +141,12 @@ L'application `Catalogue` permet de répondre aux questions suivantes :
 
 La configuration des produits permet 4 situations:
 
-
-| Id    | Variant | Packaging | Exemple Concret                                            |
-| :---- | :-----: | :-------: | :--------------------------------------------------------- |
-| **A** | **OFF** |  **OFF**  | **Un sac de chips** dans un dépanneur.                    |
-| **B** | **OFF** |  **ON**  | **Des œufs** dans une épicerie.                          |
-| **C** | **ON** |  **OFF**  | **Un t-shirt** dans une boutique de vêtements.            |
-| **D** | **ON** |  **ON**  | **Des canettes de bière** dans une fabrique artisanale. |
+| Id    | Variant | Packaging | Exemple Concret                                         |
+|:----- |:-------:|:---------:|:------------------------------------------------------- |
+| **A** | **OFF** | **OFF**   | **Un sac de chips** dans un dépanneur.                  |
+| **B** | **OFF** | **ON**    | **Des œufs** dans une épicerie.                         |
+| **C** | **ON**  | **OFF**   | **Un t-shirt** dans une boutique de vêtements.          |
+| **D** | **ON**  | **ON**    | **Des canettes de bière** dans une fabrique artisanale. |
 
 ### Impact pour l'UI/UX
 
@@ -202,72 +207,61 @@ TODO
 
 ---
 
-### URLs company-scoped et vues globales owner <a id="urls"></a>
+## URLs <a id="urls"></a>
+
+### Company-scoped - Une compagnie unique
 
 Les **vues métier liées à une compagnie** utilisent le format suivant :
 
 ```text
-/c/<company_slug>/...
+/c/<company-slug>/...
 ```
 
 Ces vues sont toujours filtrées sur la compagnie courante, y compris lorsque l'utilisateur est le propriétaire.
 
-Les **vues globales** sont séparées et explicitement réservées aux propriétaires et aux utilisateurs avec les permissions appropriées :
+Ces vues utilisent le manager personnalisé `objects = CompanyScopedManager`.
+
+### Companies-scoped - Aggrégation de plusieurs compagnies
+
+Les **vues métier liées à plusieurs compagnies** (multi-compagnies, utilisé pour rapports) sont séparées et explicitement réservées aux propriétaires et aux utilisateurs avec les permissions appropriées :
 
 ```text
-/g/...
+/mc/dashboard
+/mc/inventory
+/mc/reports
 ```
 
+Ces vues utilisent le manager personnalisé `companies = CompaniesScopedManager`.
+- les vues consolidées seront développées plus tard, en V1 ;
+- elles sont accessibles aux propriétaires et aux employés autorisés ;
+- chaque vue déclare sa permission ;
+- le périmètre est calculé par CompanyAccessService.
 
-| Contexte         | Comportement                                         |
-| :--------------- | :--------------------------------------------------- |
-| /c/company-a/.,, | filtre sur company-a                                 |
-| /g/...           | requêtes globales explicites                        |
-| aucun contexte   | Erreur / Refus sur les modèles company-scoped       |
-| Django-admin     | Accès via manager spécial ou all_objects réservé |
-
-### Cas des vues globales
+### Vues globale - aucune compagnie
 
 #### Vues d'authentification
 
 ```
 .../login
-.../register
 .../password-lost
 ```
 
 Ces vues doivent évidemment rester accessibles sans contexte.
 
-#### Vues propriétaire
+#### Vues de gestion non liées à 8777777une ou plusieurs compagnies
 
 ```
-.../g/dashboard/
-.../g/inventory/
-.../g/reports/
+.../g/users/create
+.../g/access/
 ```
 
-Ces vues ne doivent pas utiliser le même contexte par entreprise car elles *doivent* récupérer l'information de plusieurs entreprises. Elles ont besoin d'un contexte explicite (ou un manager non filtré?)
+Ces vues utilisent le manager standard de django sur `objects`.
 
-## Évolutions pssibles
+### Résumé
 
-* Vers un SaaS complet
-
-  * Ajout d'un modèle `Account `et lien vers les modèles `User `et `Company`.
-  * Complexité accrue. Sécurité multi-tenant particulièrement sensible.
-
----
-
----
-
----
-
-Table des matières
-
-1. [RBAC personnalisé](#rbac)
-2. <a href="#midleware">CompanyMiddleware</a>
-3. <a href="#manager">CompanyScopedManager</a>
-4. <a href="#permissions">Référentiel des permissions</a>
-5. <a href="#roles">Roles par défaut</a>
-6. <a href="#tests">Tests de sécurité</a>
-
----
+| Contexte         | Comportement                                     |
+|:---------------- |:------------------------------------------------ |
+| /c/company-a/.,, | filtre sur company-a                             |
+| /g/...           | requêtes globales explicites                     |
+| aucun contexte   | Erreur / Refus sur les modèles company-scoped    |
+| Django-admin     | Accès via manager spécial ou all_objects réservé |
