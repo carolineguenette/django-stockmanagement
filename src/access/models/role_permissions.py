@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-class RolePermission(models.Model):
+class RolePermissions(models.Model):
     """
     Table d'association Many-to-Many entre Role et Permission (POC).
     """
@@ -12,7 +12,7 @@ class RolePermission(models.Model):
     )
     permission = models.ForeignKey(
         'access.Permission',
-        on_delete=models.CASCADE,
+        on_delete=models.RESTRICT,
         verbose_name=_('Permission')
     )
 

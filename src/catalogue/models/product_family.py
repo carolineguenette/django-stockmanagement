@@ -2,10 +2,11 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from parler.models import TranslatableModel, TranslatedFields
 
+from src.core.models.abstract_audit import AbstractAudit
 from src.scope.models.company_owned import CompanyOwned
 
 
-class LocationType(TranslatableModel, CompanyOwned):
+class ProductFamily(TranslatableModel, CompanyOwned, AbstractAudit):
     slug = models.SlugField(
         max_length=255,
         verbose_name=_("Slug"),
@@ -22,22 +23,29 @@ class LocationType(TranslatableModel, CompanyOwned):
         ),
     )
 
-    is_stockable = models.BooleanField(
+    is_productvariant_on = models.BooleanField(
+        default=False,
+        verbose_name=_("Variants enabled"),
+    )
+
+    is_productpackaging_on = models.BooleanField(
+        default=False,
+        verbose_name=_("Packaging enabled"),
+    )
+
+    is_active = models.BooleanField(
         default=True,
-        verbose_name=_("Stockable"),
-        help_text=_(
-            "If disabled, locations of this type cannot be selected for inventory storage."
-        ),
+        verbose_name=_("Is active"),
     )
 
     class Meta:
-        db_table = "company_locationtype"
-        verbose_name = _("Location type")
-        verbose_name_plural = _("Location types")
+        db_table = "catalogue_productfamily"
+        verbose_name = _("Product family")
+        verbose_name_plural = _("Product families")
         constraints = [
             models.UniqueConstraint(
                 fields=["company", "slug"],
-                name="unique_slug_locationtype_by_company",
+                name="unique_slug_productmodel_by_company",
                 violation_error_message=_(
                     "This slug is already used in this company."
                 ),

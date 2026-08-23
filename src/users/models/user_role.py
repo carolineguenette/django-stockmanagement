@@ -1,9 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import Group
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
-from src.company.models.company import Company
-from src.company.models.location import Location
 
 
 class UserRole(models.Model):
@@ -16,15 +13,16 @@ class UserRole(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="roles",
-        verbose_name=_('user')
+        related_name="role_assignments",
+        verbose_name=_('User role assignment')
     )
 
     role = models.ForeignKey(
         'access.Role',
         on_delete=models.RESTRICT,
         related_name='user_assignments',
-        verbose_name=_('Role')
+        verbose_name=_('User role assignment'),
+        help_text=_("The role assigned to the user.")
     )
 
     company = models.ForeignKey(
@@ -34,6 +32,7 @@ class UserRole(models.Model):
         null=True,
         blank=True,
         verbose_name=_("Company"),
+        help_text=_("The company to which the user is assigned. If None, this permission is apply to ALL companies.")
     )
 
     location = models.ForeignKey(
@@ -43,12 +42,13 @@ class UserRole(models.Model):
         blank=True,
         related_name="user_roles",
         verbose_name=_('Location'),
+        help_text=_("The location to which the user is assigned. If None, this permission is apply globally.")
     )
 
     is_active = models.BooleanField(
         default=True,
         verbose_name=_("Is active"),
-        help_text=_("Designates whether this user assignment to the role is active.")
+        help_text=_("Designates whether this user assignment to the role is active. Set it to False to disable this permission instead of deleting it.")
     )
 
     class Meta:
@@ -61,7 +61,7 @@ class UserRole(models.Model):
                 fields=["user", "role", "company", "location"],
                 name="unique_user_role_company_location",
                 violation_error_message=_(
-                    "The user already has a role assigned to this company and location."
+                    "The user already has this role assigned to this company and location."
                 ),
             )
         ]

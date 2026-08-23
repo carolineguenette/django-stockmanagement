@@ -13,3 +13,7 @@ class PermissionSensibilityChoices(models.TextChoices):
     HIGH = 'HIGH', _('High')
     MEDIUM = 'MEDIUM', _('Medium')
     LOW = 'LOW', _('Low')
+
+class AccessLogTargetChoices(models.TextChoices):
+    ACCESS_PERMISSION = "access_permission", _("Access permission")
+    ACCESS_ROLE = "access_role", _("Access role")

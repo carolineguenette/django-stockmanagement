@@ -1,28 +1,41 @@
-# src/catalogue/models/product.py
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from src.scope.models.abstract_companyowned import CompanyOwned
 from src.core.models.abstract_audit import AbstractAudit
+from src.scope.models.company_owned import CompanyOwned
 
 
 class Product(CompanyOwned, AbstractAudit):
-    """
-    Modèle de produit isolé par entreprise et audité.
-    Hérite des champs d'audit et des 3 managers de scope.
-    """
-
-    # TEMPORAIRE : en attendant d'avoir model ProductModel
-    official_name = models.CharField(
+    slug = models.SlugField(
         max_length=255,
-        verbose_name=_("name")
+        verbose_name=_("Slug"),
     )
 
+    product_family = models.ForeignKey(
+        "catalogue.ProductFamily",
+        on_delete=models.PROTECT,
+        related_name="products",
+        verbose_name=_("Product family"),
+    )
+
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name=_("Is active"),
+    )
 
     class Meta:
         db_table = "catalogue_product"
-        verbose_name = _("product")
-        verbose_name_plural = _("products")
+        verbose_name = _("Product")
+        verbose_name_plural = _("Products")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["company", "slug"],
+                name="unique_slug_product_by_company",
+                violation_error_message=_(
+                    "This slug is already used in this company."
+                ),
+            )
+        ]
 
     def __str__(self):
-        return f"{self.company.official_name}"
+        return f"{self.company.official_name} - {self.slug}"

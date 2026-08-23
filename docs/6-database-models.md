@@ -9,7 +9,7 @@ Projet Gestion de stocks — document de conception
 ![Statut](https://img.shields.io/badge/Statut_du_document-En_cours_de_rédaction-purple.svg)  [![Schema](https://img.shields.io/badge/Schéma_DB-LucidChart-F45D22.svg)](https://lucid.app/lucidchart/786327e6-745d-4881-95e1-39f3fdf33c66/view)
 
 <h3>
-<a href="#core">Core</a> | <a href="#access">Access</a> | <a href="#scope">Scope</a> | <a href="#users">Users</a> | <a href="#company">Company</a> | <a href="#catalogue">Catalogue</a> | <a href="#inventory">Inventory</a> | <a href="#reporting">Reporting</a> | <a href="#others">Extensions</a>
+<a href="#general">Généralités</a> | <a href="#core">Core</a> | <a href="#access">Access</a> | <a href="#scope">Scope</a> | <a href="#users">Users</a> | <a href="#company">Company</a> | <a href="#catalogue">Catalogue</a> | <a href="#inventory">Inventory</a> | <a href="#reporting">Reporting</a> | <a href="#others">Extensions</a>
 
 </h3>
 
@@ -21,6 +21,45 @@ Ce document ajoute des commentaires explicatifs sur le schéma de la base de don
 
 ![](schema_database.svg)](schema_database.svg)
 [Voir le Schéma de la base de données sur LucidChart](https://lucid.app/lucidchart/786327e6-745d-4881-95e1-39f3fdf33c66/view)
+
+---
+
+## Généralités <a id="general"></a>
+
+### Limite des contraintes d'unicité contenant NULL
+
+Une contrainte unique classique autorise plusieurs lignes contenant NULL, car MySQL ne considère pas deux NULL comme égaux pour cette contrainte.
+
+Donc, si cette ligne existe :
+
+```python
+user_id=1, role_id=1, company_id=NULL, location_id=NULL, is_active=True
+```
+
+une autre ligne avec les mêmes valeurs pourra généralement être insérée, car `company_id `et `location_id `sont `NULL`.
+
+Pour contrer cela, deux colonnes générées peuvent normaliser les valeurs `NULL` :
+
+```sql
+company_scope_key  = COALESCE(company_id, 0)
+location_scope_key = COALESCE(location_id, 0)
+```
+
+Une contrainte unique est ensuite créée sur :
+
+```text
+user_id, role_id, company_scope_key, location_scope_key
+```
+
+Ainsi, une assignation globale est comparée comme suit :
+
+```text
+(user_id=1, role_id=1, company_scope_key=0, location_scope_key=0)
+```
+
+Une seconde assignation identique est donc refusée par la base de données.
+
+Ces colonnes sont techniques : elles sont calculées automatiquement par MySQL et ne représentent pas de nouvelles données métier. Leur création est effectuée au moyen d’une migration Django personnalisée utilisant `migrations.RunSQL`.
 
 ---
 
@@ -63,7 +102,7 @@ Application responsable du contrôle d'accès métier ([détails ⬀](5-django-a
 
 Catalogue des permissions métier disponibles dans l'application. Les données de cette table sont insérées à l'initialisation du système et ne changeront plus (à moins d'autres développements). Le référentiel des permissions (les données de cette table) est documenté dans [4-data-securiy.md#permissions](4-data-security.md#permissions).
 
-Table immuable sans ADD, CHANGE ni DELETE.
+Table immuable sans ADD, CHANGE ni DELETE. L'sjout  / suppression de permissions devraient se faire via des migrations personnalisées contrôlées. La seule modification autorisée est l'activation / désactivation temporaire dans le panneau d'administration de django.~~~~
 
 ![](https://img.shields.io/badge/Unique-codename-blueviolet.svg)
 
@@ -405,15 +444,14 @@ Liste des entreprises et de leurs caractéristiques. Chaque compagnie est indép
 - les rapports par compagnie ;
 - les rapports multi-compagnies (réservés au propriétaire et les utilisateurs avec les permissions appropriées).
 
-| ![](https://img.shields.io/badge/-Field-turquoise.svg)                            | Note                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-|:---------------------------------------------------------------------------------:| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `official_name`                                                                   | Nom officiel enregistré pour l'entreprise (non traduisible)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `slug`                                                                            | Identifiant unique utilisé dans les URLs `/c/<company_slug>/...`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| :globe_with_meridians: `name`                                                     | Nom commercial de l'entreprise (traduisible)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `logo_id`                                                                         | Logo de l'entreprise<br/>![](https://img.shields.io/badge/on_delete-SET_NULL-purple.svg) ![](https://img.shields.io/badge/related_name-logos-purple.svg)                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `is_multilingual_on`                                                              | ![](https://img.shields.io/badge/DEV-POC-green.svg) Toujours `Faux`. Les données dynamiques sont présentées dans la langue dans laquelle ils ont été écrits, peu importe la langue d'affichage de l'UI. L'UX apparaît comme une langue unique malgré la gestion par la librairie tierce django-parler en arrière-plan.<br/>![](https://img.shields.io/badge/DEV-VX-green.svg) Permet d'activer la gestion multi-langages des données dynamiques.                                                                                                                    |
-| `default_location_ transit_entrance`<br/>`default_location_ transit_intercompany` | *(idée à développer: avoir des locations par défaut pour certaines actions... réception marchandise, vente, etc... permettrait d'avoir auto-select de champs... À voir plus tard durant le développement.)*                                                                                                                                                                                                                                                                                                                                                         |
-| `is_active`                                                                       | ![](https://img.shields.io/badge/DEV-POC-green.svg) Toujours `Vrai`<br/>![](https://img.shields.io/badge/DEV-V1-green.svg) Permet d'archiver une entreprise (`is_active=False`). Toutes ses caractéristiques, incluant son catalogue de produit et son inventaire, passe en mode lecture seule. La seule modification possible est la réactivation. Une entreprise archivée n'apparaît plus dans les rapports globaux mais ses rapports spécifiques sont toujours disponibles à la consultation. L'archivage est une action réservée exclusivement au propriétaire. |
+| ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+|:------------------------------------------------------:| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `official_name`                                        | Nom officiel enregistré pour l'entreprise (non traduisible)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `slug`                                                 | Identifiant unique utilisé dans les URLs `/c/<company_slug>/...`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| :globe_with_meridians: `name`                          | Nom commercial de l'entreprise (traduisible)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `logo_id`                                              | Logo de l'entreprise<br/>![](https://img.shields.io/badge/on_delete-SET_NULL-purple.svg) ![](https://img.shields.io/badge/related_name-logos-purple.svg)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `is_multilingual_on`                                   | ![](https://img.shields.io/badge/DEV-POC-green.svg) Toujours `Disabled`. Les données dynamiques sont présentées dans la langue dans laquelle ils ont été écrits, peu importe la langue d'affichage de l'UI. L'UX apparaît comme une langue unique malgré leur gestion par la librairie tierce django-parler en arrière-plan.<br/>![](https://img.shields.io/badge/DEV-VX-green.svg) Permet d'activer la gestion multi-langages des données dynamiques. 2 options d'activation sont possibles: gestion des langues ou gestion des langues et des régionales. Cela permet une interface adaptée aux besoins de l'utilisateur (de simplifiée à complète) |
+| `is_active`                                            | ![](https://img.shields.io/badge/DEV-POC-green.svg) Toujours `Vrai`<br/>![](https://img.shields.io/badge/DEV-V1-green.svg) Permet d'archiver une entreprise (`is_active=False`). Toutes ses caractéristiques, incluant son catalogue de produit et son inventaire, passe en mode lecture seule. La seule modification possible est la réactivation. Une entreprise archivée n'apparaît plus dans les rapports globaux mais ses rapports spécifiques sont toujours disponibles à la consultation. L'archivage est une action réservée exclusivement au propriétaire.                                                                                   |
 
 ### ![](https://img.shields.io/badge/-Model-blue.svg) Address (table `company_address`)
 
@@ -439,7 +477,7 @@ Liste des pays avec leur code iso, pour les adresses. Table statique, populée p
 
 ### ![](https://img.shields.io/badge/-Model-blue.svg) Uom (table `company_uom`)
 
-![](https://img.shields.io/badge/Unique-company__id,_type,_is__reference[True]-blueviolet.svg)
+![](https://img.shields.io/badge/Unique-company__id,_type,_is__reference[True]-blueviolet.svg) (voir field `is_ref_contraint`)
 
 Sigle pour "Unit of Measure". Permet de calculer les quantités selon différentes unités de mesure.
 
@@ -453,12 +491,15 @@ Chaque entreprise doit avoir **exactement une seule** référence (`is_reference
 
 Uom implémente le modèle abstrait CompanyOwned.
 
+
+
 | ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                                                                                                                                                                                                                                     |
 |:------------------------------------------------------:| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `company_id`<br/>(de **CompanyOwned**)                 | Compagnie<br/>![](https://img.shields.io/badge/on_delete-CASCADE-purple.svg) ![](https://img.shields.io/badge/related_name-uoms-purple.svg)                                                                                                                                                                                                              |
 | `type`                                                 | Catégorise l'unité (UNIT, WEIGHT, LENGTH, VOLUME, AREA ou TIME). Les conversions se font au sein d'un même type pour une entreprise donnée. <br/>NOTE: les ratios pour UNIT sont définis dans la table catalogue_productpackaging<br/>*Ex: une entreprise vendant des oeufs<br/>UNIT: Unité (1.0) [is_reference=True], Pièce (1.0) [is_reference=False]* |
 | system                                                 | Indique le système de mesure utlisé par l'uom<br/>- UNIT et TIME: NONE<br/>- WEIGHT, LENGTH, VOLUME et AREA: IMPERIAL ou METRIC                                                                                                                                                                                                                          |
 | `is_reference`                                         | Représente l'unité du groupe par type qui doit servir de référence pour le calcul des quantités totales en inventaire.                                                                                                                                                                                                                                   |
+| is_ref_contraint                                       | Champs technique autocalculé uniquement créé car MySQL ne gère pas les contraintes unique avec condition. On profite du comportement où NULL != NULL. Ce champs contient NULL si is_reference est Faux et 1 si is_reference est Vrai. On peut ainsi créer un index valide avec la condition "1 seule valeur de référence par type".                      |
 | `ratio`                                                | Facteur de conversion entre l'unité de référence et les autres définitions du même type d'unité.<br/>`Quantité en unité de référence = Quantité saisie * ratio de l'unité saisie.`                                                                                                                                                                       |
 | `is_active`                                            | Permet de ne plus afficher l'unité de mesure (ex: dans les menus déroulants), sans la supprimer.                                                                                                                                                                                                                                                         |
 
@@ -537,16 +578,16 @@ Définit les types d'emplacements pour l'entreprise. Implémente CompanyOwned (d
 
 Application gérant le référentiel des produits, leurs déclinaisons (variantes), leur classification (catégories), leurs images, leur conditionnement (packaging) et leurs caractéristiques techniques [détails ⬀](5-django-apps-and-urls.md#catalogue).
 
-### ![](https://img.shields.io/badge/-Model-blue.svg) ProductModel (table `catalogue_productmodel`)
+### ![](https://img.shields.io/badge/-Model-blue.svg) ProductFamily (table `catalogue_productfamily`)
 
-Représente le modèle ou le "parent" de l'article. Implémente CompanyOwned (de scope) et AbstractAudit (de core).
+Représente la "famille" de l'article. Implémente CompanyOwned (de scope) et AbstractAudit (de core).
 
 | ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                                                                                                                                                                                                                                                                                            |
 |:------------------------------------------------------:| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `company_id` (de **CompanyOwned**)                     | ![](https://img.shields.io/badge/on_delete-CASCADE-purple.svg) ![](https://img.shields.io/badge/related_name-product__models-purple.svg)                                                                                                                                                                                                                                                                        |
 | `is_productvariant_on`                                 | ![](https://img.shields.io/badge/DEV-POC-green.svg) Toujours `Faux` Le système crée un modèle de produit et un variant unique, sans aucun attribut, de manière transparente pour l'utilisateur.<br/>![](https://img.shields.io/badge/DEV-VX-green.svg) Permet d'activer la gestion des produits par modèles et variants (ex: T-Shirt couleur bleue et grandeur Petit, T-Shirt couleur rouge et grandeur Moyen). |
 | `is_productpackaging_on`                               |                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `is_archived`                                          | ![](https://img.shields.io/badge/DEV-VX-green.svg) Un modèle de produit archivé n'apparaît plus dans les recherches et rapports (le modèle et toutes ses variantes). Un produit peut être archivé seulement si son inventaire (toutes ses variantes) est nul.                                                                                                                                                   |
+| `is_active`                                            | ![](https://img.shields.io/badge/DEV-VX-green.svg) Un modèle de produit archivé n'apparaît plus dans les recherches et rapports (le modèle et toutes ses variantes). Un produit peut être archivé seulement si son inventaire (toutes ses variantes) est nul.                                                                                                                                                   |
 
 ### ![](https://img.shields.io/badge/-Model-blue.svg) Product (table `catalogue_product`)
 
@@ -557,8 +598,8 @@ Repréente la déclinaison ou variante physique de l'article. Implémente Compan
 | ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                                                                                                |
 |:------------------------------------------------------:| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `company_id` (de **CompanyOwned**)                     | ![](https://img.shields.io/badge/on_delete-CASCADE-purple.svg) ![](https://img.shields.io/badge/related_name-products-purple.svg)                                                                                   |
-| `productmodel_id`                                      | ![](https://img.shields.io/badge/on_delete-PROTECT-purple.svg) ![](https://img.shields.io/badge/related_name-products-purple.svg)                                                                                   |
-| `is_archived`                                          | ![](https://img.shields.io/badge/DEV-VX-green.svg) Un produit archivé n'apparaît plus dans les recherches et rapports (cette variante seulement). Un produit peut être archivé seulement si son inventaire est nul. |
+| `product_family_id`                                    | ![](https://img.shields.io/badge/on_delete-PROTECT-purple.svg) ![](https://img.shields.io/badge/related_name-products-purple.svg)                                                                                   |
+| `is_active`                                            | ![](https://img.shields.io/badge/DEV-VX-green.svg) Un produit archivé n'apparaît plus dans les recherches et rapports (cette variante seulement). Un produit peut être archivé seulement si son inventaire est nul. |
 
 ### ![](https://img.shields.io/badge/-Model-blue.svg) ProductPackaging (table `catalogue_productpackaging`)
 
@@ -625,13 +666,13 @@ Table de jointure permettant d'associer un modèle de produit à une ou plusieur
 
 | ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                        |
 |:------------------------------------------------------:| ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `productmodel_id`                                      | ![](https://img.shields.io/badge/on_delete-CASCADE-purple.svg) ![](https://img.shields.io/badge/related_name-product__models-purple.svg)    |
+| `product_family_id`                                    | ![](https://img.shields.io/badge/on_delete-CASCADE-purple.svg) ![](https://img.shields.io/badge/related_name-product__models-purple.svg)    |
 | `category_id`                                          | ![](https://img.shields.io/badge/on_delete-CASCADE-purple.svg) ![](https://img.shields.io/badge/related_name-product_categories-purple.svg) |
 | `is_main`                                              | Catégorie principale du produit.                                                                                                            |
 
 ### ![](https://img.shields.io/badge/-Model-blue.svg) AttributeKey (table `catalogue_attributekey`)
 
-Permet de définir des attributs dynamiques pour les variantes de produit. Implémente `CompanyOwned` (de scope).
+Permet de définir des atftributs dynamiques pour les variantes de produit. Implémente `CompanyOwned` (de scope).
 
 | ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                     |
 |:------------------------------------------------------:| ---------------------------------------------------------------------------------------------------------------------------------------- |
@@ -655,16 +696,16 @@ Associe un produit à une paire d'attribut key=value (relation Many-to-many). Im
 | attributevalue_id                                      | ![](https://img.shields.io/badge/on_delete-CASCADE-purple.svg) ![](https://img.shields.io/badge/related_name-attributes-purple.svg)                       |
 | `is_main`                                              | ![](https://img.shields.io/badge/DEV-VX-green.svg) Détermine si cette combinaison est la variante principale. Permet d'être affiché en premier dans l'UI. |
 
-### ![](https://img.shields.io/badge/-Model-blue.svg) ProductModelImage (table `catalogue_productmodelimage`)
+### ![](https://img.shields.io/badge/-Model-blue.svg) ProductFamilyImage (table `catalogue_productfamilyimage`)
 
-Table de jointure entre un modèle de produit et ses images (`core.image`). Implémente `CompanyOwned` (de scope).
+Table de jointure entre la famille de produit et ses images (`core.image`). Implémente `CompanyOwned` (de scope).
 
-![](https://img.shields.io/badge/Unique-productmodel__id,_image__id-blueviolet.svg)
+![](https://img.shields.io/badge/Unique-product__family__id,_image__id-blueviolet.svg)
 
-| ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                          |
-|:------------------------------------------------------:| --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `productmodel_id`                                      | ![](https://img.shields.io/badge/on_delete-CASCADE-purple.svg) ![](https://img.shields.io/badge/related_name-productmodels-purple.svg)        |
-| `image_id`                                             | ![](https://img.shields.io/badge/on_delete-CASCADE-purple.svg) ![](https://img.shields.io/badge/related_name-productmodel__images-purple.svg) |
+| ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                             |
+|:------------------------------------------------------:| ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `product_family_id`                                    | ![](https://img.shields.io/badge/on_delete-CASCADE-purple.svg) ![](https://img.shields.io/badge/related_name-productfamilies-purple.svg)         |
+| `image_id`                                             | ![](https://img.shields.io/badge/on_delete-CASCADE-purple.svg) ![](https://img.shields.io/badge/related_name-product__family__images-purple.svg) |
 
 ### ![](https://img.shields.io/badge/-Model-blue.svg) ProductImage (table `catalogue_productimage`)
 
@@ -698,11 +739,11 @@ Représente l'état instantané du stock pour un produit donné. Les lignes ne s
 
 | ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                                |
 |:------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------------- |
-|           `company_id` (de **CompanyOwned**)           | ![](https://img.shields.io/badge/on_delete-CASCADE-purple.svg) ![](https://img.shields.io/badge/related_name-stocks-purple.svg)                     |
-|                      `product_id`                      | ![](https://img.shields.io/badge/on_delete-PROTECT-purple.svg) ![](https://img.shields.io/badge/related_name-stocks-purple.svg)                     |
-|                     `location_id`                      | ![](https://img.shields.io/badge/on_delete-PROTECT-purple.svg) ![](https://img.shields.io/badge/related_name-stocks-purple.svg)                     |
-|                 `product_packaging_id`                 | ![](https://img.shields.io/badge/on_delete-PROTECT-purple.svg) ![](https://img.shields.io/badge/related_name-stocks-purple.svg)                     |
-|                    `pack_quantity`                     | Ce champs fait l'objet de permissions pointues pour pouvoir être modifiés et chaque modification est enregistrée dans la table`inventory_movement`. |
+| `company_id` (de **CompanyOwned**)                     | ![](https://img.shields.io/badge/on_delete-CASCADE-purple.svg) ![](https://img.shields.io/badge/related_name-stocks-purple.svg)                     |
+| `product_id`                                           | ![](https://img.shields.io/badge/on_delete-PROTECT-purple.svg) ![](https://img.shields.io/badge/related_name-stocks-purple.svg)                     |
+| `location_id`                                          | ![](https://img.shields.io/badge/on_delete-PROTECT-purple.svg) ![](https://img.shields.io/badge/related_name-stocks-purple.svg)                     |
+| `product_packaging_id`                                 | ![](https://img.shields.io/badge/on_delete-PROTECT-purple.svg) ![](https://img.shields.io/badge/related_name-stocks-purple.svg)                     |
+| `pack_quantity`                                        | Ce champs fait l'objet de permissions pointues pour pouvoir être modifiés et chaque modification est enregistrée dans la table`inventory_movement`. |
 
 Dès que le champs `quantity` changent ou qu'une ligne est ajoutée dans `inventory_stock`, un mouvement d'inventaire est enregistré dans la table `inventory_movement`.
 
@@ -737,7 +778,7 @@ Toutes les clés étrangères sont gérées exclusivement via l'ORM django sans 
 | `product_id`                                           | ![](https://img.shields.io/badge/on_delete-SET_NULL-purple.svg) ![](https://img.shields.io/badge/related_name-inventory__movements-purple.svg)                                                                                                                                                                                                                          |
 | `location_source_id`                                   | Provenance du stock. Voir tableau ci-bas.<br/>![](https://img.shields.io/badge/on_delete-SET_NULL-purple.svg) ![](https://img.shields.io/badge/related_name-source__movements-purple.svg)                                                                                                                                                                               |
 | `productpackaging_`<br/> `source_id`                   | ![](https://img.shields.io/badge/on_delete-SET_NULL-purple.svg) ![](https://img.shields.io/badge/related_name-source__movements-purple.svg)                                                                                                                                                                                                                             |
-| `quantity...`                                          | Enregistrement des valeurs initiale, finale et différentiellles des quantités, pour la quantité totale de ce produit et pour la quantité conditionnée en particulier. Permet d'optimiser recherche et filtre sans avoir à fouiller dans le champ `snap_infos`,  qui enregistre aussi ces informations.                                                                  |
+| `quantity...`                                          | Enregistrement des valeurs initiale, finale et différentiellles des quantités, pour la quantité totale de ce produit (ref) et pour la quantité conditionnée (pack) en particulier. Permet d'optimiser recherche et filtre sans avoir à fouiller dans le champ `snap_infos`,  qui enregistre aussi ces informations.                                                     |
 | `reason_id`                                            | ![](https://img.shields.io/badge/on_delete-SET_NULL-purple.svg) ![](https://img.shields.io/badge/related_name-movements-purple.svg)                                                                                                                                                                                                                                     |
 | `location_dest_id`                                     | Destination du stock. Voir tableau ci-bas.<br/>![](https://img.shields.io/badge/on_delete-SET_NULL-purple.svg) ![](https://img.shields.io/badge/related_name-source__movements-purple.svg)                                                                                                                                                                              |
 | `snap_infos`                                           | JSONField. Snapshot permettant d'immortaliser les informations provenant des clés étrangères. La structure JSON copie les infos p ertinentes sur l'entreprise, le produit et les locations et renseigne les clés 'old' et 'new' pour les valeurs qui ont été modifiées. Le snpshot inclut le libellés de toutes les langues, les variantes enregistrées du modèle, etc. |
@@ -784,7 +825,7 @@ Une entrée de transit est créée pour les mouvements d'inventaire suivants :
 
 | ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                                                                      |
 |:------------------------------------------------------:| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `transit_id`                                           | Identification du colis                                                                                                                                                                   |
+| `uuid`                                                 | Identification du colis                                                                                                                                                                   |
 | `source_company_officialname`                          | Nom de la compagnie qui envoie le colis (snapshot à l'intention du destinataire)                                                                                                          |
 | `source_location_parent_name`                          | Origine du colis. Il s'agit de la location du plus haut niveau: cette location n'a pas de parent (snapshot à l'intention du destinataire)                                                 |
 | `source_product_name`                                  | Nom du produit (snapshot à l'intention du destinataire)                                                                                                                                   |

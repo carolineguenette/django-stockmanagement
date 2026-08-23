@@ -4,7 +4,6 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 from src.users.choices import PreferredHomePageChoices, PreferredLanguageChoices
-from src.core.models.image import Image
 
 class User(AbstractUser):
     # id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active sont natifs.
@@ -18,7 +17,7 @@ class User(AbstractUser):
     )
 
     photo = models.ForeignKey(
-        Image,
+        'core.Image',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

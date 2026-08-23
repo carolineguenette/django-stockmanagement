@@ -43,7 +43,7 @@ class Role(TranslatableModel, AbstractAudit):
     )
     permissions = models.ManyToManyField(
         'access.Permission',
-        through='access.RolePermission',
+        through='access.RolePermissions',
         related_name='roles',
         verbose_name=_('Permissions')
     )

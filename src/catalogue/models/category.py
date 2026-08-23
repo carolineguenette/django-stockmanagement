@@ -3,22 +3,15 @@ from django.utils.translation import gettext_lazy as _
 from parler.models import TranslatableModel, TranslatedFields
 from treebeard.mp_tree import MP_Node
 
-from src.core.models.abstract_audit import AbstractAudit
 from src.scope.models.company_owned import CompanyOwned
 
-class Location(TranslatableModel, CompanyOwned, MP_Node, AbstractAudit):
+
+class Category(TranslatableModel, CompanyOwned, MP_Node):
     node_order_by = ["name"]
 
     slug = models.SlugField(
-        max_length=150,
-        verbose_name=_('Slug')
-    )
-
-    location_type = models.ForeignKey(
-        "company.LocationType",
-        on_delete=models.RESTRICT,
-        related_name="locations",
-        verbose_name=_("Location type"),
+        max_length=255,
+        verbose_name=_("Slug"),
     )
 
     image = models.ForeignKey(
@@ -26,32 +19,30 @@ class Location(TranslatableModel, CompanyOwned, MP_Node, AbstractAudit):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="locations",
+        related_name="category_images",
         verbose_name=_("Image"),
     )
 
-    # Déclaration des champs traduisibles pour django-parler
     translations = TranslatedFields(
-        name = models.CharField(
+        name=models.CharField(
             max_length=150,
-            verbose_name=_('Name')
+            verbose_name=_("Name"),
         ),
     )
 
     class Meta:
-        db_table = 'company_location'
-        verbose_name = _('Location')
-        verbose_name_plural = _('Locations')
-
+        db_table = "catalogue_category"
+        verbose_name = _("Category")
+        verbose_name_plural = _("Categories")
         constraints = [
             models.UniqueConstraint(
                 fields=["company", "slug"],
-                name="unique_slug_location_by_company",
+                name="unique_slug_category_by_company",
                 violation_error_message=_(
                     "This slug is already used in this company."
                 ),
             )
         ]
 
-    def __str__(self): 
+    def __str__(self):
         return f"{self.company.official_name} - {self.name}"

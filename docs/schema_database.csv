@@ -1,0 +1,178 @@
+Id,Nom,Bibliothèque de formes,ID de page,Contenu par,Groupe,Source de la ligne,Destination de la ligne,Source de la flèche,Destination de la flèche,Labels,Statut,Zone de texte 1,Zone de texte 2,Zone de texte 3,Zone de texte 4,Zone de texte 5,Zone de texte 6,Zone de texte 7,Zone de texte 8,Zone de texte 9,Zone de texte 10,Zone de texte 11,Zone de texte 12,Zone de texte 13,Zone de texte 14,Zone de texte 15,Zone de texte 16,Zone de texte 17,Zone de texte 18,Zone de texte 19,Zone de texte 20,Zone de texte 21,Zone de texte 22,Zone de texte 23,Zone de texte 24,Zone de texte 25,Zone de texte 26,Zone de texte 27,Zone de texte 28,Zone de texte 29,Zone de texte 30,Zone de texte 31,Zone de texte 32,Zone de texte 33,Zone de texte 34,Zone de texte 35,Zone de texte 36,Zone de texte 37,Zone de texte 38,Zone de texte 39,Zone de texte 40,Zone de texte 41,Zone de texte 42,Zone de texte 43,Zone de texte 44,Zone de texte 45,Zone de texte 46,Zone de texte 47,Zone de texte 48,Zone de texte 49,Zone de texte 50,Zone de texte 51,Zone de texte 52,Zone de texte 53,Zone de texte 54,Zone de texte 55,Zone de texte 56,Zone de texte 57,Zone de texte 58,Commentaires,Notes,Identification de la forme,SpreadsheetColumnParentKey,SpreadsheetRowParentKey
+1,Document,,,,,,,,,,Brouillon,django_stock,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,786327e6-745d-4881-95e1-39f3fdf33c66,,
+2,Page,,,,,,,,,,,Page 1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0_0,,
+3,SparkFrameBlock,Formes Lucidspark,2,,,,,,,,,DATABASE Stock Management multi-companies - Django Web App,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,9Jse6nYtDxD.,,
+4,Texte,Standard,2,3,,,,,,,,                                            ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,CEwhnxHAFfoR,COLUMN,ROW
+5,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,"catalogue_attributevalue (TranslatableModel, CompanyOwned)",V1,id PK,bigint AUTO,V1,"company_id FK 
+(de CompanyOwned)",bigint,V1,attributekey_id FK,bigint,V1,  value,varchar,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,76uhYQJz8Q12,COLUMN,ROW
+6,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,catalogue_productattribute (CompanyOwned),V1,id PK,bigint AUTO,V1,"company_id FK 
+(de CompanyOwned)",bigint,V1,product_id FK,bigint,V1,attributevalue_id FK,bigint,V1,is_main,tinyint d=False,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Y7uh.rBLvnXJ,COLUMN,ROW
+7,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,"catalogue_category (CompanyOwned, MP_Node, TranslatableModel)",MVP,id PK,bigint,MVP,"company_id FK
+(de CompanyOwned)",bigint,MVP,slug,varchar,MVP,  name,varchar,V1,image_id FK core.Image,bigint NULLABLE d=NULL,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,9Jse6~MmMUWK,COLUMN,ROW
+8,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,catalogue_productcategory (CompanyOwned), ,id PK,bigint AUTO,MVP,"company_id FK
+(de CompanyOwned)",bigint,MVP,productmodel_id FK,bigint,MVP,category_id FK,bigint,MVP,is_main,tinyint ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,dELeKDkMPP2R,COLUMN,ROW
+9,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,"catalogue_attributekey (TranslatableModel, CompanyOwned)",V1,id PK,bigint AUTO,V1,"company_id FK 
+(de CompanyOwned)",bigint,V1,  key,varchar,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,rQuhI0FD8aNf,COLUMN,ROW
+10,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,catalogue_productimage (CompanyOwned),V1,id PK,bigint AUTO,V1,"company_id FK 
+(de CompanyOwned)",bigint,V1,product_id FK,bigint,V1,image_id FK core.Image,bigint,V1,is_main,tinyint,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,xIAhZ1TXgNhz,COLUMN,ROW
+11,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,catalogue_productmodelimage (CompanyOwned),V1,id PK,bigint AUTO,V1,"company_id FK 
+(de CompanyOwned)",bigint,V1,productmodel_id FK,bigint,V1,image_id FK core.Image,bigint,V1,is_main,tinyint,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,EHAh4wIIYd-_,COLUMN,ROW
+12,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,"catalogue_productpackaging (TranslatableModel, CompanyOwned, AbstractAudit)",MVP,id PK,bigint AUTO,MVP,"company_id FK
+(de CompanyOwned)",bigint,MVP,product_id FK,bigint,MVP,sku,varchar,V1,  name,varchar,V1,  code,varchar NULLABLE,V1,base_uom_id FK,bigint,V1,ratio,decimal,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,u0FiFgw9z9y8,COLUMN,ROW
+13,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,"catalogue_productconfig (CompanyOwned, AbstractAudit)",V1,id PK,bigint AUTO,V1,"company_id FK
+(de CompanyOwned)",bigint,V1,product_id FK,bigint,V1,location_id FK,bigint,V1,productpackaging_id FK,bigint,V1,alert_threshold,decimal >=0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,KkzetVn5YwqO,COLUMN,ROW
+14,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,"catalogue_product (CompanyOwned, AbstractAudit)",POC,id PK,bigint AUTO,POC,"company_id FK
+(de CompanyOwned)",bigint,POC,slug,varchar,POC,productmodel_id FK,bigint,V1,is_archived,tinyint d=False,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,cNuh2nfd6i4K,COLUMN,ROW
+15,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,"catalogue_productmodel (TranslatableModel, CompanyOwned, AbstractAudit)",POC,id PK,bigint AUTO,POC,"company_id FK
+(de CompanyOwned)",bigint,POC,slug,varchar,POC,  name,varchar,MVP,  description,longtext BLANK,V1,is_productvariant_on,tinyint d=False,V1,is_productpackaging_on,tinyint d=False,V1,is_archived,tinyint d=False,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,9JseGwdLXt41,COLUMN,ROW
+16,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,users_user (AbstractUser),POC,id PK,bigint,POC,password NATIF,varchar,POC,last_login NATIF,datetime,POC,is_superuser NATIF,tinyint,POC,username NATIF,varchar,POC,first_name NATIF,varchar,POC,last_name NATIF,varchar,POC,email NATIF,varchar,POC,is_staff NATIF,tinyint,POC,is_active NATIF,tinyint,POC,date_joined NATIF,datetime AUTO_NOW_ADD,POC,is_owner,tinyint d=False,POC,update_at,datetime AUTO_NOW_UPDATE,POC,created_by_id FK self,bigint NULLABLE d=NULL,POC,updated_by_id FK self,bigint NULLABLE d=NULL,V1,photo_id FK core.Image,bigint NULLABLE d=NULL,V1,preferred_language,varchar,V1,preferred_home_page,varchar,V1,preferred_company_id FK,bigint NULLABLE d=NULL,,,9Jseh16eBw0F,COLUMN,ROW
+17,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,"company_company (TranslatableModel, AbstractAudit)",POC,id PK,bigint,POC,official_name,varchar,POC,slug,varchar,POC,  name,varchar,V1,logo_id FK core.Image,bigint NULLABLE d=NULL,V1,accept_negative_stock,tinyint d=False,V1,translation_option,enum d=DISABLED,POC,is_active,tinyint d=True,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,9Jse575XVdt2,COLUMN,ROW
+18,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,users_userrole,POC,id PK,bigint AUTO,POC,user_id FK,bigint,POC,role_id FK,bigint,POC,company_id FK,bigint NULLABLE d=NULL,POC,location_id FK,bigint NULLABLE d=NULL,POC,is_active,tinyint d=True,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,9Jse0W8CxnqK,COLUMN,ROW
+19,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,"company_location (TranslatableModel, CompanyOwned, AbstractAudit, MP_Node)",POC,id PK,bigint,POC,"company_id FK 
+(de CompanyOwned)",bigint ,POC,slug,varchar,POC,  name,varchar,MVP,location_type_id FK,bigint,V1,image_id FK core.Image,bigint NULLABLE d=NULL,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,9Jse1iFPTKyv,COLUMN,ROW
+20,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,inventory_stock (CompanyOwned),POC,id PK,bigint AUTO,POC,"company_id FK
+(de CompanyOwned)",bigint,POC,product_id FK,bigint,POC,location_id FK,bigint,POC,productpackaging_id FK ,bigint,POC,pack_quantity,decimal,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,9JsexPQIzGuX,COLUMN,ROW
+21,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,"inventory_movement (CompanyOwned, AbstractAudit)",POC,id PK,bigint AUTO,POC,uuid,UUID Field,POC,stock_id FK,bigint,POC,"company_id FK
+(de CompanyOwned)",bigint NULLABLE,POC,product_id FK,bigint NULLABLE,POC,location_source_id FK,bigint NULLABLE,POC,productpackaging_source_id FK,bigint NULLABLE,POC,pack_quantity_init,decimal,POC,pack_quantity_final,decimal,POC,pack_quantity_delta,decimal,POC,ref_quantity_init,decimal,POC,ref_quantity_final,decimal,POC,ref_quantity_delta,decimal,POC,reason_id FK,bigint NULLABLE,POC,location_dest_id FK,bigint NULLABLE,MVP,snap_infos,JSON Field,POC,created_by_comment,text NULLABLE d=NULL BLANKABLE,POC,productpackaging_dest_id FK,bigint NULLABLE,,,,"[{""Résolu(s)"":true,""Commentaires"":[{""Horodatage"":""2026-07-24T20:44:20.000Z"",""Créateur"":""Caroline Guénette"",""Contenu"":""TODO Les champs product_id et company_id sont-ils vraiment nécessaires considérant qu'on fait référence à stock_id? Pour performance peut-être?""}]}]",,9Jse7Oj64AYR,COLUMN,ROW
+22,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,core_settings,V1,id PK,bigint AUTO,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,e0HeeU9C4rGZ,COLUMN,ROW
+23,Rectangle,Formes Lucidspark,2,3,,,,,,,,"LÉGENDE
+Plus de détails : database-models.md ⬀
+                                                                                   
+Colonne 1: Fonction complète à partir de la version...                                                                                                                       
+POC  Proof of Concept
+MVP  Minimal Viable Product
+V1      Première version complète
+VX     Version future (fonctionnalité envisagée                     
+              mais non planifiée)
+Colonne 2: nom du champs 
+       Champs traduisible (TranslatableModel)
+nom souligné    Champs UNIQUE (together ou non)
+nom en italique Champs INDEXÉ
+PK/FK                 Primary / Foreign Key
+Colonne 3: type du champs et propriétés
+AUTO                  Auto increment
+NULLABLE
+d=                       Default Value
+>                         Champs ne pouvant pas être                             négatif",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,iKKe8Tr6JWQ1,COLUMN,ROW
+24,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,company_locationtype (CompanyOwned),MVP,id PK,int,MVP,"company_id FK 
+(de CompanyOwned)",bigint,MVP,slug,varchar,MVP,  name,varchar,MVP,  description,text,MVP,is_stockable,tinyint d=True,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,4k2eBCukHOL6,COLUMN,ROW
+25,Rectangle,Formes Lucidspark,2,3,,,,,,,,"DATABASE VERSION: 0.16
+Voir aussi database-models.md⬀",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,pNsgIWK5uDpt,COLUMN,ROW
+26,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,"access_role (TranslatableModel, AbstractAudit)",POC,id PK,int AUTO,POC,slug,varchar,POC,company_id FK,bigint NULLABLE,POC,  name,varchar,POC,  description,text,POC,is_active,tinyint d=True,POC,manage_by_id FK,bigint,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,lC9gM6Q2wjNf,COLUMN,ROW
+27,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,access_rolepermissions,POC,id PK,int AUTO,POC,role_id FK,int,POC,permission_id FK,int,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,lC9g4wgOuihH,COLUMN,ROW
+28,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,access_permission (TranslatableModel),POC,id PK,int AUTO,POC,codename,varchar,POC,  name,varchar,POC,  help_text,"text NULLABLE, BLANKABLE d=null",POC,context,enum,POC,sensibility,enum,POC,is_active,tinyint d=True,POC,display_order,int d=0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,lC9guC2ESCrn,COLUMN,ROW
+29,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,"core_image (TranslatableModel, AbstractAudit)",V1,id PK,bigint AUTO,V1,image,varchar ImageField,V1,  alt_text,varchar NULLABLE BLANKABLE d=NULL,V1,  legend,varchar NULLABLE BLANKABLE d=NULL,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,PtvhK1lus-bf,COLUMN,ROW
+30,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,core_abstractaudit (Abstract True),POC,created_at,datetime AUTO_NOW_ADD,POC,updated_at,datetime AUTO_NOW,MVP,created_by_id FK,bigint NULLABLE,MVP,updated_by_id FK,bigint NULLABLE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,cIzh_TLo17Pl,COLUMN,ROW
+31,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,users_userrolelog,MVP,id PK,bigint AUTO,MVP,uuid,UUIDField,MVP,userrole_id FK,bigint NULLABLE,MVP,user_id FK,bigint NULLABLE,MVP,role_id FK,bigint NULLABLE,MVP,company_id FK,bigint NULLABLE,MVP,location_id FK,bigint NULLABLE,MVP,changed_at,datetime AUTO_NOW_ADD,MVP,changed_by_id FK User,bigint,MVP,action,enum,MVP,snap_infos,JSONField,,,,,,,,,,,,,,,,,,,,,,,,,,,s7zh2L9jTU~S,COLUMN,ROW
+32,Rectangle,Formes Lucidspark,2,3,,,,,,,,"action ENUM
+CREATE
+UPDATE
+DELETE",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,R8zh4MtegneE,COLUMN,ROW
+33,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,access_log,MVP,id PK,bigint AUTO,MVP,uuid,UUIDField,MVP,target_table,varchar,MVP,target_id,bigint,MVP,role_id FK,bigint NULLABLE,MVP,action,ENUM,MVP,changed_at,datetime AUTO_NOW_ADD,MVP,changed_by_id FK,bigint NULLABLE,MVP,snap_infos,JSONField,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,OdAhNoDJkqMa,COLUMN,ROW
+34,Rectangle,Formes Lucidspark,2,3,,,,,,,,"action ENUM
+CREATE
+UPDATE
+DELETE",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,joAhVEcw0sVi,COLUMN,ROW
+35,Rectangle,Formes Lucidspark,2,3,,,,,,,,"LIBRAIRIES TIERCES
+Arbre:  django-treebeard sera utilisé pour gérer les arbres de manière optimisée avec la classe MP_Node (company -> Location et catalogue -> Category)
+
+Traduction des données dynamique: django-parler (classe TranslatableModel). Les données dynamiques devant être traduites sont marquées par le symbole   devant le nom du champs.",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,iDDhtULl~g33,COLUMN,ROW
+36,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,"inventory_movementreason (TranslatableModel, CompanyOwned, AbstractAudi)",V1,id PK,bigint AUTO,V1,"company_id FK
+(de CompanyOwned)",bigint,V1,slug,varchar,V1,  name,varchar,V1,permission_required_id FK,varchar,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Ik0h65pzSUmF,COLUMN,ROW
+37,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,inventory_transit (CompanyOwned),V1,id PK,bigint AUTO,V1,transit_id,varchar,V1,source_company_officialname,varchar,V1,source_location_parent_name,varchar,V1,source_product_name,varchar,V1,source_product_description,text,V1,source_infos,JSONField,V1,source_pack_quantity_send,decimal,V1,product_sku,varchar,V1,"company_id FK = destination
+(de CompanyOwned)",bigint,V1,dest_pack_quantity_received,decimal NULLABLE d=NULL,V1,status,enum,V1,dest_comment,text NULLABLE. BLANKABLE,Clé,source_comment,text NULLABLE. BLANKABLE,V1,source_created_at,datetime AUTO_NOW_ADD,,,,,,,,,,,,,,,9y7hVVKEDpXo,COLUMN,ROW
+38,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,"company_uom (TranslatableModel, CompanyOwned, AbstractAudit)",MVP,id PK,bigint AUTO,MVP,"company_id FK 
+(de CompanyOwned)",bigint,MVP,type,enum,MVP,system,enum,MVP,  name,varchar,MVP,  code,varchar,MVP,is_reference,tinyint,MVP,ratio,decimal,MVP,is_active,tinyint d=True,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,CMFijehsMuKz,COLUMN,ROW
+39,Rectangle,Formes Lucidspark,2,3,,,,,,,,"type ENUM
+UNIT
+WEIGHT
+LENGTH
+VOLUME
+AREA
+TIME",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,CMFiObEH.~6v,COLUMN,ROW
+40,Rectangle,Formes Lucidspark,2,3,,,,,,,,"system ENUM
+IMPERIAL
+METRIC
+NONE",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,VQFi.Cqc3KE8,COLUMN,ROW
+41,Rectangle,Formes Lucidspark,2,3,,,,,,,,"sensibility ENUM
+HIGH
+MEDIUM
+LOW",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,~zNieaRpaiSh,COLUMN,ROW
+42,Rectangle,Formes Lucidspark,2,3,,,,,,,,"context ENUM
+SYSTEM
+DELEGATE
+COMPANY
+MULTI_COMPANIES
+LOCATION
+MULTI_LOCATIONS",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,QU4iaZm3iRMZ,COLUMN,ROW
+43,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,"users_userhierarchy (MP_Node, AbstractAudit)",POC,id PK,bigint AUTO,POC,user_id FK,bigint,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,nQ_iC81UQLAg,COLUMN,ROW
+44,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,scope_companyowned (Abstract True),POC,companie_ID FK,bigint,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,JR9kxvhPZYTM,COLUMN,ROW
+45,SparkFrameBlock,Formes Lucidspark,2,,,,,,,,,DATABASE EXTENSIONS Stock Management multi-companies - Django Web App,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,UZ-g15YhrJNO,,
+46,SparkFrameBlock,Formes Lucidspark,2,45,,,,,,,,Intégration de l'utilisation de scanneur de codebar,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,RuTiDdptRgGO,,
+47,SparkFrameBlock,Formes Lucidspark,2,45,,,,,,,,Gestion des tiers - app partners,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,utTiU9nqQiPK,,
+48,SparkFrameBlock,Formes Lucidspark,2,45,,,,,,,,finance,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1tTiY6-kZdnt,,
+49,SparkFrameBlock,Formes Lucidspark,2,45,,,,,,,,Traçabilité fine de l'inventaire,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,9ETiR33E5cAo,,
+50,SparkFrameBlock,Formes Lucidspark,2,45,,,,,,,,Gestion des documents financier,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,IDTiZzl4Wfw9,,
+51,SparkFrameBlock,Formes Lucidspark,2,45,,,,,,,,Concept de produit disponible / réservé / en attente de traitement / bloqué en QA,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Is2islMyfXrv,,
+52,SparkFrameBlock,Formes Lucidspark,2,45,,,,,,,,Création de liens entre les produits inter-entreprises d'un même propriétaire,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,7DTifu1OdTT.,,
+53,SparkFrameBlock,Formes Lucidspark,2,45,,,,,,,,SaaS                                                                   ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,eqTit~IhNWSc,,
+54,SparkFrameBlock,Formes Lucidspark,2,45,,,,,,,,Ajout de locations par défaut pour les différentes activités,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Vybm5zqepSti,,
+55,"Entité (clé, champ, type)",Entité-Association,2,45|47,,,,,,,,partner_supplier,VX,id PK,int AUTO,VX,name,varchar,VX,company_id FK,bigint NULLABLE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,a4-gPC7SJsx5,COLUMN,ROW
+56,"Entité (clé, champ, type)",Entité-Association,2,45|47,,,,,,,,partner_client,VX,id PK,int AUTO,VX,name,varchar,VX,company_id FK,bigint NULLABLE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,J4-gksAv.m2Y,COLUMN,ROW
+57,"Entité (clé, champ, type)",Entité-Association,2,45|50,,,,,,,,document_TODO,VX,id PK,int AUTO,VX,  name,varchar,VX,company_id FK,bigint NULLABLE,VX,TODO,Type,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,09-gLsGIyaHa,COLUMN,ROW
+58,"Entité (clé, champ, type)",Entité-Association,2,45|48,,,,,,,,finance_productprice,VX,id PK,int AUTO,VX,product_id FK,bigint,VX,location_id FK,bigint,Clé,currency_id FK,int,VX,purchase_price,"decimal(10,2)",VX,sale_price,"decimal(10,2)",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,O.-ghQs-V8JC,COLUMN,ROW
+59,"Entité (clé, champ, type)",Entité-Association,2,45|52,,,,,,,,global_catalogue_TODO,VX,id PK,int AUTO,VX,name,varchar,VX,company_id FK,bigint NULLABLE,VX,TODO,Type,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,o~-gh7QxtxMR,COLUMN,ROW
+60,Rectangle,Formes Lucidspark,2,45,,,,,,,,Extensions,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,db_gaKwN.jvc,,
+61,"Entité (clé, champ, type)",Entité-Association,2,45|46,,,,,,,,users_user (AbstractUser),NEW,badgecode,varchar NULLABLE d=NULL,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,xD_gaSfob-JP,COLUMN,ROW
+62,"Entité (clé, champ, type)",Entité-Association,2,45|48,,,,,,,,finance_currency,VX,id PK,int AUTO,VX,company_id FK,bigint NULLABLE,VX,code_iso,varchar,VX,symbol,varchar,VX,name,varchar,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,aMvh7IWEXMHT,COLUMN,ROW
+63,"Entité (clé, champ, type)",Entité-Association,2,45|48,,,,,,,,finance_taxe,VX,id PK,int AUTO,VX,company_id FK,bigint NULLABLE,VX,location_id FK,bigint,VX,name,varchar,VX,pourcent,decimal,VX,order (comment gérer  la manière dont on calcule le montant?),int,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,6Wvh79k_8Na1,COLUMN,ROW
+64,"Entité (clé, champ, type)",Entité-Association,2,45|53,,,,,,,,account_TODO,VX,id PK,bigint AUTO,VX,user_id FK,bigint NULLABLE,VX,name,varchar,VX,TODO,Type,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,LbOhg0B0wkhr,COLUMN,ROW
+65,Tableau,Tableaux,2,,,,,,,,,company_uom (Données exemple),id,company,type,system,name,code,is_ref,ratio,1,1,UNIT,NONE,Unité,ch.,True,1.0,2,1,WEIGHT,METRIC,Gramme,g,True,1.0,3,1,WEIGHT,METRIC,Kilogramme,kg,False,1000.0,4,2,UNIT,NONE,Unité,ch.,True,1.0,5,2,WEIGHT,METRIC,Gramme,g,True,1.0,,,,,,,,,,,,CMFie8A-w1Sx,,
+66,Tableau,Tableaux,2,,,,,,,,,catalogue_productpackaging (Données exemple),id,company,product,name,code,base_uom,ratio,1,2,1 (Oeufs),Demi-douzaine,B06,4 (Unité),6.0,6,2,1 (Oeufs),Douzaine,B12,4 (Unité),12.0,2,2,1 (Oeufs),Caissette de 30 oeufs,C30,4 (Unité),30.0,3,2,1 (Oeufs),Boîte (12 douzaines),,4 (Unité),144.0,7,2,1 (Oeufs),Boîte (5 caissettes),,4 (Unité),150.0,4,2,2 (Farine),Sac de 5kg,ch.,5 (Gramme),5000.0,5,2,2 (Farine),Sac de 20kg,ch.,5 (Gramme),20000.0,,,,q-FiF-wmDq_E,,
+67,"Entité (clé, champ, type)",Entité-Association,2,45|53,,,,,,,,company_company (AbstractAudit),NEW,account_id FK,bigint,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,RrTiIxXMu1iK,COLUMN,ROW
+68,"Entité (clé, champ, type)",Entité-Association,2,45|46,,,,,,,,"company_location (AbstractAudit, MP_Node)",NEW,barcode,varchar NULLABLE d=NULL,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,ywTiKqaTW8Oq,COLUMN,ROW
+69,"Entité (clé, champ, type)",Entité-Association,2,45|46,,,,,,,,catalogue_product (AbstractAudit),NEW,barcode,varchar NULLABLE d=NULL,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,fyTiu1T8VTF5,COLUMN,ROW
+70,"Entité (clé, champ, type)",Entité-Association,2,45|46,,,,,,,,catalogue_productpackaging (AbstractAudit),NEW,barcode,varchar NULLABLE d=NULL,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,WzTiDjc~UFOe,COLUMN,ROW
+71,Texte,Standard,2,45|49,,,,,,,,"Ajout du suivi par lots (batch), numéros de série (serial number), dates d'expiration",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,kFTi-WPB9X0j,,
+72,"Entité (clé, champ, type)",Entité-Association,2,45|46,,,,,,,,inventory_transit,NEW,transit_barcode,varchar,NEW,product_barcode,varchar,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,WnUie2Rxf.s6,COLUMN,ROW
+73,Texte,Standard,2,45|51,,,,,,,,Quels produits sont réservés ou en attente de traitement?,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Dv2ihY7u21ac,,
+74,"Entité (clé, champ, type)",Entité-Association,2,45|49,,,,,,,,inventory_itemtracking,VX,id PK,bigint AUTO,VX,company_id FK,bigint,VX,product_id FK,bigint,VX,tracking_type,enum,VX,batch_number,varchar NULLABLE,VX,serial_number,varchar NULLABLE,VX,expiration_date,datetime NULLABLE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,BNDjBTo8dk3Z,COLUMN,ROW
+75,Rectangle,Formes Lucidspark,2,45|49,,,,,,,,"tracking_type ENUM
+BATCH
+SERIAL
+NONE",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,iPDjuQRdUO~8,COLUMN,ROW
+76,"Entité (clé, champ, type)",Entité-Association,2,45|49,,,,,,,,catalogue_productmodel (AbstractAudit),VX,tracking_policy,enum d=NONE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,ORDjM6EOc5QL,COLUMN,ROW
+77,"Entité (clé, champ, type)",Entité-Association,2,45|49,,,,,,,,inventory_stock,VX,item_tracking_id FK,bigint NULLABLE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,QTDjwjCjShJq,COLUMN,ROW
+78,"Entité (clé, champ, type)",Entité-Association,2,45|49,,,,,,,,inventory_movement,VX,item_tracking_id (FK),bigint NULLABLE d=null,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,ZVDjmAqZc22t,COLUMN,ROW
+79,"Entité (clé, champ, type)",Entité-Association,2,45|49,,,,,,,,inventory_transit,VX,item_tracking_id (FK),bigint NULLABLE d=null,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,ZVDj3kbS4eVD,COLUMN,ROW
+80,Rectangle,Formes Lucidspark,2,45|49,,,,,,,,"tracking_type ENUM
+BATCH
+SERIAL
+NONE",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,yZDjZWKU00rM,COLUMN,ROW
+81,Tableau,Tableaux,2,45|49,,,,,,,,access_permission (Ajout de données),codename,context,sensibility,inventory.stock.quarantine,MULTI_LOCATIONS,HIGH,inventory.stock.change_tracking_Info,LOCATION,MEDIUM,...,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,00DjBv9PhPzW,,
+82,Rectangle,Formes Lucidspark,2,3,,,,,,,,"translation ENUM
+DISABLED
+GENERIC
+REGIONAL",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,tJ6lthY7xxey,COLUMN,ROW
+83,"Entité (clé, champ, type)",Entité-Association,2,45|54,,,,,,,,company_defaultlocations (CompanyOwned),V1,id PK,biging,V1,"company_id FK 
+(de CompanyOwned)",bigint ,V1,for_location,bigint,V1,transit_entrance FK Location,bigint  NULLABLE d=NULL,V1,transit_intercompany FK Location,bigint  NULLABLE d=NULL,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Gxbmraz.0oAU,COLUMN,ROW
+84,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,"company_address (TranslatableModel, CompanyOwned, AbstractAudit)",MVP,id PK,bigint,MVP,"company_id FK 
+(de CompanyOwned)",bigint ,MVP,location_id FK,varchar,MVP,  street_address,varchar NULLABLE d=NULL,MVP,  extended_address,varchar NULLABLE d=NULL,MVP,  locality,varchar NULLABLE d=NULL,MVP,  region,varchar NULLABLE d=NULL,MVP,country FK,bigint,MVP,postal_code,varchar NULLABLE d=NULL,V1,time_zone,varchar NULLABLE d=NULL,MVP,latitude,"decimal(9,6) NULLABLE d=NULL",MVP,longitude,"decimal(9,6) NULLABLE d=NULL",,,,,,,,,,,,,,,,,,,,,,,,Xasm~uUwglwC,COLUMN,ROW
+85,Rectangle,Formes Lucidspark,2,3,,,,,,,,"status ENUM
+CREATED
+IN TRANSIT
+REFUSED - BACK TO SENDER
+NEVER RECEIVED
+DONE",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,zaymRKvdQ-ys,COLUMN,ROW
+86,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,company_country (TranslatableModel),MVP,id PK,bigint,MVP,iso_code,varchar(2),MVP,  name,varchar(100),,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,HDGmKcAeePcg,COLUMN,ROW
+87,"Entité (clé, champ, type)",Entité-Association,2,3,,,,,,,,access_roledelegatepermissions,POC,id PK,int AUTO,POC,role_id FK,int,POC,delegate_perm_id FK,int,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,gjRmV1BK61Pg,COLUMN,ROW
+88,Ligne,,2,,,32,31,None,None,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,tcAh-KUdFa..,,
+89,Ligne,,2,,,34,33,None,None,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,QvAhV0X.Ex-y,,
+90,Ligne,,2,,,39,38,None,None,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,xRFi8l1TFLJ~,,
+91,Ligne,,2,,,40,38,None,None,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,BRFipEGXL1Nb,,
+92,Ligne,,2,,,41,28,None,None,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,aBNiG.JrtUIz,,
+93,Ligne,,2,,,42,28,None,None,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TV4iu2.tsziJ,,
+94,Ligne,,2,,,75,74,None,None,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,5QDj9qDoMf.I,,
+95,Ligne,,2,,,76,80,None,None,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,BSDjYXXGMQke,,
+96,Ligne,,2,,,17,82,None,None,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,RK6lxqwADw-1,,
+97,Ligne,,2,,,37,85,None,None,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,QhBm5A4V_Nmc,,

@@ -51,10 +51,12 @@ Conception et développement d'une application web complète, moderne et profess
 * **Base de données :** MySQL (via `mysqlclient`)
 * **Dépendances tierces :**
   * Gestion des variables d'environnement : `django-environ`
-  * Framework de tests : `pytest-django`
-  * Traitement d'images : `pillow` (Gestion des images Produit), `django-cleanup` (Suppression des fichiers médias orphelins)
+  * Modèles hiérarchisés en arbre (UserHierarchy, Location, Category) : `django-treebeard`
+  * Traduction des données dynamiques : `django-parler` (introduit dès le POC avec 1 langue. sera étendue plus tard)
+  * Framework de tests : `pytest`, `pytest-django`, `pytest-cov`
+  * Traitement d'images : `pillow`, `django-cleanup` (Suppression des fichiers médias orphelins - TODO)
   * Outils de développement: `django-browser-reload` (rechargement automatique), `ruff` (linter et formattage)
-  * Gestion des fichiers CSV `django-import-export`
+  * Gestion des fichiers CSV `django-import-export` (TODO)
 
 *La liste des dépendances sera mise à jour à mesure du développement.*
 

@@ -1,54 +1,48 @@
-# src/catalogue/models/product_image.py
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from pathlib import Path
-import uuid
 
-from src.catalogue.models.product import Product
+from src.scope.models.company_owned import CompanyOwned
 
 
-# Renomme les fichiers image téléchargés selon le SKU et un uuid
-# TODO Ce serait mieux comme fonction de classe, non?
-def product_image_upload_name(instance, filename):
-    ext = filename.split(".")[-1]
-    short_uuid = uuid.uuid4().hex[
-        :6
-    ]  # Génère un jeton court et unique de 6 caractères (ex: a1b2c3)
-    sku = instance.product.sku
-    new_filename = f"{sku}_{short_uuid}.{ext}"
-    return str(Path("products") / sku / new_filename)
+# def product_image_upload_name(instance, filename):
+#     # TODO Revoir la stratégie de nommage de fichiers plus tard.
+#     # Code temporairement désactivé à la demande.
+#     return filename
 
 
-class ProductImage(models.Model):
+class ProductImage(CompanyOwned):
     product = models.ForeignKey(
-        Product,
+        "catalogue.Product",
         on_delete=models.CASCADE,
-        related_name="images",  # Permet d'appeler product.images.all() dans les templates
+        related_name="product_images",
         verbose_name=_("Product"),
     )
 
-    # Champ Image (Pillow)
-    image = models.ImageField(
-        upload_to=product_image_upload_name, verbose_name=_("Image")
+    image = models.ForeignKey(
+        "core.Image",
+        on_delete=models.CASCADE,
+        related_name="product_images",
+        verbose_name=_("Image"),
     )
 
-    # Texte alternatif pour le SEO/Accessibilité
-    alt_text = models.CharField(
-        max_length=255, blank=True, verbose_name=_("Alternative text")
+    is_main = models.BooleanField(
+        default=False,
+        verbose_name=_("Is main"),
     )
-
-    # Est-ce l'image principale du produit
-    is_main = models.BooleanField(default=False, verbose_name=_("Main image"))
-
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created at"))
 
     class Meta:
-        verbose_name = _("Product Image")
-        verbose_name_plural = _("Product Images")
-        ordering = [
-            "-is_main",
-            "created_at",
-        ]  # L'image principale apparaît toujours en premier
+        db_table = "catalogue_productimage"
+        verbose_name = _("Product image")
+        verbose_name_plural = _("Product images")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["product", "image"],
+                name="unique_product_image",
+                violation_error_message=_(
+                    "This image is already linked to this product."
+                ),
+            )
+        ]
 
     def __str__(self):
-        return f"Image for {self.product.name} (SKU {self.product.sku})"
+        return f"{self.product.slug} -> {self.image_id}"
