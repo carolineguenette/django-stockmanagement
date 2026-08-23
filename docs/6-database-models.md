@@ -17,7 +17,7 @@ Projet Gestion de stocks — document de conception
 
 Ce document ajoute des commentaires explicatifs sur le schéma de la base de données (choix architecturale, notes de développement, etc.). Les modèles et composants ne sont pas listés de manière exhaustives dans le présent document (se référer au schéma dans LucidChart). 
 
-[← Modules](5-django-apps-and-urls.md) | [Sommaire](2-conception.md) |  [Arborescence des fichiers →](7-project-structure.md)
+[← Modules](5-django-apps-and-urls.md) | [Sommaire](2-conception.md) |  [Système d'inventaire →](7-inventory-system.md)
 
 ![](schema_database.svg)](schema_database.svg)
 [Voir le Schéma de la base de données sur LucidChart](https://lucid.app/lucidchart/786327e6-745d-4881-95e1-39f3fdf33c66/view)
