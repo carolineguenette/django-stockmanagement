@@ -18,8 +18,8 @@ class RolePermissions(models.Model):
 
     class Meta:
         db_table = 'access_rolepermissions'
-        verbose_name = _('Access Role permission')
-        verbose_name_plural = _('Access Role permissions')
+        verbose_name = _('Permission associée à un rôle')
+        verbose_name_plural = _('Permissions associées à un rôle')
         constraints = [
             models.UniqueConstraint(
                 fields=["role", "permission"],

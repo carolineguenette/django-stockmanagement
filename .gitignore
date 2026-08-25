@@ -220,5 +220,8 @@ __marimo__/
 # Fichiers médias locaux (Téléversements utilisateurs)
 medias/
 
-# Fichiers temporaires
+# Fichiers temporaires et fichiers de configuration IA
 docs/temp*
+AGENTS.md
+.github/copilot-instruction.md
+.windsurf/

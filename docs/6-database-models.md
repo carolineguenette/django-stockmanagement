@@ -106,15 +106,16 @@ Table immuable sans ADD, CHANGE ni DELETE. L'sjout  / suppression de permissions
 
 ![](https://img.shields.io/badge/Unique-codename-blueviolet.svg)
 
-| ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                                                    |
-|:------------------------------------------------------:| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `codename`                                             | Code unique de la permission métier                                                                                                                                     |
-| :globe_with_meridians:`name`                           | Nom lisible (traduisible)                                                                                                                                               |
-| :globe_with_meridians:`help_text`                      | Explication longue, incluant parfois des exemples (traduisible).                                                                                                        |
-| `context`                                              | Flag déterminant le contexte requis : SYSTEM, DELEGATE, COMPANY, MULTI_COMPANIES, LOCATION ou MULTI_LOCATIONS                                                           |
-| `sensibility`                                          | Flag déterminant le degré de sensibilité (HIGH, MEDIUM, LOW). Pourrait servir à mettre en place des avertissements de "Permission sensible" lors d'attribution de rôle. |
-| `is_active`                                            | Permet de désactiver une permission sans la supprimer. Champs technique uniquement disponible dans l'admin django      .                                                |
-| `display_order`                                        | Sert de premier tri pour une meilleure UX lors de la gestion des permissions et de leur assignation à des utilisateurs.                                                 |
+| ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                                                                                                                                                                                                              |
+|:------------------------------------------------------:| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `codename`                                             | Code unique de la permission métier                                                                                                                                                                                                                                                                                               |
+| :globe_with_meridians:`name`                           | Nom lisible (traduisible)                                                                                                                                                                                                                                                                                                         |
+| :globe_with_meridians:`help_text`                      | Explication longue, incluant parfois des exemples (traduisible).                                                                                                                                                                                                                                                                  |
+| `context`                                              | Flag déterminant le contexte requis : SYSTEM, COMPANY, MULTI_COMPANIES, LOCATION ou MULTI_LOCATIONS                                                                                                                                                                                                                               |
+| `sensibility`                                          | Flag déterminant le degré de sensibilité (HIGH, MEDIUM, LOW). Pourrait servir à mettre en place des avertissements de "Permission sensible" lors d'attribution de rôle.                                                                                                                                                           |
+| `category`                                             | Flag déterminant la catégorie pour mieux gérer l'affichage des permissions : ACCESS, DELEGATE, USERS, COMPANY, CATALOGUE, INVENTORY, MOVEMENT, REPORTING. À noter que la catégorie DELEGATE a besoin que les permissions ainsi déléguéess soient renseignées (assignation de permission dans le modèle `RoleDelegatePermissions`) |
+| `is_active`                                            | Permet de désactiver une permission sans la supprimer. Champs technique uniquement disponible dans l'admin django      .                                                                                                                                                                                                          |
+| `display_order`                                        | Sert de premier tri pour une meilleure UX lors de la gestion des permissions et de leur assignation à des utilisateurs.                                                                                                                                                                                                           |
 
 ## ![](https://img.shields.io/badge/-Model-blue.svg) Role (table `access_role `)
 
@@ -142,7 +143,7 @@ Association entre les rôles et les permissions octroyées par le rôle.
 
 ## ![](https://img.shields.io/badge/-Model-blue.svg) RoleDelegatePermissions (table `access_roledelegatepermissions `)
 
-Association entre les rôles et les permissions déléguables, pour les permissions de contexte DELEGATE. Cette liste ne donne pas le droit de réaliser l'action. Il s'agit de la liste de permissions que le rôle permet d'assigner à un autre utilisateur, pour une permissions de type DELEGATE (permissions `access_role_manage `et `users_userrole_manage`)
+Association entre les rôles et les permissions déléguables, pour les permissions de catégorie DELEGATE. Cette liste ne donne pas le droit de réaliser l'action. Il s'agit de la liste de permissions que le rôle permet d'assigner à un autre utilisateur. Il y a actuellement deux permissions DELEGATE:  `access_role_manage `et `users_userrole_manage`.
 
 ![](https://img.shields.io/badge/Unique-role__id,_permissions__id-blueviolet.svg)
 
@@ -490,8 +491,6 @@ Chaque entreprise doit avoir **exactement une seule** référence (`is_reference
 À la création d'une entrepise, cette table est populée à partir d'un gabarit (constante dans *src/core/utils/uom_template.py*) selon les préférences du propriétaire (*ex: Une entreprise de textile souhaite activer la vente par unité et par longueur, en système métrique seulement. Le système ajoutera donc les lignes du gabarit correspondant aux besoins indiqués*).
 
 Uom implémente le modèle abstrait CompanyOwned.
-
-
 
 | ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                                                                                                                                                                                                                                     |
 |:------------------------------------------------------:| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

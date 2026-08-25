@@ -48,7 +48,7 @@ Conception et développement d'une application web complète, moderne et profess
 ## Spécifications techniques <a id="specs"></a>
 
 * **Langage & Framework :** Python 3.11+ / Django 6.0.7
-* **Base de données :** MySQL (via `mysqlclient`)
+* **Base de données :** MySQL 8.0.46 (via `mysqlclient`)
 * **Dépendances tierces :**
   * Gestion des variables d'environnement : `django-environ`
   * Modèles hiérarchisés en arbre (UserHierarchy, Location, Category) : `django-treebeard`

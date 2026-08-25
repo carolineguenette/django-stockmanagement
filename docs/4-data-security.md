@@ -28,33 +28,23 @@ Les permissions métier sont gérées par un système custom. Les modèles sont 
 
 ### Descriptions des modèles du contrôle d'accès
 
-<img src="schema_database_access.svg" alt="Schema access tables" width=400 />
-<img src="schema_database_userrole.svg" alt="Schema userrole table" width=400 />
-
-| table                    | Description                                                                                                                                                                                                                                                                                                           |
-|:------------------------ |:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `access_permission`      | Stocke les permissions fonctionnelles de l'application (ex:`codename = "inventory.movement.sale"`). Contrairement au CRUD global de Django, ces permissions décrivent des actions métiers précises. Chaque permission s'applique dans un certain contexte (`access_permission.context`) défini ci-bas.                |
-| `access_role`            | Regroupe un ensemble de permissions sous un identifiant unique<br/><br/>** Clé stratégique** : Le champ `company_id FK (NULLABLE)`. S'il est `NULL`, le rôle est **global** (ex: le rôle *Gestionnaire* existe pour toutes les entreprises). S'il est renseigné, le rôle est spécifique à une seule entreprise.       |
-| `access_rolepermissions` | **Liste des permissions d'un rôle**<br/> Table d'association entre les permissions et les rôles. Permet de définir les permissions associées à chaque rôle.                                                                                                                                                           |
-| `access_log`             | **Audit** <br/>Enregistre de manière immuable chaque action de modification sur le système d'accès (création de rôle, changement de permissions). Elle utilise un champ `JSONField` (`snap_infos`) pour stocker les infos au moment de la transaction et des FK pour permettre la recherche / filtre plus facilement. |
-| `users_userrole`         | **Table d'assignation**<br/> Cœur du système. Elle associe un utilisateur à un rôle, et y ajoute aussi un **scope (périmètre de validité)**.                                                                                                                                                                          |
-| users_userrolelog        | **Audit**<br/>Enregistre de manière immuable chaque action de modification sur les attributions de rôles aux utilisateurs. Elle utilise un champ `JSONField` (`snap_infos`) pour stocker les infos au moment de la transaction et des FK pour permettre la recherche / filtre plus facilement.                        |
+| table                            | Description                                                                                                                                                                                                                                                                                                           |
+|:-------------------------------- |:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `access_permission`              | Stocke les permissions fonctionnelles de l'application (ex:`codename = "inventory.movement.sale"`). Contrairement au CRUD global de Django, ces permissions décrivent des actions métiers précises. Chaque permission s'applique dans un certain contexte (`access_permission.context`) défini ci-bas.                |
+| `access_role`                    | Regroupe un ensemble de permissions sous un identifiant unique<br/><br/>** Clé stratégique** : Le champ `company_id FK (NULLABLE)`. S'il est `NULL`, le rôle est **global** (ex: le rôle *Gestionnaire* existe pour toutes les entreprises). S'il est renseigné, le rôle est spécifique à une seule entreprise.       |
+| `access_rolepermissions`         | **Liste des permissions d'un rôle**<br/> Table d'association entre les permissions et les rôles. Permet de définir les permissions associées à chaque rôle.                                                                                                                                                           |
+| `access_roledelegatepermissions` | Liste des permissions délégables d'un rôle contenant une permission de catégorie `DELEGATE`<br/>Table d'association entre les permissions et les rôles. Nécessaire seulement pour les rôles contenant une permissions de catégorie `DELEGATE`.                                                                        |
+| `access_log`                     | **Audit** <br/>Enregistre de manière immuable chaque action de modification sur le système d'accès (création de rôle, changement de permissions). Elle utilise un champ `JSONField` (`snap_infos`) pour stocker les infos au moment de la transaction et des FK pour permettre la recherche / filtre plus facilement. |
+| `users_userrole`                 | **Table d'assignation**<br/> Cœur du système. Elle associe un utilisateur à un rôle, et y ajoute aussi un **scope (périmètre de validité)**.                                                                                                                                                                          |
+| users_userrolelog                | **Audit**<br/>Enregistre de manière immuable chaque action de modification sur les attributions de rôles aux utilisateurs. Elle utilise un champ `JSONField` (`snap_infos`) pour stocker les infos au moment de la transaction et des FK pour permettre la recherche / filtre plus facilement.                        |
 
 ### Contexte des permissions <a id="permissions-context"></a>
 
-Une permission s'applique dans un contexte particulier. Cinq (6) contextes sont définis: système (`SYSTEM`), délégation (`DELEGATE`), compagnie (`COMPANY`), multi-compagnies (`MULTI_COMPANIES`), location (`LOCATION`) et multi-location (`MULTI_LOCATIONS`).
+Une permission s'applique dans un contexte particulier. Cinq (5) contextes sont définis: système (`SYSTEM`), compagnie (`COMPANY`), multi-compagnies (`MULTI_COMPANIES`), location (`LOCATION`) et multi-location (`MULTI_LOCATIONS`).
 
 #### Système (`access_permission.context = SYSTEM`)
 
 La permission concerne une configuration externe aux compagnies (*ex: création d'utilisateur, téléversement d'images sur le serveur*)
-
-#### Délégation (`access_permission.context = DELEGATE`)
-
-La permission définit une permission / rôle spécial. Les permissions pouvant être déléguées doivent être précisées. Ces permissions sont enregistrées dans la table `access_roledelegatepermissions`. 
-
-*Exemple: `access.role.manage` est assignée au rôle "Gestionnaire d'accès". Les permissions `inventory.stock.increase` et `inventory.stock.decrease` sont précisées comme délégables. Cela sgnifie qu'un Gestionnaire d'accès peut créer des rôles avec ces 2 permissions et seulement ces 2 permissions. Il ne peut,pas augmenter ou diminuer l'inventaire lui-même l'inventaire en stock avec cette permission.*
-
-La permission s'applique exclusivement dans un contexte d'entreprise, sans info sur les locations.
 
 #### Compagnie (`access_permission.context = COMPANY`)
 
@@ -72,6 +62,7 @@ La permission s'applique exclusivement dans un contexte d'entreprise active. Il 
 La permission concerne une demande d'aggrégation (rapport consolidé sur plusieurs compagnies). Il n'y a pas d'information de location nécessaire.
 
 Quatre règles :
+
 1. la permission autorise une fonctionnalité multi-compagnies ;
 2. elle ne donne pas accès à toutes les compagnies ;
 3. le périmètre vient des rôles et assignations ordinaires ;
@@ -99,6 +90,20 @@ La permission s'applique dans un contexte d'entreprise active (1 compagnie activ
   - À noter que l'interface ne devrait pas proposer `boutique-a` mais si une manipulation malvellante était réalisée, le système refuserait le transfert.
 
 - déplacer `product-2` situé dans `boutique-a` => Error Permission denied.
+
+### Catégorie des permissions
+
+Aide à classer les permissions. 
+
+La catégorie `DELEGATE `est particulière.
+
+#### Délégation (`access_permission.context = DELEGATE`)
+
+La permission définit une permission / rôle spécial. Les permissions pouvant être déléguées doivent être précisées. Ces permissions sont enregistrées dans la table `access_roledelegatepermissions`.
+
+*Exemple: `access.role.manage` est assignée au rôle "Gestionnaire d'accès". Les permissions `inventory.stock.increase` et `inventory.stock.decrease` sont précisées comme délégables. Cela sgnifie qu'un Gestionnaire d'accès peut créer des rôles avec ces 2 permissions et seulement ces 2 permissions. Il ne peut,pas augmenter ou diminuer l'inventaire lui-même l'inventaire en stock avec cette permission.*
+
+La permission s'applique exclusivement dans un contexte d'entreprise, sans info sur les locations.
 
 ### Sensibilité des permissions <a id="permissions-sensibility"></a>
 
@@ -176,7 +181,6 @@ Cet utilisateur peut-il effectuer cette action dans ce contexte et ce périmètr
           [ Filtrage & Boucle sur les Permissions assignées à l'utilisateur via UserRoles ]
     EXCLURE d'emblée les UserRoles inactifs, les Permissions inactives ou rattachées à un Rôle inactif.
                                      │
-                                     ├── Aucune permission trouvée ──> RETOURNER FAUX
                                      ▼
           [ Boucle sur chaque Permission valide assignée à l'utilisateur ]
                                      │
@@ -187,7 +191,7 @@ Cet utilisateur peut-il effectuer cette action dans ce contexte et ce périmètr
                                                        │
          ┌─────────────────────────────────────────────┼──────────────────────────────────────────────┐
          ▼                                             ▼                                              ▼
-   [ Permission SYSTEM ]                [ Permission COMPANY / DELEGATE ]                [ Permission LOCATION / MULTI_LOCATIONS ]
+   [ Permission SYSTEM ]                [ Permission COMPANY / MULTI_COMPANIES]           [ Permission LOCATION / MULTI_LOCATIONS ]
    │  (si Obj est fourni, un                Obj matche-t-il ?                               La location (ou liste) matche-t-elle
    │   warning a déjà été préparé)               ├── Non ──> Passer au suivant                  l'assignation ou ses enfants ?
    └───> RETOURNER VRAI                          └── Oui ──> RETOURNER VRAI                     ├── Oui ──> RETOURNER VRAI
@@ -213,14 +217,6 @@ Validation du paramètre `obj` (Contexte)
     ├── SYSTEM ─────────────────────> `company_id` OU `location_id` est fourni ?
     │                                    ├── [Oui] ──> ÉMETTRE WARNING : "SYSTEM permission ignores context"
     │                                    └─> CONTEXTE VALIDE
-    │
-    ├── DELEGATE ───────────────────> `company_id` est-il absent ? ──[Oui]──> LEVER EXCEPTION (Missing Company)
-    │                                    │
-    │                                    └──[Non] ──> Est-ce une liste/un array ? ──[Oui]──> LEVER EXCEPTION (Too Many Companies)
-    │                                                   │
-    │                                                   └──[Non] ──> `location_id` est-il fourni ?
-    │                                                                   ├── [Oui] ──> ÉMETTRE WARNING : "Location ignored for DELEGATE context"
-    │                                                                   └─> CONTEXTE VALIDE
     │
     ├── COMPANY ────────────────────> `company_id` est-il absent ? ──[Oui]──> LEVER EXCEPTION (Missing Company)
     │                                    │
@@ -278,7 +274,7 @@ class CompanyRBACBackend:
         :param perm: Le codename string de la permission (ex: 'catalogue.product.delete').
         :param obj: Un dictionnaire optionnel contenant le contexte à vérifier 
            SYSTEM          - None
-           DELEGATECOMPANY - { "company_id": A }
+           COMPANY         - { "company_id": A }
            LOCATION        - { "company_id": A, "location_id": Y }
            MULTI_LOCATIONS - { "company_id": A, "location_id": [Y, X] }
            MULTI_COMPANIES - { "company_id": [A, B] }

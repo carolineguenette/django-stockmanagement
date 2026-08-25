@@ -13,8 +13,8 @@ from src.users.models.user_hierarchy import UserHierarchy
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
     # Liste les colonnes à afficher dans le tableau récapitulatif
-    list_display = ("username", "email", "first_name", "last_name", "is_owner", "is_active", "is_staff", "is_superuser")
-    list_filter = ("is_owner", "is_active")
+    list_display = ("username", "email", "first_name", "last_name", "is_owner", "is_active")
+    list_filter = ("is_owner", "is_active", "is_staff", "is_superuser")
 
     # Ajout d'une barre de recherche
     search_fields = ("username", "email")

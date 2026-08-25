@@ -21,7 +21,8 @@ class Role(TranslatableModel, AbstractAudit):
         related_name='roles',
         null=True,
         blank=True,
-        verbose_name=_('Company')
+        verbose_name=_('Company'),
+        help_text=_('Leave empty to create a global role. If set, the role will be specific to this company.')
     )
 
     # Déclaration des champs traduisibles pour django-parler
@@ -48,10 +49,19 @@ class Role(TranslatableModel, AbstractAudit):
         verbose_name=_('Permissions')
     )
 
+    manage_by = models.ForeignKey(
+        'users.User',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='manages_roles',
+        verbose_name=_('Manage by')
+    )
+
     class Meta:
         db_table = 'access_role'
-        verbose_name = _('Access role')
-        verbose_name_plural = _('Access roles')
+        verbose_name = _('Role')
+        verbose_name_plural = _('Roles')
         constraints = [
             models.UniqueConstraint(
                 fields=["slug", "company"],

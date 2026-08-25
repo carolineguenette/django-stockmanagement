@@ -183,13 +183,13 @@ LANGUAGES_FALLBACKS = {
 #     }
 # }
 
-# Une seule langue est active pour les données pour le moment
+# Une seule langue est active pour les données dynamiques pour le moment
 PARLER_LANGUAGES = {
     1: (
-        {'code': 'fr'},
+        {'code': env("DEFAULT_LANG")},
     ),
     'default': {
-        'fallbacks': ['fr'],
+        'fallbacks': [env("DEFAULT_LANG")],
         'hide_untranslated': False,
     }
 }

@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from parler.models import TranslatableModel, TranslatedFields
-from src.access.choices import PermissionContextChoices, PermissionSensibilityChoices
+from src.access.choices import PermissionContextChoices, PermissionSensibilityChoices, PermissionCategoryChoices
 
 class Permission(TranslatableModel):
     """
@@ -37,6 +37,11 @@ class Permission(TranslatableModel):
         choices=PermissionSensibilityChoices.choices,
         verbose_name=_('Sensibility')
     )
+    category = models.CharField(
+        max_length=20,
+        choices=PermissionCategoryChoices.choices,
+        verbose_name=_('Category')
+    )
     is_active = models.BooleanField(
         default=True,
         verbose_name=_('Is active')
@@ -48,8 +53,8 @@ class Permission(TranslatableModel):
 
     class Meta:
         db_table = 'access_permission'
-        verbose_name = _('Access permission')
-        verbose_name_plural = _('Access permissions')
+        verbose_name = _('Permission')
+        verbose_name_plural = _('Permissions')
         ordering = ['display_order', 'codename']
 
     def __str__(self):

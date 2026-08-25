@@ -3,7 +3,6 @@ from django.utils.translation import gettext_lazy as _
 
 class PermissionContextChoices(models.TextChoices):
     SYSTEM = 'SYSTEM', _('System')
-    DELEGATE = 'DELEGATE', _('Delegate')
     COMPANY = 'COMPANY', _('Company')
     MULTI_COMPANIES = 'MULTI_COMPANIES', _('Multi-companies')
     LOCATION = 'LOCATION', _('Location')
@@ -13,6 +12,16 @@ class PermissionSensibilityChoices(models.TextChoices):
     HIGH = 'HIGH', _('High')
     MEDIUM = 'MEDIUM', _('Medium')
     LOW = 'LOW', _('Low')
+
+class PermissionCategoryChoices(models.TextChoices):
+    ACCESS = 'ACCESS', _('Access')
+    DELEGATE = 'DELEGATE', _('Delegate')
+    USERS = 'USERS', _('Users')
+    COMPANY = 'COMPANY', _('Company')
+    CATALOGUE = 'CATALOGUE', _('Catalogue')
+    INVENTORY = 'INVENTORY', _('Inventory')
+    MOVEMENT = 'MOVEMENT', _('Movement')
+    REPORTING = 'REPORTING', _('Reporting')
 
 class AccessLogTargetChoices(models.TextChoices):
     ACCESS_PERMISSION = "access_permission", _("Access permission")

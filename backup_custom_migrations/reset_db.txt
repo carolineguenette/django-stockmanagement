@@ -3,4 +3,7 @@ DROP DATABASE django_stock;
 CREATE DATABASE django_stock CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 bash:
-find . -path "./.venv" -prune -o -path "*/migrations/*.py" ! -name "__init__.py" ! -name "*custom*" -print
+find . -not -path "./.venv/*" -path "*/migrations/*.py" ! -name "__init__.py" ! -name "*custom*" -print
+
+find . -not -path "./.venv/*" -path "*/migrations/*.py" ! -name "__init__.py" ! -name "*custom*" -delete
+
