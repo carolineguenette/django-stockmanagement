@@ -1,4 +1,6 @@
-# Dans app access
+# **************************
+# Dans app django access
+# **************************
 
 from django.db import migrations
 
@@ -767,7 +769,7 @@ def create_permissions(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("access", "0002_initial"),     # TODO: Need to be adjust with real migration numbers
+        ("access", "0002_initial"),
     ]
 
     operations = [

@@ -34,8 +34,8 @@ class Transit(CompanyOwned):
         verbose_name=_('Source Information Snapshot')
     )
     source_pack_quantity_send = models.DecimalField(
-        max_digits=12,
-        decimal_places=4,
+        max_digits=20,
+        decimal_places=6,
         verbose_name=_('Source Pack Quantity Sent')
     )
     source_comment = models.TextField(
@@ -55,8 +55,8 @@ class Transit(CompanyOwned):
     # company_id FK = destination (Hérité de la classe abstraite CompanyOwned)
 
     dest_pack_quantity_received = models.DecimalField(
-        max_digits=12,
-        decimal_places=4,
+        max_digits=20,
+        decimal_places=6,
         null=True,
         blank=True,
         default=None,

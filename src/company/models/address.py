@@ -1,12 +1,12 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from parler.models import TranslatableModel, TranslatedFields
+from parler.models import TranslatedFields
 
+from src.scope.models.translatable_company_owned import TranslatableCompanyOwned
 from src.core.models.abstract_audit import AbstractAudit
-from src.scope.models.company_owned import CompanyOwned
 
 
-class Address(TranslatableModel, CompanyOwned, AbstractAudit):
+class Address(TranslatableCompanyOwned, AbstractAudit):
     location = models.ForeignKey(
         "company.Location",
         on_delete=models.RESTRICT,

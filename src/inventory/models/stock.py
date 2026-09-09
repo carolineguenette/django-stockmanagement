@@ -23,8 +23,8 @@ class Stock(CompanyOwned):
         verbose_name=_('Product Packaging')
     )
     pack_quantity = models.DecimalField(
-        max_digits=15,
-        decimal_places=5,
+        max_digits=20,
+        decimal_places=6,
         verbose_name=_('Pack Quantity')
     )
 

@@ -5,7 +5,7 @@ from parler.models import TranslatableModel, TranslatedFields
 from src.core.models.abstract_audit import AbstractAudit
 
 
-class Role(TranslatableModel, AbstractAudit):
+class Role(TranslatableModel):
     """
     Modèle représentant les rôles métier. Un rôle regroupe plusieurs permissions.
     Personnalisable par l'utilisateur
@@ -22,7 +22,7 @@ class Role(TranslatableModel, AbstractAudit):
         null=True,
         blank=True,
         verbose_name=_('Company'),
-        help_text=_('Leave empty to create a global role. If set, the role will be specific to this company.')
+        help_text=_('Leave empty to create a global role. If set, the role will be limited to this company.')
     )
 
     # Déclaration des champs traduisibles pour django-parler

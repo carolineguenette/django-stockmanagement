@@ -87,20 +87,23 @@ class User(AbstractUser):
         verbose_name = _("user")
         verbose_name_plural = _("users")
 
-    # Surcharge de la méthode save pour automatiser l'audit utilisateur via le middleware
-    def save(self, *args, **kwargs):
-        from src.core.middleware import get_current_user
+    def save(self, **kwargs):
+        from src.core.services.audit_service import AuditService
 
-        current_user = get_current_user()
+        AuditService.apply_audit(self)
+        super().save(**kwargs)
 
-        if current_user and current_user.is_authenticated:
-            if not self.pk:  # Création d'un nouvel utilisateur
-                self.created_by = current_user
-                self.updated_by = None
-            else:  # Mise à jour d'un utilisateur existant
-                self.updated_by = current_user
-
-        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name} ({self.username})"
+        # Nettoie les valeurs pour gérer les cas None et les espaces vides
+        f_name = (self.first_name or "").strip()
+        l_name = (self.last_name or "").strip()
+
+        # Si les deux sont vides, renvoie uniquement le username
+        if not f_name and not l_name:
+            return self.username
+
+        # Construit la chaîne sans double espace si l'un est vide
+        full_name = f"{f_name} {l_name}".strip()
+        return f"{full_name} ({self.username})"
+

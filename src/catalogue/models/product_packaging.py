@@ -1,12 +1,12 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from parler.models import TranslatableModel, TranslatedFields
+from parler.models import TranslatedFields
 
+from src.scope.models.translatable_company_owned import TranslatableCompanyOwned
 from src.core.models.abstract_audit import AbstractAudit
-from src.scope.models.company_owned import CompanyOwned
 
 
-class ProductPackaging(TranslatableModel, CompanyOwned, AbstractAudit):
+class ProductPackaging(TranslatableCompanyOwned, AbstractAudit):
     product = models.ForeignKey(
         "catalogue.Product",
         on_delete=models.CASCADE,
@@ -34,7 +34,7 @@ class ProductPackaging(TranslatableModel, CompanyOwned, AbstractAudit):
     )
 
     ratio = models.DecimalField(
-        max_digits=12,
+        max_digits=18,
         decimal_places=6,
         verbose_name=_("Ratio"),
     )

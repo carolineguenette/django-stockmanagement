@@ -24,5 +24,6 @@ class PermissionCategoryChoices(models.TextChoices):
     REPORTING = 'REPORTING', _('Reporting')
 
 class AccessLogTargetChoices(models.TextChoices):
-    ACCESS_PERMISSION = "access_permission", _("Access permission")
-    ACCESS_ROLE = "access_role", _("Access role")
+    ACCESS_ROLE = "access_role", _("Role")
+    ACCESS_PERMISSION = "access_rolepermissions", _("Permission")
+    ACCESS_DELEGATE = "access_roledelegatepermissions", _("Delegate")

@@ -12,12 +12,12 @@ class PermissionAdmin(TranslatableAdmin):
 
     fieldsets = (
         ("Identifiants", {
-            'fields': ('codename', 'display_order'),
+            'fields': ('codename',),
         }),
         ("Champs Traduisibles (Multilingue)", {
             'fields': ('name', 'help_text'),
         }),
         ("Classification et Sécurité", {
-            'fields': ('category', 'context', 'sensibility'),
+            'fields': ('category', 'context', 'sensibility', 'display_order'),
         }),
     )

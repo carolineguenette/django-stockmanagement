@@ -1,30 +1,25 @@
-import threading
 from django.conf import settings
 from django.utils import translation
 from django.utils.translation import get_language_from_request
 
+from src.core.services.audit_service import AuditService
 
-_local = threading.local()
-
-def get_current_user():
-    """Permet de récupérer l'utilisateur connecté n'importe où dans le thread actuel."""
-    return getattr(_local, 'user', None)
 
 class AuditUserMiddleware:
     """
-    Middleware pour capturer l'utilisateur de la requête HTTP.
-    Utilisé par core.AbstractAudit et users.User lors du save pour définir les champs created_by et updated_by.
+    Middleware capturant le user connecté dans le contexte pour automatiser
+    l'audit dans les formulaires imbriqués (inlines) et les futures vues web.
     """
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
-        _local.user = request.user
-        response = self.get_response(request)
-        # Nettoyage après la requête
-        if hasattr(_local, 'user'):
-            del _local.user
-        return response
+        token = AuditService.set_user(getattr(request, 'user', None))
+        try:
+            response = self.get_response(request)
+            return response
+        finally:
+            AuditService.reset_user(token)
 
 
 class RegionalLocaleMiddleware:
@@ -92,3 +87,4 @@ class RegionalLocaleMiddleware:
 
         # Sinon, règle de repli (ex: fr -> fr-ca) ou base_lang par défaut
         return fallbacks.get(base_lang, base_lang)
+

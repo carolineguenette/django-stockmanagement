@@ -3,11 +3,13 @@ from django.utils.translation import gettext_lazy as _
 from parler.models import TranslatableModel, TranslatedFields
 from treebeard.mp_tree import MP_Node
 
+from src.scope.models.translatable_company_owned import TranslatableCompanyOwned
 from src.core.models.abstract_audit import AbstractAudit
-from src.scope.models.company_owned import CompanyOwned
 
-class Location(TranslatableModel, CompanyOwned, MP_Node, AbstractAudit):
-    node_order_by = ["name"]
+
+class Location(TranslatableCompanyOwned, MP_Node, AbstractAudit):
+
+    node_order_by = ["slug"]
 
     slug = models.SlugField(
         max_length=150,
@@ -20,6 +22,32 @@ class Location(TranslatableModel, CompanyOwned, MP_Node, AbstractAudit):
         related_name="locations",
         verbose_name=_("Location type"),
     )
+
+    is_stockable = models.BooleanField(
+        default=None,
+        verbose_name=_("Stockable (override)"),
+        null=True,
+        blank=True,
+        help_text=_(
+            "Leave blank (Null) to let the system decide automatically: leaf nodes "
+            "will be stockable, parent nodes will not. Set explicitly to True or False "
+            "to override this behavior."
+        ),
+    )
+
+    @property
+    def can_stock(self) -> bool:
+        """
+        Calcule dynamiquement si la location peut recevoir du stock.
+        """
+        # Si une décision explicite a été prise sur la location, on la respecte
+        if self.is_stockable is not None:
+            return self.is_stockable
+
+        # Sinon, le comportement dépend de la structure de l'arbre (Treebeard)
+        # django-treebeard maintient 'numchild'. Si numchild == 0, c'est une feuille.
+        is_leaf = getattr(self, 'numchild', 0) == 0
+        return is_leaf
 
     image = models.ForeignKey(
         "core.Image",
@@ -54,4 +82,4 @@ class Location(TranslatableModel, CompanyOwned, MP_Node, AbstractAudit):
         ]
 
     def __str__(self): 
-        return f"{self.company.official_name} - {self.name}"
+        return f"{self.name} ({self.company.official_name})"

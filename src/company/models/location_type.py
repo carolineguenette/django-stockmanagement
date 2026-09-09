@@ -1,11 +1,11 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from parler.models import TranslatableModel, TranslatedFields
+from parler.models import TranslatedFields
 
-from src.scope.models.company_owned import CompanyOwned
+from src.scope.models.translatable_company_owned import TranslatableCompanyOwned
 
+class LocationType(TranslatableCompanyOwned):
 
-class LocationType(TranslatableModel, CompanyOwned):
     slug = models.SlugField(
         max_length=255,
         verbose_name=_("Slug"),
@@ -22,14 +22,6 @@ class LocationType(TranslatableModel, CompanyOwned):
         ),
     )
 
-    is_stockable = models.BooleanField(
-        default=True,
-        verbose_name=_("Stockable"),
-        help_text=_(
-            "If disabled, locations of this type cannot be selected for inventory storage."
-        ),
-    )
-
     class Meta:
         db_table = "company_locationtype"
         verbose_name = _("Location type")
@@ -39,10 +31,10 @@ class LocationType(TranslatableModel, CompanyOwned):
                 fields=["company", "slug"],
                 name="unique_slug_locationtype_by_company",
                 violation_error_message=_(
-                    "This slug is already used in this company."
+                    "This slug is already used in the company."
                 ),
             )
         ]
 
     def __str__(self):
-        return f"{self.company.official_name} - {self.name}"
+        return f"{self.name} ({self.company.official_name})"

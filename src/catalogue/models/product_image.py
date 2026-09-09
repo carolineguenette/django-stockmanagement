@@ -6,7 +6,7 @@ from src.scope.models.company_owned import CompanyOwned
 
 # def product_image_upload_name(instance, filename):
 #     # TODO Revoir la stratégie de nommage de fichiers plus tard.
-#     # Code temporairement désactivé à la demande.
+#     # Code temporairement désactivé.
 #     return filename
 
 

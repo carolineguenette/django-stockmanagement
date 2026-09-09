@@ -31,18 +31,9 @@ class AbstractAudit(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        # Récupération sécurisée de l'utilisateur stocké par le middleware django
-        from src.core.middleware import get_current_user
-        user = get_current_user()
+        from src.core.services.audit_service import AuditService
 
-        # Si l'utilisateur est connecté (et pas anonyme)
-        if user and user.is_authenticated:
-            if not self.pk:  # Création d'un nouvel enregistrement
-                self.created_by = user
-                self.updated_by = None  # Reste explicitement null à la création
-            else:            # Mise à jour d'un enregistrement existant
-                self.updated_by = user
-
+        AuditService.apply_audit(self)
         super().save(*args, **kwargs)
 
     class Meta:

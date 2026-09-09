@@ -14,15 +14,14 @@ class UserRole(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="role_assignments",
-        verbose_name=_('User role assignment')
+        verbose_name=_('User')
     )
 
     role = models.ForeignKey(
         'access.Role',
         on_delete=models.RESTRICT,
         related_name='user_assignments',
-        verbose_name=_('User role assignment'),
-        help_text=_("The role assigned to the user.")
+        verbose_name=_('Role'),
     )
 
     company = models.ForeignKey(

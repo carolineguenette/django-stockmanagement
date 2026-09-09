@@ -40,7 +40,7 @@ class Log(models.Model):
         verbose_name=_("Action"),
     )
 
-    created_at = models.DateTimeField(
+    changed_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_("Created at"),
     )
@@ -60,12 +60,12 @@ class Log(models.Model):
 
     class Meta:
         db_table = "access_log"
-        verbose_name = _("Access log")
-        verbose_name_plural = _("Access logs")
+        verbose_name = _("Log (access)")
+        verbose_name_plural = _("Logs (access)")
         indexes = [
             models.Index(fields=["role"], name="access_log_role_idx"),
         ]
-        ordering = ["-created_at"]
+        ordering = ["-changed_at"]
 
     def __str__(self):
         return f"{self.target_table}:{self.target_id}"

@@ -1,11 +1,11 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from parler.models import TranslatableModel, TranslatedFields
+from parler.models import TranslatedFields
 
-from src.scope.models.company_owned import CompanyOwned
+from src.scope.models.translatable_company_owned import TranslatableCompanyOwned
 
 
-class AttributeKey(TranslatableModel, CompanyOwned):
+class AttributeKey(TranslatableCompanyOwned):
     slug = models.SlugField(
         max_length=150,
         verbose_name=_("Slug"),

@@ -3,10 +3,10 @@ from django.utils.translation import gettext_lazy as _
 from parler.models import TranslatableModel, TranslatedFields
 from treebeard.mp_tree import MP_Node
 
-from src.scope.models.company_owned import CompanyOwned
+from src.scope.models.translatable_company_owned import TranslatableCompanyOwned
 
 
-class Category(TranslatableModel, CompanyOwned, MP_Node):
+class Category(TranslatableCompanyOwned, MP_Node):
     node_order_by = ["name"]
 
     slug = models.SlugField(

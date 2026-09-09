@@ -28,7 +28,7 @@ class ProductConfig(CompanyOwned, AbstractAudit):
     )
 
     alert_threshold = models.DecimalField(
-        max_digits=12,
+        max_digits=20,
         decimal_places=6,
         verbose_name=_("Low stock threshold"),
     )

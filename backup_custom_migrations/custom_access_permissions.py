@@ -1,4 +1,6 @@
-# Dans app access
+# **************************
+# Dans app django access
+# **************************
 
 from django.db import migrations
 
@@ -16,7 +18,7 @@ PERMISSIONS = [
             "fr": "Gérer les rôles et leur association avec des permissions. Cette permission est strictement encadrée pour empêcher l'escalade de privilèges.",
             "en": "Manage roles and their association with permissions. This permission is strictly controlled to prevent privilege escalation."
         },
-        "context": "SYSTEM",
+        "context": "COMPANY",
         "sensibility": "HIGH",
         "category": "DELEGATE",
         "display_order": 1,
@@ -157,7 +159,7 @@ PERMISSIONS += [
             "fr": "Assigner, modifier ou supprimer les rôles assignés à un utilisateur. Strictement limité aux subordonnés et aux permissions détenues.",
             "en": "Assign, modify, or remove roles assigned to a user. Strictly limited to subordinates and held permissions."
         },
-        "context": "SYSTEM",
+        "context": "COMPANY",
         "sensibility": "HIGH",
         "category": "DELEGATE",
         "display_order": 58,
@@ -767,7 +769,7 @@ def create_permissions(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("access", "0002_initial"),
+        ("access", "0002_initial"),     # TODO: Need to be adjust with real migration numbers
     ]
 
     operations = [

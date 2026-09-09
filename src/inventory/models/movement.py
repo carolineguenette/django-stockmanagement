@@ -70,12 +70,12 @@ class Movement(CompanyOwned, AbstractAudit):
     )
 
     # Exact metric recording fields for quick filtering without traversing JSON
-    pack_quantity_init = models.DecimalField(max_digits=15, decimal_places=5, verbose_name=_('Initial Pack Quantity'))
-    pack_quantity_final = models.DecimalField(max_digits=15, decimal_places=5, verbose_name=_('Final Pack Quantity'))
-    pack_quantity_delta = models.DecimalField(max_digits=15, decimal_places=5, verbose_name=_('Delta Pack Quantity'))
-    ref_quantity_init = models.DecimalField(max_digits=15, decimal_places=5, verbose_name=_('Initial Ref Quantity'))
-    ref_quantity_final = models.DecimalField(max_digits=15, decimal_places=5, verbose_name=_('Final Ref Quantity'))
-    ref_quantity_delta = models.DecimalField(max_digits=15, decimal_places=5, verbose_name=_('Delta Ref Quantity'))
+    pack_quantity_init = models.DecimalField(max_digits=20, decimal_places=6, verbose_name=_('Initial Pack Quantity'))
+    pack_quantity_final = models.DecimalField(max_digits=20, decimal_places=6, verbose_name=_('Final Pack Quantity'))
+    pack_quantity_delta = models.DecimalField(max_digits=20, decimal_places=6, verbose_name=_('Delta Pack Quantity'))
+    ref_quantity_init = models.DecimalField(max_digits=20, decimal_places=6, verbose_name=_('Initial Ref Quantity'))
+    ref_quantity_final = models.DecimalField(max_digits=20, decimal_places=6, verbose_name=_('Final Ref Quantity'))
+    ref_quantity_delta = models.DecimalField(max_digits=20, decimal_places=6, verbose_name=_('Delta Ref Quantity'))
 
     snap_infos = models.JSONField(verbose_name=_('Snapshot Information'))
 

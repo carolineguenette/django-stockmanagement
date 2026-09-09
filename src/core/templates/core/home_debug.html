@@ -78,6 +78,18 @@
         font-weight: 600;
     }
 
+    .debug-card .footer {
+        text-align: right;
+        margin-top: 1rem;
+    }
+    .debug-card .footer a {
+        text-decoration: underline;
+    }
+    .debug-card .footer a:hover {
+        text-decoration: none;
+    }
+
+
     /* Ajustement spécifique pour le mode sombre si nécessaire */
     @media (prefers-color-scheme: dark) {
         .debug-route {
@@ -138,5 +150,8 @@
             </tr>
         </tbody>
     </table>
+    <div class="footer">
+        <a href="/admin">Aller au panneau d'administration de django</a>
+    </div>
 </div>
 {% endblock %}

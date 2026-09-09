@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from src.scope.models.company_owned import CompanyOwned
 
 
-class ProductAttribute(CompanyOwned):
+class ProductAttributes(CompanyOwned):
     product = models.ForeignKey(
         "catalogue.Product",
         on_delete=models.CASCADE,

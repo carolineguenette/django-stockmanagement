@@ -85,8 +85,8 @@ class UserRoleLog(models.Model):
 
     class Meta:
         db_table = "users_userrolelog"
-        verbose_name = _("User role log")
-        verbose_name_plural = _("User role logs")
+        verbose_name = _("log")
+        verbose_name_plural = _("logs")
         indexes = [
             models.Index(fields=["role"], name="userrole_log_role_idx"),
         ]

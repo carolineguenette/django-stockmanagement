@@ -1,13 +1,13 @@
 from django.db import models
 from django.db.models import Case, When, Value, IntegerField
 from django.utils.translation import gettext_lazy as _
-from parler.models import TranslatableModel, TranslatedFields
+from parler.models import TranslatedFields
 
+from src.scope.models.translatable_company_owned import TranslatableCompanyOwned
 from src.core.models.abstract_audit import AbstractAudit
-from src.scope.models.company_owned import CompanyOwned
 from src.company.choices import UomTypeChoices, UomSystemChoices
 
-class Uom(TranslatableModel, CompanyOwned, AbstractAudit):
+class Uom(TranslatableCompanyOwned, AbstractAudit):
     type = models.CharField(
         max_length=20,
         choices=UomTypeChoices.choices,
@@ -52,8 +52,8 @@ class Uom(TranslatableModel, CompanyOwned, AbstractAudit):
     )
 
     ratio = models.DecimalField(
-        max_digits=12,
-        decimal_places=6,
+        max_digits=20,
+        decimal_places=12,
         verbose_name=_("Ratio"),
     )
 
@@ -73,7 +73,12 @@ class Uom(TranslatableModel, CompanyOwned, AbstractAudit):
                 violation_error_message = _(
                     "A reference unit already exists for this type."
                 ),
-            )
+            ),
+            models.CheckConstraint(
+                condition=models.Q(ratio__gt=0),
+                name="company_uom_ratio_gt_zero",
+                violation_error_message=_("The ratio must be greater than zero."),
+            ),
         ]
 
     def __str__(self):

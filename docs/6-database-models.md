@@ -512,13 +512,14 @@ Définit la typologie des différents emplacements, de manière hiérarchique. L
 
 ![](https://img.shields.io/badge/DEV-VX-green.svg) Développement de l'UX pour créer une structure hiérarchique.
 
-| ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                                |
-|:------------------------------------------------------:| --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `image_id`                                             | ![](https://img.shields.io/badge/on_delete-SET__NULL-purple.svg) ![](https://img.shields.io/badge/related_name-images-purple.svg) Image optionnelle |
+| ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                                                                                                                                                                              |
+|:------------------------------------------------------:| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `is_stockable`                                         | Détermine si la location peut contenir du stock d'inventaire. <br/><br/>**Règle métier:**<br/>- Si `is_stockable `est défini (`True `ou False`)`: Application directe de la valeur<br/>- Si `NULL`: si le noeud est une feuille, la location est stockable sinon la location n'est pas stockable. |
+| `image_id`                                             | ![](https://img.shields.io/badge/on_delete-SET__NULL-purple.svg) ![](https://img.shields.io/badge/related_name-images-purple.svg) Image optionnelle                                                                                                                                               |
 
 *Exemple de structure*: 
 
-- une entreprise peut être composée d'une boutique ABC à une certaine adresse et d'un entrepôt X à une autre adresse postale.
+- une entreprise peut être composée d'une boutique ABC à une certaine adresse postale et d'un entrepôt X à une autre adresse postale.
 - l'entrepôt peut gérer finement les emplacements de son inventaire en créant des zones distintes organisées de manière hiérarchique alors que pour la boutique ABC, tout l'inventaire est simplement "dans la boutique", sans distinction.
 
 *Concrètement*: 
@@ -533,17 +534,17 @@ Définit la typologie des différents emplacements, de manière hiérarchique. L
   
   * Rangée A (`type: zone-de-circulation`)
     
-    * Étagère A.1 (`type: zone-entrepot`)
+    * Étagère A.1 (`type: zone-entreposage`)
     
-    * Étagère A.2 (`type: zone-entrepot`)
+    * Étagère A.2 (`type: zone-entreposage`)
   
   * Rangée B (`type: zone-de-circulation`)
     
-    * Étagère B.1 (`type: zone-entrepot`)
+    * Étagère B.1 (`type: zone-entreposage`)
     
     * ...
   
-  * Frigo (`type: zone-entrepot`)
+  * Frigo (`type: zone-entreposage`)
   
   * Lift 518 (`type: transit`)
 
@@ -555,21 +556,22 @@ Définit les types d'emplacements pour l'entreprise. Implémente CompanyOwned (d
 
 *Exemple*:
 
-- Boutique (`is_stockable: TRUE`)
+- Boutique
 
-- Entrepôt (`is_stockable: FALSE`)
+- Entrepôt
 
-- Zone de travail (`is_stockable: TRUE`)
+- Zone de travail
 
-- Zone de circulation (`is_stockable: FALSE`)
+- Zone de circulation
 
-- Transit (`is_stockable: TRUE`, `description`: entreposage temporaire)
+- Entreprosage
 
-| ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                                                |
-|:------------------------------------------------------:| ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `company_id` (de **CompanyOwned**)                     | ![](https://img.shields.io/badge/on_delete-CASCADE-purple.svg) ![](https://img.shields.io/badge/related_name-location__types-purple.svg)                            |
-| `is_stockable`                                         | La location permet l'entreposage de produits d'inventaire.<br/>Si FAUX: la location n'apparaîtra pas dans liste déroulante des choix pour disposer de l'inventaire. |
-|                                                        |                                                                                                                                                                     |
+- Transit (`description`: entreposage temporaire)
+
+| ![](https://img.shields.io/badge/-Field-turquoise.svg) | Note                                                                                                                                     |
+|:------------------------------------------------------:| ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `company_id` (de **CompanyOwned**)                     | ![](https://img.shields.io/badge/on_delete-CASCADE-purple.svg) ![](https://img.shields.io/badge/related_name-location__types-purple.svg) |
+|                                                        |                                                                                                                                          |
 
 ---
 

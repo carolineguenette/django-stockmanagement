@@ -1,11 +1,11 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from parler.models import TranslatableModel, TranslatedFields
+from parler.models import TranslatedFields
 
-from src.scope.models.company_owned import CompanyOwned
+from src.scope.models.translatable_company_owned import TranslatableCompanyOwned
 
 
-class AttributeValue(TranslatableModel, CompanyOwned):
+class AttributeValue(TranslatableCompanyOwned):
     attribute_key = models.ForeignKey(
         "catalogue.AttributeKey",
         on_delete=models.CASCADE,

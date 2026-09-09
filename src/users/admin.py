@@ -6,9 +6,11 @@ from django.utils.translation import gettext_lazy as _
 from treebeard.admin import TreeAdmin
 from treebeard.forms import movenodeform_factory
 
-from src.core.admin import BaseAuditAdmin
+from src.core.admin import admin_audit_register
 from src.users.models.user import User
 from src.users.models.user_hierarchy import UserHierarchy
+from src.users.models.user_role import UserRole
+from src.users.models.user_role_log import UserRoleLog
 
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
@@ -17,7 +19,7 @@ class UserAdmin(DjangoUserAdmin):
     list_filter = ("is_owner", "is_active", "is_staff", "is_superuser")
 
     # Ajout d'une barre de recherche
-    search_fields = ("username", "email")
+    search_fields = ("email", "username", "first_name", "last_name")
 
     # Rendre les champs d'audit non modifiables dans le formulaire
     readonly_fields = ('date_joined', 'created_by', 'update_at', 'updated_by')
@@ -28,9 +30,9 @@ class UserAdmin(DjangoUserAdmin):
     def __init__(self, model, admin_site):
         super().__init__(model, admin_site)
 
-        # Copie profonde de la configuration native de Django pour la nettoyer
+        # Copie profonde de la configuration native de Django pour la modifier et réordonner
         base_fieldsets = copy.deepcopy(DjangoUserAdmin.fieldsets)
-        cleaned_fieldsets = []
+        new_fieldsets = []
 
         # Liste des champs inexistants ou déplacés à supprimer
         fields_to_remove = {"date_joined", "groups", "user_permissions"}
@@ -44,12 +46,13 @@ class UserAdmin(DjangoUserAdmin):
             ]
             if fields:
                 # On reconstruit temporairement l'option sous forme de dictionnaire modifiable
+                # pour pouvoir ajouter nos sections custom
                 new_options = dict(section_options)
                 new_options["fields"] = list(fields)
-                cleaned_fieldsets.append((section_title, new_options))
+                new_fieldsets.append((section_title, new_options))
 
         # Injection de 'photo' et 'is_owner' dans les sections natives de Django
-        for section_title, section_options in cleaned_fieldsets:
+        for section_title, section_options in new_fieldsets:
             # Déplacement de la photo dans les infos personnelles
             if section_title == _("Personal info"):
                 section_options["fields"].append("photo")
@@ -60,12 +63,12 @@ class UserAdmin(DjangoUserAdmin):
 
         # Reconversion des listes de champs en tuples (format requis par Django)
         final_base_fieldsets = []
-        for section_title, section_options in cleaned_fieldsets:
+        for section_title, section_options in new_fieldsets:
             section_options['fields'] = tuple(section_options['fields'])
             final_base_fieldsets.append((section_title, section_options))
 
         # Assemblage final avec les nouveaux champs et la section d'audit
-        self.fieldsets = tuple(cleaned_fieldsets) + (
+        self.fieldsets = tuple(new_fieldsets) + (
             ( _("Preferences"), {
                 "fields": ( "preferred_language", "preferred_home_page", "preferred_company", ),
             }),
@@ -75,9 +78,23 @@ class UserAdmin(DjangoUserAdmin):
             }),
         )
 
-@admin.register(UserHierarchy)
-class UserHierarchyAdmin(BaseAuditAdmin, TreeAdmin):
+@admin_audit_register(UserHierarchy, TreeAdmin)
+class UserHierarchyAdmin(TreeAdmin):
     form = movenodeform_factory(UserHierarchy)
-    list_display = ("user", "depth", "numchild")
-    search_fields = ("user__email", "user__username")
+    list_display = ("user", "path", "depth", "numchild")
+    search_fields = ("user__email", "user__username", "user__first_name", "user__last_name")
+    ordering = ('path',)
 
+@admin.register(UserRole)
+class UserRoleAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'role', 'company', 'location', 'is_active')
+    list_filter = ('is_active', 'role_id', 'company_id', 'location_id')
+    search_fields = ('user_id', 'role_id')
+
+
+@admin.register(UserRoleLog)
+class UserRoleLogAdmin(admin.ModelAdmin):
+    list_display = ('id', 'uuid', 'user_role', 'action', 'changed_at', 'changed_by')
+    list_filter = ('action', 'changed_at')
+    search_fields = ('uuid', 'userrole', 'user')
+    readonly_fields = ('changed_at',)

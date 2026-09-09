@@ -2,7 +2,7 @@ from src.catalogue.models.attribute_key import AttributeKey
 from src.catalogue.models.attribute_value import AttributeValue
 from src.catalogue.models.category import Category
 from src.catalogue.models.product import Product
-from src.catalogue.models.product_attribute import ProductAttribute
+from src.catalogue.models.product_attributes import ProductAttributes
 from src.catalogue.models.product_category import ProductCategory
 from src.catalogue.models.product_config import ProductConfig
 from src.catalogue.models.product_image import ProductImage
@@ -15,7 +15,7 @@ __all__ = [
     "AttributeValue",
     "Category",
     "Product",
-    "ProductAttribute",
+    "ProductAttributes",
     "ProductCategory",
     "ProductConfig",
     "ProductImage",

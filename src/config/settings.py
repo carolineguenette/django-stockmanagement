@@ -64,11 +64,12 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "src.core.middleware.RegionalLocaleMiddleware",
-    'src.core.middleware.AuditUserMiddleware',
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_browser_reload.middleware.BrowserReloadMiddleware",
+
+    "src.core.middleware.RegionalLocaleMiddleware",
+    "src.core.middleware.AuditUserMiddleware",      # Remplit le service d'audit
     "src.scope.middleware.CompanyContextMiddleware",
 ]
 
@@ -141,6 +142,8 @@ USE_I18N = True
 USE_TZ = True
 TIME_ZONE = env("TIME_ZONE") # Format dans lequel les dates sont stockées brutes en base de données
 
+# Languages supportés par des fichiers .po/.mo
+# Lors d'ajout: mettre aussi à jour src/users/choices.py -> PreferredLanguageChoices
 LANGUAGES = [
     ('fr', 'Français'),
     ('en', 'English'),
@@ -185,8 +188,9 @@ LANGUAGES_FALLBACKS = {
 
 # Une seule langue est active pour les données dynamiques pour le moment
 PARLER_LANGUAGES = {
-    1: (
-        {'code': env("DEFAULT_LANG")},
+    None: (
+        {'code': 'fr'},
+        {'code': 'en'},
     ),
     'default': {
         'fallbacks': [env("DEFAULT_LANG")],

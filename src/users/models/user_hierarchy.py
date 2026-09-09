@@ -12,6 +12,8 @@ class UserHierarchy(MP_Node, AbstractAudit):
     Relations hiérarchiques entre utilisateurs
     Un utilisateur peut avoir plusieurs relations hiérarchiques (apparaître dans différents arbres)
     """
+    node_order_by = ["user"]
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -22,8 +24,8 @@ class UserHierarchy(MP_Node, AbstractAudit):
     # MP_Node fournit automatiquement: path, depth, numchild
 
     class Meta:
-        verbose_name = _("User hierarchy")
-        verbose_name_plural = _("Users hierarchies")
+        verbose_name = _("Hierarchy")
+        verbose_name_plural = _("Hierarchies")
 
     def __str__(self):
         return f"{self.user} (depth: {self.depth})"
